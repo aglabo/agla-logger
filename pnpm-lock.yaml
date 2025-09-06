@@ -63,6 +63,8 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.18.1)(tsx@4.20.5)
 
+  packages/@aglabo/agla-error: {}
+
 packages:
 
   '@commitlint/config-conventional@19.8.1':
