@@ -10,13 +10,13 @@ pre-commit:
   parallel: true
   commands:
     gitleaks:
-      run: gitleaks protect --config ./templates/configs/gitleaks.toml --staged
+      run: gitleaks protect --config ./configs/gitleaks.toml --staged
 
     secretlint:
       glob: "**/*"
       run: >
         secretlint
-        --secretlintrc ./templates/configs/secretlint.config.yaml
+        --secretlintrc ./configs/secretlint.config.yaml
         --secretlintignore .gitignore
         --maskSecrets
         "{staged_files}"
@@ -30,4 +30,4 @@ commit-msg:
   parallel: true
   commands:
     commitlint:
-      run: commitlint --config ./templates/configs/commitlint.config.js --edit
+      run: commitlint --config ./configs/commitlint.config.js --edit

@@ -29,7 +29,7 @@ fi
 cd "$REPO_ROOT"
 dotenvx run -- \
   codegpt \
-  --config ./templates/configs/codegpt.config.yaml \
+  --config ./configs/codegpt.config.yaml \
   commit \
   --no_confirm --preview \
   --file "$MSG_FILE"
