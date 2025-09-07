@@ -23,6 +23,7 @@ export default [
     ],
     ignores: [
       '**/lib/**',
+      '**/maps/**',
       '**/module/**',
       '**/dist/**',
       '**/node_modules/**',

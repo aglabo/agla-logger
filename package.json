@@ -33,8 +33,7 @@
     "lint:text": "textlint --config ./configs/textlintrc.yaml --cache --cache-location .cache/textlint-cache/textlintCache ",
     "lint:markdown": "markdownlint-cli2 --config ./configs/.markdownlint.yaml ",
     "lint:secrets": "secretlint --secretlintrc ./configs/secretlint.config.yaml --secretlintignore .gitignore --maskSecrets **/*",
-    "test:develop": "pnpm -r run test:develop",
-    "test:ci": "pnpm -r run test:ci",
+    "test:all": "pnpm -r run test:all",
     "new:doc": "tsx ./scripts/new-doc.ts",
     "lint:docs": "tsx ./scripts/check-doc-frontmatter.ts",
     "sync:configs": "bash scripts/sync-configs.sh"

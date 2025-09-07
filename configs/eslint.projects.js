@@ -8,7 +8,8 @@
 
 export default [
   // for OSS Utils
+  './packages/@aglabo/agla-error/tsconfig.json',
 
-  // main
-  './tsconfig.json', // ルートプロジェクト設定
+  // ルートプロジェクト設定
+  './tsconfig.json',
 ];
