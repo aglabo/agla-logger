@@ -69,8 +69,10 @@ $~*
 # Node.js / JS project ignores
 # Output directory
 dist
-**/module/*
-**/lib/*
+module
+lib
+# Types (xxx.d.ts)
+maps/*
 
 # Test Report
 *results/*
