@@ -13,6 +13,7 @@
     ".git",
     "dist",
     "lib",
+    "maps",
     "module",
     "node_modules",
     ".cache",
