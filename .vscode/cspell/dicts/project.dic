@@ -1,4 +1,8 @@
 # this files is words list for check spell on cSpell
 aglogger
+cjs
 CODEOWNERS
+esm
+ESM
 stylelintcache
+tsup
