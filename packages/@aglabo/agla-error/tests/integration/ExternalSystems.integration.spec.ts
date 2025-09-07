@@ -16,11 +16,16 @@ import { ErrorSeverity } from '../../shared/types/ErrorSeverity.types.js';
 // Test utilities
 import { TestAglaError } from '../../src/__tests__/helpers/TestAglaError.class.ts';
 
-// system mocks
+// Test mocks
 const mockFs = { readFile: vi.fn(), writeFile: vi.fn(), access: vi.fn() };
 const mockHttp = { get: vi.fn(), post: vi.fn(), request: vi.fn() };
 const mockCore = { setFailed: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() };
 
+// Helper functions
+/**
+ * Handles file operations with error wrapping
+ * Simulates filesystem operations and converts native errors to AglaError instances
+ */
 const handleFileOperation = async (
   filePath: string,
   options?: { fs?: typeof mockFs },
@@ -37,6 +42,10 @@ const handleFileOperation = async (
   }
 };
 
+/**
+ * Handles HTTP requests with error wrapping
+ * Simulates HTTP operations and converts network errors to AglaError instances
+ */
 const handleHttpRequest = async (
   url: string,
   options?: { http?: typeof mockHttp },
@@ -53,6 +62,10 @@ const handleHttpRequest = async (
   }
 };
 
+/**
+ * Handles GitHub Actions error reporting
+ * Formats AglaError instances for GitHub Actions output with proper annotations
+ */
 const handleGitHubActionsError = (aglaError: AglaError, core = mockCore): void => {
   const actionMessage = `${aglaError.errorType}: ${aglaError.message}`;
   const errorCode = aglaError.code ?? 'GA001';
@@ -61,6 +74,7 @@ const handleGitHubActionsError = (aglaError: AglaError, core = mockCore): void =
   if (aglaError.context) { core.info(`Context: ${JSON.stringify(aglaError.context)}`); }
 };
 
+// Test cases
 /**
  * External systems integration tests
  * Tests AglaError integration with filesystem, HTTP, and GitHub Actions using mocks
@@ -70,10 +84,13 @@ describe('External Systems Integration (mocked)', () => {
   afterEach(() => vi.restoreAllMocks());
 
   /**
-   * Filesystem integration scenarios
+   * Filesystem Integration Tests
+   *
+   * Tests AglaError integration with filesystem operations, focusing on
+   * proper error wrapping and context preservation for file system errors.
    */
   describe('Filesystem', () => {
-    // Filesystem error wrapping: converts ENOENT to AglaError with system context
+    // Test: ENOENT error wrapping with system context preservation
     it('wraps ENOENT errors with context', async () => {
       const fsError = Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' });
       mockFs.readFile.mockRejectedValue(fsError);
@@ -85,10 +102,13 @@ describe('External Systems Integration (mocked)', () => {
   });
 
   /**
-   * HTTP client integration scenarios
+   * HTTP Integration Tests
+   *
+   * Tests AglaError integration with HTTP operations, including network
+   * error handling, rate limiting, and request context preservation.
    */
   describe('HTTP', () => {
-    // Network error handling: wraps connection failures with request context
+    // Test: Network error wrapping with URL and method context
     it('wraps network errors with url/method in context', async () => {
       const networkError = new Error('ECONNREFUSED: Connection refused');
       mockHttp.get.mockRejectedValue(networkError);
@@ -98,7 +118,7 @@ describe('External Systems Integration (mocked)', () => {
       expect(res.error!.errorType).toBe('HTTP_REQUEST_ERROR');
     });
 
-    // Rate limiting: preserves HTTP 429 status information in error context
+    // Test: HTTP 429 rate limit error handling and status preservation
     it('handles rate limit (429) message propagation', async () => {
       const rateLimit = new Error('429 Too Many Requests');
       mockHttp.get.mockRejectedValue(rateLimit);
@@ -110,10 +130,13 @@ describe('External Systems Integration (mocked)', () => {
   });
 
   /**
-   * GitHub Actions integration scenarios
+   * GitHub Actions Integration Tests
+   *
+   * Tests AglaError formatting and output for GitHub Actions environment,
+   * including proper annotation formatting and default error code handling.
    */
   describe('GitHub Actions formatting', () => {
-    // Actions annotation: formats AglaError for GitHub Actions output
+    // Test: GitHub Actions error formatting with proper annotations
     it('formats message and emits annotations', () => {
       const agla = new TestAglaError('GITHUB_ACTION_ERROR', 'Action execution failed', {
         code: 'GA001',
@@ -126,7 +149,7 @@ describe('External Systems Integration (mocked)', () => {
       expect(mockCore.info).toHaveBeenCalled();
     });
 
-    // Default error code: applies GA001 when no explicit code provided
+    // Test: Default error code assignment when none specified
     it('applies default error code when not provided (GA001)', () => {
       const agla = new TestAglaError('GITHUB_ACTION_ERROR', 'No code provided');
       handleGitHubActionsError(agla, mockCore);

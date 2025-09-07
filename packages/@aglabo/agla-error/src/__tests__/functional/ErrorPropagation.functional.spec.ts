@@ -16,16 +16,22 @@ import { ErrorSeverity } from '../../../shared/types/ErrorSeverity.types.js';
 // Test utilities
 import { TestAglaError } from '../helpers/TestAglaError.class.ts';
 
+// Test cases
 /**
- * Error propagation functional tests
- * Tests multi-level error chaining and propagation across function boundaries
+ * Error Propagation Functional Tests
+ *
+ * Tests multi-level error chaining and propagation across function boundaries,
+ * validating property preservation and context enrichment.
  */
 describe('Error Propagation', () => {
   /**
-   * Multi-level error chaining scenarios
+   * Multi-level Error Chaining Tests
+   *
+   * Tests property preservation and message accumulation through
+   * multiple levels of error chaining.
    */
   describe('Multi-level chaining', () => {
-    // Multi-level preservation: tests property preservation through multiple chaining levels
+    // Test: Property preservation through multiple chaining levels
     it('preserves base properties across levels and appends causes', () => {
       const timestamp = new Date('2025-08-29T21:42:00Z');
       const base = new TestAglaError('MULTI_LEVEL_ERROR', 'Base level error', {
@@ -52,12 +58,24 @@ describe('Error Propagation', () => {
   });
 
   /**
-   * Error propagation across different function contexts
+   * Function Boundary Propagation Tests
+   *
+   * Tests error propagation and enrichment across different function
+   * contexts, simulating service and controller layer interactions.
    */
   describe('Propagation across function boundaries', () => {
     /**
-     * Simulates a service layer error with database failure
-     * @returns AglaError with service context and chained cause
+     * Simulates a service layer error with database failure.
+     * This mock function demonstrates error creation and chaining at the service layer,
+     * simulating a database connection failure and wrapping it in a structured AglaError.
+     *
+     * @returns AglaError with service context and chained database failure cause
+     * @example
+     * ```typescript
+     * const serviceError = service();
+     * expect(serviceError.code).toBe('SVC_001');
+     * expect(serviceError.context).toHaveProperty('component', 'service');
+     * ```
      */
     const service = (): AglaError => {
       try {
@@ -73,8 +91,17 @@ describe('Error Propagation', () => {
     };
 
     /**
-     * Simulates a controller layer error that enriches service error
-     * @returns AglaError with additional controller context
+     * Simulates a controller layer error that enriches service error.
+     * This mock function demonstrates error propagation and enrichment across layers,
+     * taking a service layer error and adding controller-specific context through chaining.
+     *
+     * @returns AglaError with additional controller context and enriched error chain
+     * @example
+     * ```typescript
+     * const controllerError = controller();
+     * expect(controllerError.message).toContain('Controller observed failure');
+     * expect(controllerError.context).toHaveProperty('component', 'service');
+     * ```
      */
     const controller = (): AglaError => {
       const err = service();
@@ -82,7 +109,7 @@ describe('Error Propagation', () => {
       return err.chain(new Error('Controller observed failure'));
     };
 
-    // Cross-boundary propagation: maintains error properties while enriching context
+    // Test: Cross-boundary propagation with context enrichment
     it('keeps severity and accumulates context', () => {
       const propagated = controller();
       expect(propagated.severity).toBe(ErrorSeverity.ERROR);

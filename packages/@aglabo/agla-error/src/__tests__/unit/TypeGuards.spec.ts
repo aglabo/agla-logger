@@ -12,22 +12,28 @@ import { describe, expect, it } from 'vitest';
 // Type definitions
 import { guardAglaErrorContext, isValidAglaErrorContext } from '../../../shared/types/AglaError.types.js';
 
+// Test cases
 /**
- * Runtime type guard functions unit tests
- * Tests validation and guard functions for AglaErrorContext type safety
+ * Type Guards Unit Tests
+ *
+ * Tests runtime type guard functions for AglaErrorContext validation
+ * and guarding, ensuring proper type safety at runtime.
  */
 describe('Type Guards', () => {
   /**
-   * isValidAglaErrorContext validation function tests
+   * isValidAglaErrorContext Validation Tests
+   *
+   * Tests the validation function for AglaErrorContext objects,
+   * covering object type checking and edge case handling.
    */
   describe('isValidAglaErrorContext', () => {
-    // Non-object rejection: returns false for primitive types and null/undefined
+    // Test: Non-object rejection - primitive types and null/undefined
     it('returns false for non-object values', () => {
       const cases = [null, undefined, 'str', 0, true, Symbol('x'), () => {}, BigInt(1)];
       cases.forEach((v) => expect(isValidAglaErrorContext(v)).toBe(false));
     });
 
-    // Object validation: returns true for valid plain objects
+    // Test: Object validation - accepts valid plain objects
     it('returns true for plain objects', () => {
       expect(isValidAglaErrorContext({})).toBe(true);
       expect(isValidAglaErrorContext({ user: 'a', id: 1 })).toBe(true);
@@ -35,10 +41,13 @@ describe('Type Guards', () => {
   });
 
   /**
-   * guardAglaErrorContext guard function tests
+   * guardAglaErrorContext Guard Function Tests
+   *
+   * Tests the guard function that validates and returns AglaErrorContext
+   * objects, with proper error throwing for invalid inputs.
    */
   describe('guardAglaErrorContext', () => {
-    // Pass-through validation: returns same object reference when valid
+    // Test: Pass-through validation - returns same object reference
     it('returns same object when valid', () => {
       const obj = { k: 'v' };
       const guarded = guardAglaErrorContext(obj);
@@ -46,7 +55,7 @@ describe('Type Guards', () => {
       expect(guarded.k).toBe('v');
     });
 
-    // Error throwing: throws appropriate errors for invalid input values
+    // Test: Error throwing for invalid input values
     it('throws for invalid values', () => {
       const invalids = [null, undefined, 'x', 1, true];
       invalids.forEach((v) => expect(() => guardAglaErrorContext(v)).toThrow());

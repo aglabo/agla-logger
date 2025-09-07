@@ -16,24 +16,57 @@ import type { AglaErrorContext, AglaErrorOptions } from '../../../shared/types/A
 // Test utilities
 import { TestAglaError } from '../helpers/TestAglaError.class.ts';
 
+/**
+ * Processed error type for testing type system integration scenarios.
+ * Represents an error that has been processed through various transformations
+ * including serialization and chaining operations.
+ *
+ * @example
+ * ```typescript
+ * const processed: ProcessedError = {
+ *   type: 'VALIDATION_ERROR',
+ *   severity: ErrorSeverity.HIGH,
+ *   serialized: { message: 'Invalid input', code: 'E001' },
+ *   chained: new TestAglaError('NETWORK_ERROR', 'Connection failed')
+ * };
+ * ```
+ */
 type ProcessedError = {
+  /** The error type identifier */
   type: string;
+  /** Optional severity level of the error */
   severity?: unknown;
+  /** Serialized representation of the error data */
   serialized: unknown;
+  /** The chained AglaError instance */
   chained: AglaError;
 };
 
+// Test cases
 /**
- * TypeScript type system integration functional tests
- * Tests type safety, union types, and context type compatibility
+ * TypeScript Type System Integration Tests
+ *
+ * Tests type safety, union types, context type compatibility,
+ * and generic handler preservation across AglaError operations.
  */
 describe('TypeScript Integration', () => {
   /**
-   * Generic error handler type preservation scenarios
+   * Generic Handler Type Preservation Tests
+   *
+   * Tests that generic error handlers maintain type safety
+   * and preserve types across different implementations.
    */
   describe('Generic handlers preserve types', () => {
-    // Type preservation: maintains type safety in generic processing functions
+    // Test: Type safety maintenance in generic processing functions
     it('maintains type safety across implementations', () => {
+      /**
+       * Generic error processor function for type preservation testing.
+       * This mock function demonstrates type safety maintenance across AglaError operations,
+       * processing errors while preserving type information and method availability.
+       *
+       * @param error - AglaError instance to process
+       * @returns ProcessedError object containing type, serialization, and chained error
+       */
       const errorProcessor = (error: AglaError): ProcessedError => ({
         type: error.errorType,
         serialized: error.toJSON(),
@@ -51,10 +84,13 @@ describe('TypeScript Integration', () => {
   });
 
   /**
-   * Union type compatibility with standard Error class
+   * Union Type Compatibility Tests
+   *
+   * Tests compatibility with standard Error class in union types
+   * and mixed error array handling.
    */
   describe('Union with Error works', () => {
-    // Union type handling: supports mixed AglaError and Error arrays
+    // Test: Mixed AglaError and Error array support
     it('supports (AglaError | Error)[] pattern', () => {
       const mixed: (AglaError | Error)[] = [
         new TestAglaError('TEST_TYPE', 'Test message'),
@@ -71,10 +107,13 @@ describe('TypeScript Integration', () => {
   });
 
   /**
-   * AglaErrorContext type compatibility and integrity
+   * AglaErrorContext Type Integrity Tests
+   *
+   * Tests AglaErrorContext type compatibility, options integration,
+   * and context getter type safety.
    */
   describe('AglaErrorContext replacement integrity', () => {
-    // Context type compatibility: AglaErrorOptions.context matches AglaErrorContext
+    // Test: AglaErrorOptions context type compatibility
     it('AglaErrorOptions.context satisfies AglaErrorContext', () => {
       const validContext: AglaErrorContext = {
         userId: 'user123',
@@ -94,7 +133,7 @@ describe('TypeScript Integration', () => {
       expect(options.context?.metadata).toEqual({ source: 'test' });
     });
 
-    // Context getter type safety: returns properly typed context or undefined
+    // Test: Context getter type safety with proper typing
     it('AglaError.context getter returns AglaErrorContext | undefined', () => {
       const contextWithData: AglaErrorContext = {
         traceId: 'trace-345',

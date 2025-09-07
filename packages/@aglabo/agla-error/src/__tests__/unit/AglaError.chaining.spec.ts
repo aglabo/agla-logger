@@ -12,16 +12,22 @@ import { describe, expect, it } from 'vitest';
 // Test utilities
 import { TestAglaError } from '../helpers/TestAglaError.class.ts';
 
+// Test cases
 /**
- * AglaError chain method unit tests
- * Tests error chaining functionality including message combination, property preservation, and context merging
+ * AglaError Chain Method Unit Tests
+ *
+ * Tests error chaining functionality including message combination,
+ * property preservation, context merging, and edge case handling.
  */
 describe('Given AglaError method chaining', () => {
   /**
-   * Normal error chaining scenarios with valid Error objects
+   * Normal Error Chaining Tests
+   *
+   * Tests standard error chaining with valid Error objects,
+   * focusing on message combination and context preservation.
    */
   describe('When chaining with cause error', () => {
-    // Message combination: combines original and cause messages with standard format
+    // Test: Message combination with standard format
     it('Then should combine messages and preserve properties', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const causeError = new Error('Cause message');
@@ -33,7 +39,7 @@ describe('Given AglaError method chaining', () => {
       expect(chainedError).toBeInstanceOf(TestAglaError);
     });
 
-    // Context merging: preserves original context and adds cause information
+    // Test: Context merging with cause information
     it('Then should merge context with cause information', () => {
       const originalContext = { userId: '123', operation: 'test' };
       const originalError = new TestAglaError('TEST_ERROR', 'Original message', { context: originalContext });
@@ -51,7 +57,7 @@ describe('Given AglaError method chaining', () => {
       });
     });
 
-    // Immutability: returns new instance rather than modifying original
+    // Test: Immutability - returns new instance
     it('Then 正常系：should return new error instance', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const causeError = new Error('Cause message');
@@ -62,24 +68,27 @@ describe('Given AglaError method chaining', () => {
   });
 
   /**
-   * Edge case scenarios with invalid or non-Error cause parameters
+   * Edge Case Error Chaining Tests
+   *
+   * Tests error chaining with invalid or non-Error cause parameters,
+   * including null, undefined, string, and object causes.
    */
   describe('When chaining with invalid or non-Error causes', () => {
-    // Null handling: should throw appropriate error for null cause
+    // Test: Null cause handling with error throwing
     it('Then 異常系：should handle null cause gracefully', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const nullCause = null as unknown as Error;
       expect(() => originalError.chain(nullCause)).toThrow();
     });
 
-    // Undefined handling: should throw appropriate error for undefined cause
+    // Test: Undefined cause handling with error throwing
     it('Then 異常系：should handle undefined cause gracefully', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const undefinedCause = undefined as unknown as Error;
       expect(() => originalError.chain(undefinedCause)).toThrow();
     });
 
-    // String cause: attempts to access message property from non-Error object
+    // Test: String cause handling via message property access
     it('Then 正常系：should handle string cause by accessing message property', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const stringCause = 'string error' as unknown as Error;
@@ -87,7 +96,7 @@ describe('Given AglaError method chaining', () => {
       expect(stringChainedError.message).toBe('Original message (caused by: undefined)');
     });
 
-    // Object cause: extracts message from object with message property
+    // Test: Object cause handling via message property extraction
     it('Then エッジケース：should handle object cause by accessing message property', () => {
       const originalError = new TestAglaError('TEST_ERROR', 'Original message');
       const objectCause = { message: 'object error message' } as unknown as Error;

@@ -15,16 +15,22 @@ import { ErrorSeverity } from '../../../shared/types/ErrorSeverity.types.js';
 // Test utilities
 import { TestAglaError } from '../helpers/TestAglaError.class.ts';
 
+// Test cases
 /**
- * Complete workflow functional tests
- * Tests end-to-end scenarios combining error chaining, serialization, and context merging
+ * Complete Workflow Functional Tests
+ *
+ * Tests end-to-end scenarios combining error chaining, serialization,
+ * and context merging in realistic workflow scenarios.
  */
 describe('Complete Workflows', () => {
   /**
-   * Error chaining workflow with context merging and serialization
+   * Error Chaining Workflow Tests
+   *
+   * Tests complete error chaining workflow including message combination,
+   * context merging, and serialization in integrated scenarios.
    */
   describe('Error chaining workflow', () => {
-    // Complete chaining workflow: tests message combination, property preservation, and serialization
+    // Test: Complete chaining workflow with message, property, and context handling
     it('combines messages, preserves errorType, and merges context', () => {
       const originalError = new TestAglaError(
         'WORKFLOW_ERROR',
@@ -69,10 +75,13 @@ describe('Complete Workflows', () => {
   });
 
   /**
-   * Complex serialization scenarios with nested data structures
+   * Complex Serialization Workflow Tests
+   *
+   * Tests serialization of deeply nested contexts and complex data
+   * structures with preservation of all field types and values.
    */
   describe('Complex serialization workflow', () => {
-    // Deep serialization: handles nested objects, arrays, and complex data structures
+    // Test: Deep serialization with nested objects and arrays
     it('serializes deeply nested context and preserves fields', () => {
       const complexContext = {
         user: { id: '123', name: 'John Doe', roles: ['admin', 'user'] },

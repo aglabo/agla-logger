@@ -15,6 +15,7 @@ import { ErrorSeverity } from '../../shared/types/ErrorSeverity.types.js';
 // Test utilities
 import { TestAglaError } from '../../src/__tests__/helpers/TestAglaError.class.ts';
 
+// Test mocks
 const fs = { readFile: vi.fn() };
 const http = { get: vi.fn() };
 
@@ -25,6 +26,7 @@ const reportSink = {
   },
 };
 
+// Helper functions
 const readConfig = async (path: string): Promise<string | TestAglaError> => {
   try {
     return await fs.readFile(path, 'utf8');
@@ -52,6 +54,14 @@ const aggregateReport = (errors: TestAglaError[]): number => {
   return reportSink.logs.length;
 };
 
+// Test cases
+/**
+ * System Integration E2E Tests
+ *
+ * Tests the complete error flow from filesystem reads and HTTP requests
+ * through to aggregated error reporting. Validates that errors are properly
+ * propagated, transformed into AglaError instances, and collected for reporting.
+ */
 describe('System Integration', () => {
   it('propagates FS/HTTP failures and aggregates report', async () => {
     fs.readFile.mockRejectedValue(new Error('ENOENT'));
