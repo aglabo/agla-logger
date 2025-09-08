@@ -1,122 +1,148 @@
-# CLAUDE.md
+# ag-logger モノレポ開発ガイド
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、Claude Code (claude.ai/code) がag-loggerモノレポでの作業時に参照する総合ガイドです。
 
-## Project Overview
+## 📋 目次・ドキュメント構成
 
-This is a TypeScript monorepo for the **ag-logger** project - a lightweight & pluggable logger for TypeScript. The repository uses pnpm workspaces and contains multiple packages organized under different prefixes:
+すべての詳細情報は体系化された `docs/claude/` ディレクトリに整理されています：
 
-- **@agla-*** packages: Legacy/transition packages (ag-logger related)
-- **@esta-*** packages: Core infrastructure packages (error handling, tools, utilities)
-- **shared/** packages: Common types and constants
+### 🚀 基本情報・概要
 
-Key focus: Currently migrating to a structured error handling system with AglaError framework.
+- **[01-project-overview.md](docs/claude/01-project-overview.md)** - プロジェクト全体概要・パッケージ構造
+- **[02-architecture-complete.md](docs/claude/02-architecture-complete.md)** - 技術アーキテクチャ・設計パターン
 
-## Essential Commands
+### 🛠️ 開発プロセス・手順
 
-### Development Workflow
+- **[03-development-workflow.md](docs/claude/03-development-workflow.md)** - BDD開発フロー・実装手順
+- **[04-coding-conventions.md](docs/claude/04-coding-conventions.md)** - コーディング規約・ベストプラクティス
+- **[05-command-reference.md](docs/claude/05-command-reference.md)** - 開発コマンド完全リファレンス
+
+### 🔍 品質保証・テスト
+
+- **[06-quality-assurance.md](docs/claude/06-quality-assurance.md)** - 多層品質保証システム
+- **[07-project-roadmap.md](docs/claude/07-project-roadmap.md)** - プロジェクトロードマップ・未了タスク
+
+### 🔧 専門技術・高度な機能
+
+- **[08-plugin-system-guide.md](docs/claude/08-plugin-system-guide.md)** - プラグインシステム詳細ガイド
+- **[09-type-system-reference.md](docs/claude/09-type-system-reference.md)** - TypeScript型システムリファレンス
+- **[10-symbol-map-navigation.md](docs/claude/10-symbol-map-navigation.md)** - シンボルマップ・コードナビゲーション
+
+### 📚 ユーティリティ・ツール
+
+- **[11-utility-functions.md](docs/claude/11-utility-functions.md)** - ユーティリティ関数カタログ
+- **[12-mcp-tools-mandatory.md](docs/claude/12-mcp-tools-mandatory.md)** - **🔴必須: MCP ツール使用要件**
+- **[13-code-navigation-commands.md](docs/claude/13-code-navigation-commands.md)** - コードナビゲーション・MCPコマンド
+
+## ⚡ クイックスタート
+
+### 最重要情報（開発開始前必読）
+
+1. **[MCPツール必須使用](docs/claude/12-mcp-tools-mandatory.md)** 🔴
+   - **すべての開発作業でlsmcp・serena-mcpの使用が必須**
+   - コード理解・実装・テスト・デバッグの全段階で活用
+
+2. **[BDD開発プロセス](docs/claude/03-development-workflow.md)**
+   - Red-Green-Refactorサイクルの厳格遵守
+   - 1 message = 1 testの原則
+
+3. **[品質ゲート](docs/claude/06-quality-assurance.md)**
+   - コミット前の必須チェック5項目
+   - lefthookによる自動品質保証
+
+### 必須コマンドセット
+
 ```bash
-# Build all packages (ESM + CommonJS)
-pnpm run build
+# 型チェック（最優先）
+pnpm run check:types
 
-# Run all tests across packages
-pnpm -r run test:develop    # Unit tests
-pnpm -r run test:ci         # Integration tests
+# コード品質
+pnpm run lint:all
 
-# Code quality checks
-pnpm run lint:all           # ESLint (basic + typed)
-pnpm run check:types        # TypeScript type checking
-pnpm run check:dprint       # Code formatting check
-pnpm run check:spells       # Spell checking
+# フォーマット
+pnpm run check:dprint
 
-# Fix formatting and linting
-pnpm run format:dprint      # Format code
-pnpm run lint -- --fix     # Auto-fix lint issues
-```
-
-### Single Package Development
-```bash
-# Navigate to specific package
-cd packages/@esta-core/error-handler
-
-# Run package-specific commands
+# テスト実行
 pnpm run test:develop
+
+# ビルド確認
 pnpm run build
-pnpm run lint
 ```
 
-### Testing Specific Files
-```bash
-# Run specific test file
-pnpm exec vitest run --config ./configs/vitest.config.unit.ts src/__tests__/AglaError.spec.ts
-```
+## 🏗️ プロジェクト概要（要約）
 
-## Architecture
+### 基本情報
 
-### Module System
-- **ESM-first** with CommonJS compatibility
-- **Dual builds**: `lib/` (CJS) and `module/` (ESM)
-- **Path aliases**: `@shared/types`, `@shared/constants`, etc.
-- **TypeScript strict mode** with comprehensive type definitions
+- **プロジェクト**: ag-logger - TypeScript用軽量・プラガブルロガー
+- **アーキテクチャ**: pnpmワークスペース使用のモノレポ
+- **現在フォーカス**: AglaErrorフレームワークへの移行
 
-### Package Structure
+### パッケージ構成
+
 ```
 packages/
-├── @esta-core/           # Core infrastructure
-│   ├── error-handler/    # Centralized error handling
-│   └── tools-config/     # Tool configuration management
-├── @esta-utils/          # Utilities
-│   ├── command-runner/   # Command execution
-│   └── config-loader/    # Configuration loading
-└── @agla-utils/          # Legacy utilities
-    └── ag-logger/        # Main logger package
+├── @agla-utils/          # ユーティリティ（コマンド実行・設定ローダー）
+└── @aglabo/             # メインロガーパッケージ
 
 shared/packages/
-├── types/                # Shared TypeScript types (AglaError)
-└── constants/            # Shared constants
+├── types/                # 共有TypeScript型定義
+└── constants/            # 共有定数
 ```
 
-### Build Configuration
-- **tsup** for building with dual-target output
-- **Centralized configs** in `configs/` directory
-- **Base TypeScript config** in `base/configs/tsconfig.base.json`
+### 技術スタック
 
-## Important Notes
+- **ESM-first** + CommonJS互換性
+- **デュアルビルド**: `lib/` (CJS), `module/` (ESM)
+- **TypeScript厳格モード** + 包括的型定義
+- **4層テスト戦略**: Unit/Functional/Integration/E2E
 
-### File Editing Rules
-- **Never edit** `lib/` or `module/` directories (build outputs)
-- **Always edit** `src/` files and run build
-- **Follow existing patterns** and conventions in each package
+## 🎯 重要な開発ルール
 
-### Testing Structure
-- **Unit tests**: `src/__tests__/`
-- **Integration tests**: `tests/integration/`
-- **E2E tests**: `tests/e2e/`
-- **Multiple vitest configs** for different test types
+### ファイル編集制限
 
-### Code Quality
-- **ESLint**: Two configs (basic + TypeScript-aware)
-- **dprint**: Primary formatter
-- **secretlint**: Prevents secrets in commits
-- **lefthook**: Pre-commit hooks for quality checks
+- ❌ **編集禁止**: `lib/`, `module/`, `maps/`, `.cache/`, `node_modules/`
+- ✅ **編集対象**: `src/`, `configs/`, `__tests__/`, `tests/`
 
-## Task Completion Checklist
-After making changes:
-1. `pnpm run check:types`
-2. `pnpm run lint:all`
-3. `pnpm run check:dprint`
-4. `pnpm run test:develop` (or appropriate test level)
-5. `pnpm run build`
+### セキュリティ必須事項
 
-## Documentation References
+- 🔒 機密情報（APIキー・パスワード）のコード記述禁止
+- 🔒 機密情報のログ出力禁止
+- 🔒 secretlint・gitleaksによる自動検出
 
-**Detailed documentation available in `docs/claude/`:**
-- `docs/claude/project-overview.md`: Complete package structure
-- `docs/claude/commands.md`: Comprehensive command reference
-- `docs/claude/architecture.md`: Technical architecture details
-- `docs/claude/development.md`: Development workflows
-- `docs/claude/testing.md`: Testing strategies
-- `docs/claude/conventions.md`: Code conventions and standards
+### MCPツール必須活用
 
-**Supplementary documentation in `temp/` (Git-ignored working files):**
-- Project structure maps, symbol search guides, advanced tooling guides
+- 🔴 **必須**: すべての開発段階でMCPツール使用
+- 🔴 **必須**: コード理解・パターン調査・影響範囲確認
+- 🔴 **必須**: 実装前の既存パターン研究
+
+## 📊 現在の状況・優先事項
+
+### 最高優先度（Critical）
+
+1. **AglaError型システム完成**: 型安全性・整合性向上
+2. **テスト最適化**: 実行時間短縮・カバレッジ向上
+
+### 完了済み主要マイルストーン ✅
+
+- AglaError基本実装完了
+- ドキュメント体系化完了（13ファイル作成）
+- 品質保証システム確立
+
+## 🔍 詳細情報へのアクセス
+
+各トピックの詳細は対応するドキュメントファイルを参照してください：
+
+- **開発を始める前** → [MCPツール必須要件](docs/claude/12-mcp-tools-mandatory.md)
+- **プロジェクト全体を理解したい** → [プロジェクト概要](docs/claude/01-project-overview.md)
+- **実装を始める** → [開発ワークフロー](docs/claude/03-development-workflow.md)
+- **品質を確保したい** → [品質保証システム](docs/claude/06-quality-assurance.md)
+- **コマンドを確認したい** → [コマンドリファレンス](docs/claude/05-command-reference.md)
+- **コード規約を確認したい** → [コーディング規約](docs/claude/04-coding-conventions.md)
+- **高度な機能を使いたい** → [プラグインシステム](docs/claude/08-plugin-system-guide.md)
+- **型システムを理解したい** → [型システムリファレンス](docs/claude/09-type-system-reference.md)
+- **効率的にナビゲートしたい** → [シンボルマップ](docs/claude/10-symbol-map-navigation.md)
+- **タスクを確認したい** → [プロジェクトロードマップ](docs/claude/07-project-roadmap.md)
+
+---
+
+**🎯 開発成功の鍵**: MCPツールの活用 + 体系化されたドキュメントの参照 + 品質ゲートの遵守
