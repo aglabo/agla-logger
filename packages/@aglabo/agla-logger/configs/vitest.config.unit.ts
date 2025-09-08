@@ -1,10 +1,13 @@
-// src: shared/common/configs/vitest.config.functional.ts
-// @(#) : vitest config for functional test
+// src: shared/common/configs/vitest.config.unit.ts
+// @(#) : vitest config for unit test
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
+
+// plugins
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // libs for base directory
 import path, { dirname } from 'path';
@@ -21,18 +24,19 @@ import baseConfig from '../../../../base/configs/vitest.config.base';
 
 // config
 export default mergeConfig(baseConfig, {
+  plugins: [tsconfigPaths()],
   test: {
     include: [
-      // Functional Test - single feature complete behavior verification
-      'src/**/__tests__/functional/**/*.spec.ts',
-      'src/**/__tests__/functional/**/*.test.ts',
+      // Unit Test - pure unit tests for individual functions/methods
+      'src/**/__tests__/**/*.spec.ts',
+      'src/**/__tests__/**/*.test.ts',
     ],
     exclude: [
-      'src/**/__tests__/units/**/*',
+      'src/**/__tests__/functional/**/*',
       'tests/**/*',
     ],
-    cacheDir: path.resolve(__rootDir, '.cache/vitest-cache/functional/'),
-    // sequential test execution to avoid singleton state conflicts in functional tests
+    cacheDir: path.resolve(__rootDir, '.cache/vitest-cache/unit/'),
+    // sequential test execution to avoid singleton state conflicts
     sequence: {
       concurrent: false,
     },
@@ -45,11 +49,5 @@ export default mergeConfig(baseConfig, {
         'tests/**',
       ],
     },
-  },
-  resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__rootDir, './src') },
-      { find: /^@\/shared/, replacement: path.resolve(__rootDir, './shared') },
-    ],
-  },
+  }
 });

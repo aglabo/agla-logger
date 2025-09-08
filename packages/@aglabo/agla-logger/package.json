@@ -1,5 +1,5 @@
 {
-  "name": "@aglabo/ag-logger",
+  "name": "@aglabo/agla-logger",
   "_comment": "@(#) AgLogger: reusable structured logger supporting log levels, formatting, and runtime context injection",
   "private": true,
   "version": "0.0.1",

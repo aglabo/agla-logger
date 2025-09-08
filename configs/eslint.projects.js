@@ -9,7 +9,7 @@
 export default [
   // for This Product
   './packages/@aglabo/agla-error/tsconfig.json',
-  './packages/@aglabo/ag-logger/tsconfig.json',
+  './packages/@aglabo/agla-logger/tsconfig.json',
   // ルートプロジェクト設定
   './tsconfig.json',
 ];

@@ -20,7 +20,15 @@
     "rootDir": "./",
     // aliases
     "baseUrl": "./",
-    // "paths": {},
+    "paths": {
+      "@/*": [
+        "src/*",
+        "/*"
+      ],
+      "@shared/*": [
+        "shared/*"
+      ]
+    },
     // types
     // cache
     "incremental": true,
