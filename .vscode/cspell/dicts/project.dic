@@ -5,6 +5,7 @@ CODEOWNERS
 esm
 ESM
 pimzino
+stringifiable
 stylelintcache
 tsup
 uvx

@@ -7,9 +7,9 @@
 // https://opensource.org/licenses/MIT
 
 export default [
-  // for OSS Utils
+  // for This Product
   './packages/@aglabo/agla-error/tsconfig.json',
-
+  './packages/@aglabo/ag-logger/tsconfig.json',
   // ルートプロジェクト設定
   './tsconfig.json',
 ];
