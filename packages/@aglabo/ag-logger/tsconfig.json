@@ -8,8 +8,8 @@
 {
   "extends": "../../../base/configs/tsconfig.base.json",
   "include": [
-    "types/*.ts",
     "src/**/*.ts",
+    "shared/**/*.ts",
     "tests/**/*.ts"
   ],
   "exclude": [],
