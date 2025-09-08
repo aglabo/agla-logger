@@ -10,16 +10,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
 // 共有定数: ログレベル定義
-import { AG_LOGLEVEL } from '../../../../shared/types/';
+import { AG_LOGLEVEL } from '@shared/types';
 
 // テスト対象: AgLoggerとエントリーポイント
-import { AgLogger } from '../../../../src/AgLogger.class';
+import { AgLogger } from '@/AgLogger.class';
 
 // プラグイン（フォーマッター）: 出力フォーマット実装
-import { JsonFormatter } from '../../../../src/plugins/formatter/JsonFormatter';
+import { JsonFormatter } from '@/plugins/formatter/JsonFormatter';
 
 // プラグイン（ロガー）: 出力先実装とマップ
-import { ConsoleLogger, ConsoleLoggerMap } from '../../../../src/plugins/logger/ConsoleLogger';
+import { ConsoleLogger, ConsoleLoggerMap } from '@/plugins/logger/ConsoleLogger';
 
 /**
  * Console Plugin Combinations Integration Tests
