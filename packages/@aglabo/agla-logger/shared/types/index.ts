@@ -16,3 +16,4 @@ export * from './AgLogLevel.types';
 export type * from './AgLogger.interface';
 export type * from './AgLogger.types';
 export type * from './AgLogLevel.types';
+export type * from './AgMockConstructor.class';
