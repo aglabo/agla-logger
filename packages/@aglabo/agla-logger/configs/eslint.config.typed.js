@@ -35,7 +35,6 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        project: ['./tsconfig.json'],
         tsconfigRootDir: __rootDir,
         sourceType: 'module',
       },

@@ -10,13 +10,15 @@
   "include": [
     "src/**/*.ts",
     "shared/**/*.ts",
-    "tests/**/*.ts"
   ],
-  "exclude": [],
+  "exclude": [
+    "tests/**/*.ts",
+    "**/__tests__/**/*.ts",
+  ],
   "compilerOptions": {
     // directories
     "declarationDir": "./maps",
-    // "outDir": "./maps",
+    "outDir": "./maps",
     "rootDir": "./",
     // aliases
     "baseUrl": "./",

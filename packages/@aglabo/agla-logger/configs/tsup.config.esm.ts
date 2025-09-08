@@ -25,7 +25,7 @@ export default defineConfig({
   format: ['esm'],
   outDir: 'module', // for ESM
   // tsconfig
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.build.json',
   // DTS with incremental build for ESM
   dts: true,
 });

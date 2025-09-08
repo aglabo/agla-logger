@@ -24,7 +24,7 @@ export default defineConfig({
   format: ['cjs'],
   outDir: 'lib', // for CJS
   // tsconfig
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.build.json',
   // DTS with incremental build for CJS
   dts: false,
 });
