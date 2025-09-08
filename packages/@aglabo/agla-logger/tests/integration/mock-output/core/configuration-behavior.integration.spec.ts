@@ -9,7 +9,7 @@
 // テストフレームワーク: テスト実行・アサーション・モック
 import { describe, expect, it, vi } from 'vitest';
 // 共有定数: ログレベル定義
-import { AG_LOGLEVEL } from '@/shared/types';
+import { AG_LOGLEVEL } from '@shared/types';
 
 // テスト対象: AgLoggerとマネージャ
 import { AgLogger } from '@/AgLogger.class';
@@ -20,8 +20,8 @@ import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { PlainFormatter } from '@/plugins/formatter/PlainFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgLogMessage } from '@/shared/types';
-import type { AgMockConstructor } from '@/shared/types/AgMockConstructor.class';
+import type { AgLogMessage } from '@shared/types';
+import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
 
 // Test Utilities
 

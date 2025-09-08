@@ -11,8 +11,8 @@ import { describe, expect, it, vi } from 'vitest';
 import type { TestContext } from 'vitest';
 
 // 共有型・定数: ログレベルとモック型
-import { AG_LOGLEVEL } from '@/shared/types';
-import type { AgFormattedLogMessage } from '@/shared/types';
+import { AG_LOGLEVEL } from '@shared/types';
+import type { AgFormattedLogMessage } from '@shared/types';
 
 // テスト対象: AgLoggerとマネージャ
 import { AgLogger } from '@/AgLogger.class';
@@ -21,7 +21,7 @@ import { AgLogger } from '@/AgLogger.class';
 import { createMockFormatter, MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@/shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
 
 // type definitions
 /**

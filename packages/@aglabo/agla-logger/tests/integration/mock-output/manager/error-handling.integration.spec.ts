@@ -11,11 +11,11 @@ import { describe, expect, it, vi } from 'vitest';
 import type { TestContext } from 'vitest';
 
 // types
-import type { AgLoggerFunction } from '@/shared/types';
+import type { AgLoggerFunction } from '@shared/types';
 
 // ログレベル定数
-import { AG_LOGLEVEL } from '@/shared/types';
-import type { AgLogLevel } from '@/shared/types';
+import { AG_LOGLEVEL } from '@shared/types';
+import type { AgLogLevel } from '@shared/types';
 
 // テスト対象: マネージャ本体
 import { AgLoggerManager } from '@/AgLoggerManager.class';
@@ -26,7 +26,7 @@ import { AgLoggerManager } from '@/AgLoggerManager.class';
 import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@/shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
 
 const setupTestContext = (_ctx?: TestContext): {
   mockLogger: AgMockBufferLogger;

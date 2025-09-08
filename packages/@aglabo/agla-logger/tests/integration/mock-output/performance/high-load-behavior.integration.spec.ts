@@ -11,8 +11,8 @@ import { describe, expect, it } from 'vitest';
 import type { TestContext } from 'vitest';
 
 // Shared types and constants: log levels and utilities
-import { AG_LOGLEVEL } from '@/shared/types';
-import { ENABLE } from '../../../../shared/constants';
+import { AG_LOGLEVEL } from '@shared/types';
+import { ENABLE } from '@shared/constants';
 
 // Test targets: main classes under test
 import { AgLogger } from '@/AgLogger.class';
@@ -22,7 +22,7 @@ import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { E2eMockLogger } from '@/plugins/logger/E2eMockLogger';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@/shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
 
 // Test utilities
 /**

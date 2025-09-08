@@ -10,7 +10,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 // Shared types and constants: log levels and type definitions
-import { AG_LOGLEVEL } from '@/shared/types';
+import { AG_LOGLEVEL } from '@shared/types';
 
 // Test targets: main classes under test
 import { AgLoggerManager } from '@/AgLoggerManager.class';

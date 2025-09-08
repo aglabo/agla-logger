@@ -10,9 +10,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
 // 共有型・定数: ログレベル定義と型
-import { AG_LOGLEVEL } from '@/shared/types';
-import type { AgLoggerFunction, AgLogLevel } from '@/shared/types';
-import type { AgLoggerMap } from '@/shared/types';
+import { AG_LOGLEVEL } from '@shared/types';
+import type { AgLoggerFunction, AgLogLevel } from '@shared/types';
+import type { AgLoggerMap } from '@shared/types';
 
 // テスト対象: マネージャ本体
 import { AgLoggerManager } from '@/AgLoggerManager.class';
