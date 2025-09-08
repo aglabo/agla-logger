@@ -6,6 +6,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// plugins
+import tsconfigPaths from 'vite-tsconfig-paths';
+
 // libs for base directory
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -21,6 +24,7 @@ import baseConfig from '../../../../base/configs/vitest.config.base';
 
 // config
 export default mergeConfig(baseConfig, {
+  plugins: [tsconfigPaths()],
   test: {
     include: [
       // Unit Test - pure unit tests for individual functions/methods
@@ -45,11 +49,5 @@ export default mergeConfig(baseConfig, {
         'tests/**',
       ],
     },
-  },
-  resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__rootDir, './src') },
-      { find: /^@\/shared/, replacement: path.resolve(__rootDir, './shared') },
-    ],
-  },
+  }
 });

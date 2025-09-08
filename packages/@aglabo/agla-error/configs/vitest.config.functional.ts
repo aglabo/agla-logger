@@ -13,6 +13,9 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const __rootDir = path.relative(__dirname, '../');
 
+// plugins
+import tsconfigPaths from 'vite-tsconfig-paths';
+
 // system config
 import { mergeConfig } from 'vitest/config';
 
@@ -21,6 +24,7 @@ import baseConfig from '../../../../base/configs/vitest.config.base';
 
 // config
 export default mergeConfig(baseConfig, {
+  plugins: [tsconfigPaths()],
   test: {
     include: [
       // Functional Test - single feature complete behavior verification
@@ -45,11 +49,5 @@ export default mergeConfig(baseConfig, {
         'tests/**',
       ],
     },
-  },
-  resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__rootDir, './src') },
-      { find: /^@\/shared/, replacement: path.resolve(__rootDir, './shared') },
-    ],
-  },
+  }
 });
