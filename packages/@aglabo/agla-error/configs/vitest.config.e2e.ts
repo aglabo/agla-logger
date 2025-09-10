@@ -41,5 +41,5 @@ export default mergeConfig(baseConfig, {
     sequence: {
       concurrent: true,
     },
-  }
+  },
 });

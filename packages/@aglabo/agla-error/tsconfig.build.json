@@ -9,11 +9,11 @@
   "extends": "../../../base/configs/tsconfig.base.json",
   "include": [
     "src/**/*.ts",
-    "shared/**/*.ts",
+    "shared/**/*.ts"
   ],
   "exclude": [
     "tests/**/*.ts",
-    "**/__tests__/**/*.ts",
+    "**/__tests__/**/*.ts"
   ],
   "compilerOptions": {
     // directories

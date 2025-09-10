@@ -11,8 +11,8 @@ import { describe, expect, it } from 'vitest';
 import type { TestContext } from 'vitest';
 
 // Shared types and constants: log levels and utilities
-import { AG_LOGLEVEL } from '@shared/types';
 import { ENABLE } from '@shared/constants';
+import { AG_LOGLEVEL } from '@shared/types';
 
 // Test targets: main classes under test
 import { AgLogger } from '@/AgLogger.class';
