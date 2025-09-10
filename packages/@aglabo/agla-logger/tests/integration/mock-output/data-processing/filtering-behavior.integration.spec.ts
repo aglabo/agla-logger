@@ -10,10 +10,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { TestContext } from 'vitest';
 // 共有型・定数: ログレベルとverbose制御
-import { AG_LOGLEVEL } from '@shared/types';
-import type { AgLogMessage } from '@shared/types';
 import { isStandardLogLevel } from '@/utils/AgLogValidators';
 import { DISABLE, ENABLE } from '@shared/constants';
+import { AG_LOGLEVEL } from '@shared/types';
+import type { AgLogMessage } from '@shared/types';
 
 // テスト対象: AgLoggerとマネージャ
 import { AgLogger } from '@/AgLogger.class';
