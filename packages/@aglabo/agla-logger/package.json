@@ -39,5 +39,7 @@
     "sync:configs": "bash ../../../scripts/sync-configs.sh . "
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@aglabo/agla-error": "workspace:*"
+  }
 }
