@@ -61,7 +61,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When applying partial logger map configurations', () => {
       // 部分ロガーマップと混在設定の適用を検証
-      it('Then should handle partial logger maps with proper fallback', (_ctx) => {
+      it('Then: [正常] - should handle partial logger maps with proper fallback', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTest();
 
         // Given: 異なる用途の専用ロガーを準備
@@ -108,7 +108,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When updating configurations incrementally', () => {
       // 段階的な設定更新を通じて最終構成の反映を確認
-      it('Then should maintain final configuration through multiple updates', (_ctx) => {
+      it('Then: [正常] - should maintain final configuration through multiple updates', (_ctx) => {
         const { mockFormatter } = setupTest();
 
         // Given: 初期ロガーインスタンス
@@ -154,7 +154,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When executing mixed configuration updates via manager', () => {
       // マネージャーでの複合設定更新と整合性維持
-      it('Then should handle manager-based mixed configuration updates correctly', () => {
+      it('Then: [正常] - should handle manager-based mixed configuration updates correctly', () => {
         const { mockLogger, mockFormatter } = setupTest();
 
         // Given: マネージャー経由での初期設定
@@ -205,7 +205,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When performing rapid configuration changes via manager', () => {
       // マネージャーでの急速設定変更と最終状態確認
-      it('Then should handle multiple rapid manager configuration changes correctly', () => {
+      it('Then: [正常] - should handle multiple rapid manager configuration changes correctly', () => {
         const { mockLogger, mockFormatter } = setupTest();
 
         // Given: マネージャー経由の高頻度変更対応設定
@@ -238,7 +238,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When using legacy API methods with manager', () => {
       // レガシーAPI(bindLoggerFunction等)の互換動作確認
-      it('Then should handle legacy manager API methods correctly', () => {
+      it('Then: [正常] - should handle legacy manager API methods correctly', () => {
         const { mockLogger, mockFormatter } = setupTest();
 
         // Given: レガシーAPI対応の設定
@@ -283,7 +283,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When formatter conflicts occur', () => {
       // フォーマッター競合発生時のエラー処理を確認
-      it('Then should handle configuration conflicts gracefully', (_ctx) => {
+      it('Then: [異常] - should handle configuration conflicts gracefully', (_ctx) => {
         setupTest();
 
         // Given: 正常なロガーインスタンス
@@ -314,7 +314,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When rapid configuration changes occur during logging', () => {
       // ログ出力中の急速な設定変更に対する耐性を確認
-      it('Then should handle rapid configuration changes during active logging', (_ctx) => {
+      it('Then: [エッジケース] - should handle rapid configuration changes during active logging', (_ctx) => {
         const { mockLogger: mockLogger1 } = setupTest();
 
         // Given: 複数の設定オプション
@@ -356,7 +356,7 @@ describe('Core Configuration Behavior Integration', () => {
      */
     describe('When mixed error scenarios occur in complex configurations', () => {
       // 複雑設定下での混在エラーパターン処理を確認
-      it('Then should handle mixed error scenarios appropriately', (_ctx) => {
+      it('Then: [異常] - should handle mixed error scenarios appropriately', (_ctx) => {
         const { mockLogger } = setupTest();
 
         // Given: 正常なロガーとエラーロガーの混在設定

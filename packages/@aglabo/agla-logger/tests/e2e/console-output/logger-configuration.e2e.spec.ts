@@ -51,7 +51,7 @@ describe('Logger Configuration Scenarios', () => {
      */
     describe('When system requires hot reconfiguration', () => {
       // 完全更新後にINFOが1回出力される
-      it('should output one INFO log after complete update', (_ctx) => {
+      it('Then: [正常] - should output one INFO log after complete update', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -63,7 +63,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 完全更新後のメッセージが期待どおり
-      it('should match INFO message after complete setLoggerConfig', (_ctx) => {
+      it('Then: [正常] - should match INFO message after complete setLoggerConfig', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -75,7 +75,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 部分更新後にINFOが1回出力される
-      it('should output one INFO log after partial update', (_ctx) => {
+      it('Then: [正常] - should output one INFO log after partial update', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -87,7 +87,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 部分更新後のメッセージが期待どおり
-      it('should match INFO message on partial update', (_ctx) => {
+      it('Then: [正常] - should match INFO message on partial update', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -99,7 +99,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 連続更新でINFOが2回出力される
-      it('should output INFO twice across sequential updates', (_ctx) => {
+      it('Then: [正常] - should output INFO twice across sequential updates', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -113,7 +113,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 1回目のメッセージが一致
-      it('should match first INFO message update1', (_ctx) => {
+      it('Then: [正常] - should match first INFO message update1', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -128,7 +128,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 2回目のメッセージが一致
-      it('should match second INFO message update2', (_ctx) => {
+      it('Then: [正常] - should match second INFO message update2', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -149,7 +149,7 @@ describe('Logger Configuration Scenarios', () => {
      */
     describe('When configuration persistence is required', () => {
       // パラメータ省略でもINFOが1回出力
-      it('should output one INFO log with omitted params', (_ctx) => {
+      it('Then: [正常] - should output one INFO log with omitted params', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
 
         const logger = AgLogger.createLogger();
@@ -160,7 +160,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // パラメータ省略時の出力はstring
-      it('should output a string message with omitted params', (_ctx) => {
+      it('Then: [正常] - should output a string message with omitted params', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
 
         const logger = AgLogger.createLogger();
@@ -172,7 +172,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 設定更新後にcreateLogger()で同一インスタンス
-      it('should return same instance via createLogger()', (_ctx) => {
+      it('Then: [正常] - should return same instance via createLogger()', (_ctx) => {
         setupTest(_ctx);
         const logger1 = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger1.logLevel = AG_LOGLEVEL.INFO;
@@ -188,7 +188,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // INFO合計が3回
-      it('should output INFO three times overall', (_ctx) => {
+      it('Then: [正常] - should output INFO three times overall', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger1 = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger1.logLevel = AG_LOGLEVEL.INFO;
@@ -204,7 +204,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 更新後にcreateLogger()で同一インスタンス
-      it('should return same instance after update', (_ctx) => {
+      it('Then: [正常] - should return same instance after update', (_ctx) => {
         setupTest(_ctx);
         const logger1 = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger1.logLevel = AG_LOGLEVEL.INFO;
@@ -217,7 +217,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // 更新後のINFOが1回
-      it('should output one INFO log after update', (_ctx) => {
+      it('Then: [正常] - should output one INFO log after update', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger1 = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger1.logLevel = AG_LOGLEVEL.INFO;
@@ -230,7 +230,7 @@ describe('Logger Configuration Scenarios', () => {
       });
 
       // JSON argsに { shared: true } を含む
-      it('should include { shared: true } in JSON args', (_ctx) => {
+      it('Then: [正常] - should include { shared: true } in JSON args', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger1 = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger1.logLevel = AG_LOGLEVEL.INFO;

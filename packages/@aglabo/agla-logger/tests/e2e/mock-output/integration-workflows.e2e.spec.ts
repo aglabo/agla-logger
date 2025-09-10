@@ -46,9 +46,9 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  * Expects:
  * - 相関つきで連携過程を時系列に再構築できる
  */
-describe('Microservices Integration Workflows', () => {
+describe('Given: E2E microservices integration workflows environment', () => {
   /**
-   * @suite Given | Integration Requirements
+   * @suite When | Integration Requirements
    * @description 連携要件(相関ID/リトライ/タイムアウト)の明示化。
    * @testType e2e
    * @coverage 前提条件のログ/設定反映
@@ -58,9 +58,9 @@ describe('Microservices Integration Workflows', () => {
    * Expects:
    * - 以降のテストで一貫した前提が満たされる
    */
-  describe('Given distributed system integration requirements', () => {
+  describe('When: distributed system integration requirements are defined', () => {
     /**
-     * @suite When | Integration Infrastructure
+     * @suite Then | Integration Infrastructure
      * @description 連携基盤(ログ/相関/監視)の確立過程を検証。
      * @testType e2e
      * @coverage 初期化ログ/相関ID注入/メトリクス出力
@@ -70,29 +70,29 @@ describe('Microservices Integration Workflows', () => {
      * Expects:
      * - 重要イベントが時系列で追跡可能
      */
-    describe('When microservices integration infrastructure needs establishment', () => {
+    describe('Then: microservices integration infrastructure is established', () => {
       // Task 8.4.1a Red Phase: Create failing import structure for microservices integration
       // マイクロサービス統合に必要な適切なインポートなしでテストが失敗することを確認
-      it('should fail without proper microservices integration imports', () => {
+      it('Then: [異常] - should fail without proper microservices integration imports', () => {
         // This will fail - imports not properly tested yet
         expect(typeof AgLogger.createLogger).toBe('function');
       });
 
       // 分散ログ用のE2eMockLoggerインポートなしでテストが失敗することを確認
-      it('should fail without E2eMockLogger import for distributed logging', () => {
+      it('Then: [異常] - should fail without E2eMockLogger import for distributed logging', () => {
         // This will fail - E2eMockLogger not tested for integration scenarios yet
         expect(typeof E2eMockLogger).toBe('function');
       });
 
       // Task 8.4.1a Green Phase: Implement imports (AgLogger, JsonFormatter, PlainFormatter, E2eMockLogger, vitest)
       // 分散サービスログ用のAgLoggerインポートが正常に動作することを確認
-      it('should import AgLogger for distributed service logging', () => {
+      it('Then: [正常] - should import AgLogger for distributed service logging', () => {
         expect(typeof AgLogger.createLogger).toBe('function');
         expect(AgLogger.createLogger).toBeDefined();
       });
 
       // 統合テスト用のフォーマッターとE2eMockLoggerのインポートが正常に動作することを確認
-      it('should import formatters and E2eMockLogger for integration testing', () => {
+      it('Then: [正常] - should import formatters and E2eMockLogger for integration testing', () => {
         expect(JsonFormatter).toBeDefined();
         expect(PlainFormatter).toBeDefined();
         expect(typeof E2eMockLogger).toBe('function');
@@ -101,7 +101,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.1a Refactor Phase: Organize microservices-specific imports and integration utilities
       // マイクロサービス統合インポートが適切に整理されていることを確認
-      it('should organize microservices integration imports properly', () => {
+      it('Then: [正常] - should organize microservices integration imports properly', () => {
         // Verify all integration-related imports are properly organized
         expect(AgLogger).toBeDefined();
         expect(JsonFormatter).toBeDefined();
@@ -112,7 +112,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 統合ユーティリティの基盤が確立されることを確認
-      it('should establish integration utility foundations', (ctx: TestContext) => {
+      it('Then: [正常] - should establish integration utility foundations', (ctx: TestContext) => {
         // Test the setupE2eMockLogger helper function for integration scenarios
         const mockLogger = setupE2eMockLogger('integration-foundation-test', ctx);
 
@@ -147,19 +147,19 @@ describe('Microservices Integration Workflows', () => {
      * Expects:
      * - 状態/失敗率/試行結果が観測可能な形式で残る
      */
-    describe('When circuit breaker pattern governs remote calls', () => {
+    describe('When: circuit breaker pattern governs remote calls', () => {
       // Task 8.4.3: Circuit Breaker Pattern State Logging
 
       // Red: 期待値だけ（初期は未実装状態を想定）
       // 正常なサーキットブレーカー動作のログが期待されることを確認（Red フェーズ）
-      it('should expect normal circuit breaker operation logs', (ctx) => {
+      it('Then: [正常] - should expect normal circuit breaker operation logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-normal-red', ctx);
         expect(mockLogger.hasAnyMessages()).toBe(false);
       });
 
       // Green: クローズド状態で通常処理を通す
       // サーキットクローズド状態での正常なリクエスト処理を実装することを確認
-      it('should implement normal request processing with circuit closed state', (ctx) => {
+      it('Then: [正常] - should implement normal request processing with circuit closed state', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-normal-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -176,7 +176,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Refactor: 成功率やヘルスの指標を付与
       // リクエスト成功率の追跡とサーキットヘルス監視を追加することを確認
-      it('should add request success tracking and circuit health monitoring', (ctx) => {
+      it('Then: [正常] - should add request success tracking and circuit health monitoring', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-health-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -194,14 +194,14 @@ describe('Microservices Integration Workflows', () => {
 
       // Red: エラー蓄積のログ前提
       // エラー蓄積のログが期待されることを確認（Red フェーズ）
-      it('should expect error accumulation logs', (ctx) => {
+      it('Then: [異常] - should expect error accumulation logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-errors-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.ERROR)).toBe(false);
       });
 
       // Green: エラー率の増加を記録し、しきい値超過の兆候を出す
       // サーキット状態変更に至るエラー率の増加をログに記録することを確認
-      it('should log increasing error rates leading to circuit state changes', (ctx) => {
+      it('Then: [異常] - should log increasing error rates leading to circuit state changes', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-errors-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -221,7 +221,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Refactor: パターン分析・閾値監視
       // エラーパターン分析と閾値監視を追加することを確認
-      it('should add error pattern analysis and threshold monitoring', (ctx) => {
+      it('Then: [異常] - should add error pattern analysis and threshold monitoring', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-errors-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -239,14 +239,14 @@ describe('Microservices Integration Workflows', () => {
 
       // Red: オープン状態のログ前提
       // サーキットブレーカーオープン状態のログが期待されることを確認（Red フェーズ）
-      it('should expect circuit breaker open state logs', (ctx) => {
+      it('Then: [異常] - should expect circuit breaker open state logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-open-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.WARN) || mockLogger.hasMessages(AG_LOGLEVEL.ERROR)).toBe(false);
       });
 
       // Green: しきい値超過によりオープンへ
       // エラー閾値違反によりサーキットブレーカーが開くことをログに記録することを確認
-      it('should log circuit breaker opening due to error threshold breach', (ctx) => {
+      it('Then: [異常] - should log circuit breaker opening due to error threshold breach', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-open-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -263,7 +263,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Refactor: 開放判断と影響評価
       // サーキット開放判断ロジックと影響評価を追加することを確認
-      it('should add circuit opening decision logic and impact assessment', (ctx) => {
+      it('Then: [異常] - should add circuit opening decision logic and impact assessment', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-decision-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -285,14 +285,14 @@ describe('Microservices Integration Workflows', () => {
 
       // Red: リカバリ試行の前提
       // リカバリ試行のログが期待されることを確認（Red フェーズ）
-      it('should expect recovery attempt logs', (ctx) => {
+      it('Then: [正常] - should expect recovery attempt logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-recover-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.DEBUG)).toBe(false);
       });
 
       // Green: ハーフオープンでヘルスチェック
       // サーキットブレーカーのリカバリ試行とヘルスチェックをログに記録することを確認
-      it('should log circuit breaker recovery attempts and health checks', (ctx) => {
+      it('Then: [正常] - should log circuit breaker recovery attempts and health checks', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-recover-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -310,7 +310,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Refactor: 回復戦略の指標を強化
       // リカバリ戦略の詳細と成功確率の追跡を追加することを確認
-      it('should add recovery strategy details and success probability tracking', (ctx) => {
+      it('Then: [正常] - should add recovery strategy details and success probability tracking', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-recover-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -330,14 +330,14 @@ describe('Microservices Integration Workflows', () => {
 
       // Red: クローズ復帰のログ前提
       // サーキット復帰成功のログが期待されることを確認（Red フェーズ）
-      it('should expect successful circuit closure logs', (ctx) => {
+      it('Then: [正常] - should expect successful circuit closure logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-close-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(false);
       });
 
       // Green: 復帰完了と通常運転
       // サーキットブレーカーの復帰成功と正常運転の再開をログに記録することを確認
-      it('should log successful circuit breaker recovery and normal operation resumption', (ctx) => {
+      it('Then: [正常] - should log successful circuit breaker recovery and normal operation resumption', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-close-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -353,7 +353,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Refactor: 安定性確認
       // リカバリ検証と安定性確認を追加することを確認
-      it('should add recovery verification and stability confirmation', (ctx) => {
+      it('Then: [正常] - should add recovery verification and stability confirmation', (ctx) => {
         const mockLogger = setupE2eMockLogger('cb-stability-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -379,17 +379,17 @@ describe('Microservices Integration Workflows', () => {
      * Expects:
      * - 試行回数/待機/最終結果が明確
      */
-    describe('When external API integration may fail', () => {
+    describe('When: external API integration may fail', () => {
       // Task 8.4.4: External API Integration Failure Handling
 
       // API呼び出し開始のログが期待されることを確認（Red フェーズ）
-      it('should expect API call initiation logs', (ctx) => {
+      it('Then: [正常] - should expect API call initiation logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-init-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(false);
       });
 
       // 包括的なコンテキストを持つ外部API呼び出し試行をログに記録することを確認
-      it('should log external API call attempts with comprehensive context', (ctx) => {
+      it('Then: [正常] - should log external API call attempts with comprehensive context', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-init-green', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -409,7 +409,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // APIエンドポイントの詳細、パラメータ、タイムアウト設定を追加することを確認
-      it('should add API endpoint details, parameters, and timeout configuration', (ctx) => {
+      it('Then: [正常] - should add API endpoint details, parameters, and timeout configuration', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-meta-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -429,13 +429,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 詳細な失敗コンテキストのログが期待されることを確認（Red フェーズ）
-      it('should expect detailed failure context logs', (ctx) => {
+      it('Then: [異常] - should expect detailed failure context logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fail-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.ERROR)).toBe(false);
       });
 
       // 包括的なエラー詳細とコンテキストを含むAPI失敗をログに記録することを確認
-      it('should log API failures with comprehensive error details and context', (ctx) => {
+      it('Then: [異常] - should log API failures with comprehensive error details and context', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fail-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -451,7 +451,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 失敗分類、影響分析、診断情報を追加することを確認
-      it('should add failure classification, impact analysis, and diagnostic information', (ctx) => {
+      it('Then: [異常] - should add failure classification, impact analysis, and diagnostic information', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fail-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -472,13 +472,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // リトライメカニズムのログが期待されることを確認（Red フェーズ）
-      it('should expect retry mechanism logs', (ctx) => {
+      it('Then: [正常] - should expect retry mechanism logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-retry-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.WARN)).toBe(false);
       });
 
       // バックオフ戦略と試行追跡を含むリトライ試行をログに記録することを確認
-      it('should log retry attempts with backoff strategy and attempt tracking', (ctx) => {
+      it('Then: [正常] - should log retry attempts with backoff strategy and attempt tracking', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-retry-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -494,7 +494,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // リトライ戦略の最適化と成功確率分析を追加することを確認
-      it('should add retry strategy optimization and success probability analysis', (ctx) => {
+      it('Then: [正常] - should add retry strategy optimization and success probability analysis', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-retry-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -509,13 +509,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // フォールバックメカニズムのログが期待されることを確認（Red フェーズ）
-      it('should expect fallback mechanism logs', (ctx) => {
+      it('Then: [正常] - should expect fallback mechanism logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fallback-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(false);
       });
 
       // フォールバック処理の活性化と代替実行パスをログに記録することを確認
-      it('should log fallback processing activation and alternative execution paths', (ctx) => {
+      it('Then: [正常] - should log fallback processing activation and alternative execution paths', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fallback-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -530,7 +530,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // フォールバック戦略の詳細とフォールバック品質評価を追加することを確認
-      it('should add fallback strategy details and fallback quality assessment', (ctx) => {
+      it('Then: [正常] - should add fallback strategy details and fallback quality assessment', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-fallback-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -545,13 +545,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 最終結果のログが期待されることを確認（Red フェーズ）
-      it('should expect final outcome logs', (ctx) => {
+      it('Then: [正常] - should expect final outcome logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-outcome-red', ctx);
         expect(mockLogger.hasAnyMessages()).toBe(false);
       });
 
       // 取ったパスに関係なく最終的なAPI統合結果をログに記録することを確認
-      it('should log final API integration results regardless of path taken', (ctx) => {
+      it('Then: [正常] - should log final API integration results regardless of path taken', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-outcome-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -566,7 +566,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 結果分析と教訓の捕捉を追加することを確認
-      it('should add outcome analysis and lessons learned capture', (ctx) => {
+      it('Then: [正常] - should add outcome analysis and lessons learned capture', (ctx) => {
         const mockLogger = setupE2eMockLogger('api-outcome-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -596,17 +596,17 @@ describe('Microservices Integration Workflows', () => {
      * Expects:
      * - 伝播経路/影響範囲がログで再構築可能
      */
-    describe('When errors propagate across services with correlation', () => {
+    describe('When: errors propagate across services with correlation', () => {
       // Task 8.4.5: Cross-Service Error Propagation with Message Correlation
 
       // クロスサービスエラー追跡初期化が期待されることを確認（Red フェーズ）
-      it('should expect cross-service error tracking initialization', (ctx) => {
+      it('Then: [正常] - should expect cross-service error tracking initialization', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-init-red', ctx);
         expect(mockLogger.hasAnyMessages()).toBe(false);
       });
 
       // マルチサービスエラー伝播シミュレーション環境をセットアップすることを確認
-      it('should setup multi-service error propagation simulation environment', (ctx) => {
+      it('Then: [正常] - should setup multi-service error propagation simulation environment', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-env-green', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -620,7 +620,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // サービスメッシュエラー伝播と相関を設定することを確認
-      it('should configure service mesh error propagation and correlation', (ctx) => {
+      it('Then: [正常] - should configure service mesh error propagation and correlation', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-mesh-green', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -635,13 +635,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // サービス境界を越えたエラー伝播が期待されることを確認（Red フェーズ）
-      it('should expect error propagation across service boundaries', (ctx) => {
+      it('Then: [異常] - should expect error propagation across service boundaries', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-boundary-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.ERROR)).toBe(false);
       });
 
       // 相関IDを持つサービス間でのエラー伝播をログに記録することを確認
-      it('should log errors propagating between services with correlation IDs', (ctx) => {
+      it('Then: [異常] - should log errors propagating between services with correlation IDs', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-propagation-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -660,7 +660,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // サービス間でのエラー変換とコンテキスト拡充を追加することを確認
-      it('should add error transformation and context enrichment across services', (ctx) => {
+      it('Then: [異常] - should add error transformation and context enrichment across services', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-transform-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -680,13 +680,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // メッセージユーティリティを使用した自動エラー相関が期待されることを確認（Red フェーズ）
-      it('should expect automatic error correlation using message utilities', (ctx) => {
+      it('Then: [正常] - should expect automatic error correlation using message utilities', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-auto-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.ERROR)).toBe(false);
       });
 
       // 分散エラー追跡のための自動ログ相関を実装することを確認
-      it('should implement automatic log correlation for distributed error tracking', (ctx) => {
+      it('Then: [正常] - should implement automatic log correlation for distributed error tracking', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-auto-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -707,7 +707,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 相関アルゴリズムとエラー関係検出を最適化することを確認
-      it('should optimize correlation algorithms and error relationship detection', (ctx) => {
+      it('Then: [正常] - should optimize correlation algorithms and error relationship detection', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-auto-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -722,13 +722,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // エラー収束分析が期待されることを確認（Red フェーズ）
-      it('should expect error convergence analysis', (ctx) => {
+      it('Then: [正常] - should expect error convergence analysis', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-conv-red', ctx);
         expect(mockLogger.hasAnyMessages()).toBe(false);
       });
 
       // 分散システムでのエラー収束ポイントを特定してログに記録することを確認
-      it('should identify and log error convergence points in distributed system', (ctx) => {
+      it('Then: [正常] - should identify and log error convergence points in distributed system', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-conv-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -743,7 +743,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 収束パターン分析と根本原因の特定を追加することを確認
-      it('should add convergence pattern analysis and root cause identification', (ctx) => {
+      it('Then: [正常] - should add convergence pattern analysis and root cause identification', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-conv-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -763,13 +763,13 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // 協調リカバリプロセスのログが期待されることを確認（Red フェーズ）
-      it('should expect coordinated recovery process logs', (ctx) => {
+      it('Then: [正常] - should expect coordinated recovery process logs', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-recov-red', ctx);
         expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(false);
       });
 
       // 複数サービス間での協調リカバリプロセスをログに記録することを確認
-      it('should log coordinated recovery processes across multiple services', (ctx) => {
+      it('Then: [正常] - should log coordinated recovery processes across multiple services', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-recov-green', ctx);
         AgLogger.createLogger({
           formatter: PlainFormatter,
@@ -784,7 +784,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // オーケストレーションの詳細とリカバリ検証を追加することを確認
-      it('should add orchestration details and recovery validation', (ctx) => {
+      it('Then: [正常] - should add orchestration details and recovery validation', (ctx) => {
         const mockLogger = setupE2eMockLogger('xsvc-recov-refactor', ctx);
         AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -813,10 +813,10 @@ describe('Microservices Integration Workflows', () => {
      * Expects:
      * - 各ステップの結果と補償が時系列で可視
      */
-    describe('When distributed transactions need traceability', () => {
+    describe('When: distributed transactions need traceability', () => {
       // Task 8.4.2a Red Phase: Distributed transaction environment setup
       // セットアップなしで分散トランザクション追跡が失敗することを確認（Red フェーズ）
-      it('should fail distributed transaction tracing without setup', (ctx: TestContext) => {
+      it('Then: [異常] - should fail distributed transaction tracing without setup', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('transaction-trace-fail', ctx);
 
         // Red Phase: expect tracing failure before implementation
@@ -825,7 +825,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2a Green Phase: Setup multiple mockLoggers simulating different services
       // 異なるサービスをシミュレートする複数のmockLoggerをセットアップすることを確認
-      it('should setup multiple mockLoggers simulating different services', (ctx: TestContext) => {
+      it('Then: [正常] - should setup multiple mockLoggers simulating different services', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-multi-trace', ctx);
 
         AgLogger.createLogger({
@@ -850,7 +850,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2a Refactor Phase: Configure trace ID propagation and service coordination
       // トレースID伝播とサービス協調を設定することを確認
-      it('should configure trace ID propagation and service coordination', (ctx: TestContext) => {
+      it('Then: [正常] - should configure trace ID propagation and service coordination', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-coordination', ctx);
 
         AgLogger.createLogger({
@@ -878,7 +878,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2b Red Phase: Service A transaction initiation
       // トレースIDを持つService Aトランザクション開始ログが期待されることを確認（Red フェーズ）
-      it('should expect Service A transaction start log with trace ID', (ctx: TestContext) => {
+      it('Then: [正常] - should expect Service A transaction start log with trace ID', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-a-transaction-red', ctx);
 
         // Red Phase: expect transaction start logs before implementation
@@ -887,7 +887,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2b Green Phase: Implement transaction start logging
       // Service Aトランザクション開始ログを実装することを確認
-      it('should implement Service A transaction start logging', (ctx: TestContext) => {
+      it('Then: [正常] - should implement Service A transaction start logging', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-a-transaction-green', ctx);
 
         AgLogger.createLogger({
@@ -910,7 +910,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2b Refactor Phase: Add transaction context and initial state information
       // トランザクションコンテキストと初期状態情報を追加することを確認
-      it('should add transaction context and initial state information', (ctx: TestContext) => {
+      it('Then: [正常] - should add transaction context and initial state information', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-a-transaction-refactor', ctx);
 
         AgLogger.createLogger({
@@ -958,7 +958,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2c Red Phase: Service B integration logging
       // 同じトレースIDを持つService B処理ログが期待されることを確認（Red フェーズ）
-      it('should expect Service B processing log with same trace ID', (ctx: TestContext) => {
+      it('Then: [正常] - should expect Service B processing log with same trace ID', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-b-integration-red', ctx);
 
         // Red Phase: expect Service B processing logs before implementation
@@ -967,7 +967,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2c Green Phase: Implement Service B processing with trace ID propagation
       // トレースID伝播を伴うService B処理を実装することを確認
-      it('should implement Service B processing with trace ID propagation', (ctx: TestContext) => {
+      it('Then: [正常] - should implement Service B processing with trace ID propagation', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-b-integration-green', ctx);
 
         AgLogger.createLogger({
@@ -991,7 +991,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2c Refactor Phase: Add inter-service communication and data transformation
       // サービス間通信とデータ変換を追加することを確認
-      it('should add inter-service communication and data transformation', (ctx: TestContext) => {
+      it('Then: [正常] - should add inter-service communication and data transformation', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-b-integration-refactor', ctx);
 
         AgLogger.createLogger({
@@ -1043,7 +1043,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2d Red Phase: Service C processing logging
       // 一貫したトレースIDを持つService C処理ログが期待されることを確認（Red フェーズ）
-      it('should expect Service C processing log with consistent trace ID', (ctx: TestContext) => {
+      it('Then: [正常] - should expect Service C processing log with consistent trace ID', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-c-processing-red', ctx);
 
         // Red Phase: expect Service C processing logs before implementation
@@ -1052,7 +1052,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2d Green Phase: Implement Service C processing maintaining trace ID consistency
       // トレースID一貫性を維持するService C処理を実装することを確認
-      it('should implement Service C processing maintaining trace ID consistency', (ctx: TestContext) => {
+      it('Then: [正常] - should implement Service C processing maintaining trace ID consistency', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-c-processing-green', ctx);
 
         AgLogger.createLogger({
@@ -1076,7 +1076,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2d Refactor Phase: Add Service C specific processing context and results
       // Service C固有の処理コンテキストと結果を追加することを確認
-      it('should add Service C specific processing context and results', (ctx: TestContext) => {
+      it('Then: [正常] - should add Service C specific processing context and results', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('service-c-processing-refactor', ctx);
 
         AgLogger.createLogger({
@@ -1138,7 +1138,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2e Red Phase: Transaction completion logging
       // トランザクション完了ログが期待されることを確認（Red フェーズ）
-      it('should expect transaction completion log', (ctx: TestContext) => {
+      it('Then: [正常] - should expect transaction completion log', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('transaction-completion-red', ctx);
 
         // Red Phase: expect transaction completion logs before implementation
@@ -1147,7 +1147,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2e Green Phase: Implement transaction completion with final status and trace ID
       // 最終ステータスとトレースIDを持つトランザクション完了を実装することを確認
-      it('should implement transaction completion with final status and trace ID', (ctx: TestContext) => {
+      it('Then: [正常] - should implement transaction completion with final status and trace ID', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('transaction-completion-green', ctx);
 
         AgLogger.createLogger({
@@ -1171,7 +1171,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2e Refactor Phase: Add comprehensive transaction summary and performance metrics
       // 包括的なトランザクション概要とパフォーマンスメトリクスを追加することを確認
-      it('should add comprehensive transaction summary and performance metrics', (ctx: TestContext) => {
+      it('Then: [正常] - should add comprehensive transaction summary and performance metrics', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('transaction-completion-refactor', ctx);
 
         AgLogger.createLogger({
@@ -1228,7 +1228,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2f Red Phase: 【Utility Integration】Combined utilities for traceability verification
       // ユーティリティ関数を使用した包括的なトレース分析が期待されることを確認（Red フェーズ）
-      it('should expect comprehensive trace analysis using utility functions', (ctx: TestContext) => {
+      it('Then: [正常] - should expect comprehensive trace analysis using utility functions', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('trace-analysis-red', ctx);
 
         // Red Phase: expect trace analysis before implementation
@@ -1237,7 +1237,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2f Green Phase: Use combined utility functions to verify trace consistency
       // 組み合わせたユーティリティ関数を使用してトレース一貫性を検証することを確認
-      it('should use combined utility functions to verify trace consistency', (ctx: TestContext) => {
+      it('Then: [正常] - should use combined utility functions to verify trace consistency', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('trace-analysis-green', ctx);
 
         AgLogger.createLogger({
@@ -1282,7 +1282,7 @@ describe('Microservices Integration Workflows', () => {
       });
 
       // Task 8.4.2f Refactor Phase: Implement advanced trace analysis and verification algorithms
-      it('should implement advanced trace analysis and verification algorithms', (ctx: TestContext) => {
+      it('Then: [正常] - should implement advanced trace analysis and verification algorithms', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('trace-analysis-refactor', ctx);
 
         AgLogger.createLogger({
@@ -1380,7 +1380,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2g Red Phase: End-to-end traceability validation
       // 完全なトランザクションフローのトレーサビリティが期待されることを確認（Red フェーズ）
-      it('should expect complete transaction flow traceability', (ctx: TestContext) => {
+      it('Then: [正常] - should expect complete transaction flow traceability', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('e2e-trace-red', ctx);
 
         // Red Phase: expect end-to-end traceability before implementation
@@ -1389,7 +1389,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2g Green Phase: Verify transaction can be traced from start to completion
       // トランザクションが開始から完了まで追跡可能であることを確認
-      it('should verify transaction can be traced from start to completion', (ctx: TestContext) => {
+      it('Then: [正常] - should verify transaction can be traced from start to completion', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('e2e-trace-green', ctx);
 
         AgLogger.createLogger({
@@ -1430,7 +1430,7 @@ describe('Microservices Integration Workflows', () => {
 
       // Task 8.4.2g Refactor Phase: Enhance traceability analysis and reporting capabilities
       // トレーサビリティ分析とレポート機能を強化することを確認
-      it('should enhance traceability analysis and reporting capabilities', (ctx: TestContext) => {
+      it('Then: [正常] - should enhance traceability analysis and reporting capabilities', (ctx: TestContext) => {
         const mockLogger = setupE2eMockLogger('e2e-trace-refactor', ctx);
 
         AgLogger.createLogger({

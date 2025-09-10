@@ -19,14 +19,14 @@ import { AgLoggerConfig } from '../AgLoggerConfig.class';
 
 // AgMockFormatterを直接使用
 
-describe('AgLoggerConfig: AgMockConstructor対応', () => {
-  it('AgMockConstructorをformatterに指定すると、formatterは関数型に解決される', () => {
+describe('Feature: AgLoggerConfig AgMockConstructor integration', () => {
+  it('Then: [正常] - should resolve AgMockConstructor to function when specified as formatter', () => {
     const config = new AgLoggerConfig();
     config.setLoggerConfig({ formatter: AgMockFormatter as unknown as AgFormatFunction });
     expect(typeof config.formatter).toBe('function');
   });
 
-  it('AgMockConstructorを指定時は自動インスタンス化され、executeが使用される（戻り値はメッセージ透過想定）', () => {
+  it('Then: [正常] - should auto-instantiate AgMockConstructor and use execute method', () => {
     const config = new AgLoggerConfig();
     config.setLoggerConfig({ formatter: AgMockFormatter as unknown as AgFormatFunction });
 
@@ -41,7 +41,7 @@ describe('AgLoggerConfig: AgMockConstructor対応', () => {
     expect(result).toBe(msg);
   });
 
-  it('AgMockFormatterが自動インスタンス化される', () => {
+  it('Then: [正常] - should auto-instantiate AgMockFormatter', () => {
     const config = new AgLoggerConfig();
     config.setLoggerConfig({ formatter: AgMockFormatter as unknown as AgFormatFunction });
 
@@ -49,7 +49,7 @@ describe('AgLoggerConfig: AgMockConstructor対応', () => {
     expect(config.hasStatsFormatter()).toBe(true);
   });
 
-  it('自動生成されたインスタンスのexecuteがformatterに設定され、呼び出せる', () => {
+  it('Then: [正常] - should set execute method from auto-generated instance as formatter', () => {
     const config = new AgLoggerConfig();
     config.setLoggerConfig({ formatter: AgMockFormatter as unknown as AgFormatFunction });
 
@@ -64,7 +64,7 @@ describe('AgLoggerConfig: AgMockConstructor対応', () => {
     expect(out).toBe(msg);
   });
 
-  it('既存の関数フォーマッタを渡した場合はそのまま反映される', () => {
+  it('Then: [正常] - should preserve existing function formatter when provided', () => {
     const config = new AgLoggerConfig();
     const fn: AgFormatFunction = (m) => m.message;
     config.setLoggerConfig({ formatter: fn });

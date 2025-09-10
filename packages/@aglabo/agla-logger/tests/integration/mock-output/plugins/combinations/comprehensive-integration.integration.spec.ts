@@ -63,7 +63,7 @@ describe('Mock Output Comprehensive Integration', () => {
    */
   describe('Given complete system integration scenarios', () => {
     describe('When using plain formatter with basic operations', () => {
-      it('Then should integrate formatting with data handling seamlessly', (ctx) => {
+      it('Then: [正常] - should integrate formatting with data handling seamlessly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({
@@ -94,7 +94,7 @@ describe('Mock Output Comprehensive Integration', () => {
     });
 
     describe('When processing complex data objects', () => {
-      it('Then should integrate formatting with complex data correctly', (ctx) => {
+      it('Then: [正常] - should integrate formatting with complex data correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({
@@ -129,7 +129,7 @@ describe('Mock Output Comprehensive Integration', () => {
    */
   describe('Given formatter and logger combinations', () => {
     describe('When coordinating JSON output with mock logger', () => {
-      it('Then should produce structured output correctly', (ctx) => {
+      it('Then: [正常] - should produce structured output correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({
@@ -153,7 +153,7 @@ describe('Mock Output Comprehensive Integration', () => {
     });
 
     describe('When processing high-volume logging operations', () => {
-      it('Then should maintain performance under load conditions', (ctx) => {
+      it('Then: [エッジケース] - should maintain performance under load conditions', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({
@@ -186,9 +186,9 @@ describe('Mock Output Comprehensive Integration', () => {
    * @description ログレベル管理でのシステム間連携テスト
    * フィルタリング動作と動的レベル変更での統合動作を検証
    */
-  describe('Given formatter and logger combinations', () => {
+  describe('Given log level management scenarios', () => {
     describe('When managing log level changes with active formatters', () => {
-      it('Then should synchronize level changes across components', (ctx) => {
+      it('Then: [正常] - should synchronize level changes across components', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({
@@ -210,7 +210,7 @@ describe('Mock Output Comprehensive Integration', () => {
     });
 
     describe('When dynamic level changes occur', () => {
-      it('Then should handle runtime level changes correctly', (ctx) => {
+      it('Then: [正常] - should handle runtime level changes correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
 
         const logger = AgLogger.createLogger({

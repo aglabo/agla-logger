@@ -1,5 +1,5 @@
-// tests/integration/mock-output/utils/e2e-test-isolation.integration.spec.ts
-// @(#) : E2E Test Isolation Integration Tests - Test isolation, lifecycle, and concurrent access patterns
+// tests/integration/mock-output/utils/test-isolation-patterns.integration.spec.ts
+// @(#) : Test Isolation Patterns Integration Tests - Test isolation, lifecycle, and concurrent access patterns
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
@@ -56,7 +56,7 @@ describe('E2E Test Isolation Integration', () => {
    */
   describe('Given test ID isolation scenarios exist', () => {
     describe('When test ID-based isolation is applied across multiple cases', () => {
-      it('Then should isolate messages correctly by test ID across multiple cases', (_ctx) => {
+      it('Then: [正常] - should isolate messages correctly by test ID across multiple cases', (_ctx) => {
         const { mockLogger } = testSetup(_ctx);
 
         const logger = AgLogger.createLogger({
@@ -98,7 +98,7 @@ describe('E2E Test Isolation Integration', () => {
    */
   describe('Given instance isolation scenarios exist', () => {
     describe('When isolation is applied between different logger instances', () => {
-      it('Then should isolate messages between different logger instances', (ctx) => {
+      it('Then: [正常] - should isolate messages between different logger instances', (ctx) => {
         vi.clearAllMocks();
         AgLogger.resetSingleton();
 
@@ -140,7 +140,7 @@ describe('E2E Test Isolation Integration', () => {
    */
   describe('Given multiple instance management scenarios exist', () => {
     describe('When managing multiple instances concurrently', () => {
-      it('Then should manage multiple instances without message mixing', (ctx) => {
+      it('Then: [正常] - should manage multiple instances without message mixing', (ctx) => {
         vi.clearAllMocks();
         AgLogger.resetSingleton();
 
@@ -185,7 +185,7 @@ describe('E2E Test Isolation Integration', () => {
    */
   describe('Given test lifecycle management scenarios exist', () => {
     describe('When lifecycle management is applied', () => {
-      it('Then should enforce proper test lifecycle with comprehensive error handling', (ctx) => {
+      it('Then: [正常] - should enforce proper test lifecycle with comprehensive error handling', (ctx) => {
         vi.clearAllMocks();
         AgLogger.resetSingleton();
 
@@ -230,7 +230,7 @@ describe('E2E Test Isolation Integration', () => {
    */
   describe('Given concurrent access scenarios exist', () => {
     describe('When concurrent access patterns are executed', () => {
-      it('Then should handle concurrent access patterns safely and efficiently', (ctx) => {
+      it('Then: [正常] - should handle concurrent access patterns safely and efficiently', (ctx) => {
         vi.clearAllMocks();
         AgLogger.resetSingleton();
 

@@ -52,7 +52,7 @@ describe('Mock Output Logger Map Management Integration', () => {
   describe('Given logger map configuration changes', () => {
     describe('When performing complete map override', () => {
       // 目的: ロガーマップ全面上書きの適用確認
-      it('Then should replace entire configuration cleanly', () => {
+      it('Then: [正常] - should replace entire configuration cleanly', () => {
         setupTestContext();
 
         // Given: レベル別の専用ロガー
@@ -94,7 +94,7 @@ describe('Mock Output Logger Map Management Integration', () => {
 
     describe('When applying partial configuration updates', () => {
       // 目的: 部分的なロガーマップ適用時のフォールバック確認
-      it('Then should merge new settings with existing configuration', () => {
+      it('Then: [正常] - should merge new settings with existing configuration', () => {
         setupTestContext();
 
         // Given: 部分的なロガーマップ設定
@@ -140,7 +140,7 @@ describe('Mock Output Logger Map Management Integration', () => {
   describe('Given configuration edge cases', () => {
     describe('When handling missing configuration entries', () => {
       // 目的: マップ未設定レベルでのdefaultロガーへのフォールバック
-      it('Then should provide appropriate fallback behavior', () => {
+      it('Then: [正常] - should provide appropriate fallback behavior', () => {
         setupTestContext();
 
         // Given: マップ未設定の環境
@@ -163,7 +163,7 @@ describe('Mock Output Logger Map Management Integration', () => {
 
     describe('When processing empty logger map configuration', () => {
       // 目的: 空のロガーマップ指定時の挙動確認
-      it('Then should manage empty configurations without system failure', () => {
+      it('Then: [エッジケース] - should manage empty configurations without system failure', () => {
         setupTestContext();
 
         // Given: 空のロガーマップ設定
@@ -197,7 +197,7 @@ describe('Mock Output Logger Map Management Integration', () => {
   describe('Given configuration edge cases', () => {
     describe('When processing undefined values', () => {
       // 目的: ロガーマップにundefinedを含む場合の安定性
-      it('Then should handle undefined inputs gracefully', () => {
+      it('Then: [エッジケース] - should handle undefined inputs gracefully', () => {
         setupTestContext();
 
         // Given: undefined値を含むマップ設定
@@ -229,7 +229,7 @@ describe('Mock Output Logger Map Management Integration', () => {
   describe('Given dynamic logger map updates are required', () => {
     describe('When updating logger map at runtime', () => {
       // 目的: 動的なロガーマップ更新の即時反映
-      it('Then should immediately apply logger map updates to existing instances', () => {
+      it('Then: [正常] - should immediately apply logger map updates to existing instances', () => {
         setupTestContext();
 
         // Given: 初期設定のマネージャー
@@ -262,7 +262,7 @@ describe('Mock Output Logger Map Management Integration', () => {
 
     describe('When performing multiple sequential logger map updates', () => {
       // 目的: 連続的なマップ更新の累積効果
-      it('Then should handle sequential map updates with cumulative effects', () => {
+      it('Then: [正常] - should handle sequential map updates with cumulative effects', () => {
         setupTestContext();
 
         // Given: 基本設定のマネージャー

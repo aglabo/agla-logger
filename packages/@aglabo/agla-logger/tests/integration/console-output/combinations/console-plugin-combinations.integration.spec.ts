@@ -27,7 +27,7 @@ import { ConsoleLogger, ConsoleLoggerMap } from '@/plugins/logger/ConsoleLogger'
  * @description Console出力でのフォーマッターとロガーの組み合わせ統合動作を保証するテスト
  * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
  */
-describe('Console Plugin Combinations Integration', () => {
+describe('Feature: Console Plugin Combinations Integration', () => {
   const setupTestContext = (): void => {
     vi.clearAllMocks();
     AgLogger.resetSingleton();
@@ -48,7 +48,7 @@ describe('Console Plugin Combinations Integration', () => {
      */
     describe('When using actual ConsoleLoggerMap with formatter combinations', () => {
       // ConsoleLoggerMap×各フォーマッターの実システム統合を検証
-      it('Then should integrate correctly in real system scenarios', () => {
+      it('Then: [正常] - should integrate correctly in real system scenarios', () => {
         setupTestContext();
 
         // Given: 実システム相当の組み合わせ設定

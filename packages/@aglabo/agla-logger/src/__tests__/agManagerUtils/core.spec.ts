@@ -25,7 +25,10 @@ import { AgLoggerManager } from '../../AgLoggerManager.class';
  * @testType Unit Test (BDD)
  * @testTarget createManager and getLogger utility functions with AgManager global variable
  */
-describe('manager utility functions', () => {
+/**
+ * Given: AgManagerUtils ユーティリティ関数群が存在する場合
+ */
+describe('Feature: AgManagerUtils utility functions', () => {
   /**
    * テスト前の初期化 - シングルトンリセット
    */
@@ -41,32 +44,28 @@ describe('manager utility functions', () => {
   });
 
   /**
-   * createManager ユーティリティ関数カテゴリ
-   *
-   * @description createManagerユーティリティ関数の動作をテスト
+   * When: createManagerユーティリティ関数を使用した時
    */
-  describe('createManager ユーティリティ関数', () => {
+  describe('When using createManager utility function', () => {
     /**
-     * カテゴリ1: 初回呼び出し動作
-     *
-     * @description 初回呼び出し時の正常動作をテスト
+     * Then: 初回呼び出し時の正常動作
      */
-    describe('初回呼び出し動作', () => {
+    describe('Then: [正常] - first call should work correctly', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should return AgLoggerManager instance when called for the first time', () => {
+      it('Then: [正常] - should return AgLoggerManager instance when called for the first time', () => {
         const manager = createManager();
         expect(manager).toBeInstanceOf(AgLoggerManager);
       });
 
       // 2番目のテスト追加
-      it('should set AgManager global variable when called for the first time', () => {
+      it('Then: [正常] - should set AgManager global variable when called for the first time', () => {
         expect(AgManager).toBeUndefined();
         createManager();
         expect(AgManager).toBeInstanceOf(AgLoggerManager);
       });
 
       // 3番目のテスト追加（BDDカテゴリ1完了）
-      it('should accept optional AgLoggerOptions parameter', () => {
+      it('Then: [正常] - should accept optional AgLoggerOptions parameter', () => {
         const options: AgLoggerOptions = { logLevel: 4 };
         expect(() => createManager(options)).not.toThrow();
       });
@@ -77,21 +76,21 @@ describe('manager utility functions', () => {
      *
      * @description 二回目以降の呼び出しでエラーを投げる動作をテスト
      */
-    describe('二回目以降の呼び出し制御', () => {
+    describe('Then: [異常] - subsequent calls should be controlled with errors', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should throw error when called for the second time', () => {
+      it('Then: [異常] - should throw error when called for the second time', () => {
         createManager();
         expect(() => createManager()).toThrow(/already created/i);
       });
 
       // 2番目のテスト追加
-      it('should throw error when called after AgLoggerManager.createManager', () => {
+      it('Then: [異常] - should throw error when called after AgLoggerManager.createManager', () => {
         AgLoggerManager.createManager();
         expect(() => createManager()).toThrow(/already created/i);
       });
 
       // 3番目のテスト追加（BDDカテゴリ2完了）
-      it('should not update AgManager global variable on second call', () => {
+      it('Then: [異常] - should not update AgManager global variable on second call', () => {
         const firstManager = createManager();
         try {
           createManager();
@@ -107,22 +106,22 @@ describe('manager utility functions', () => {
      *
      * @description AgManagerグローバル変数が正しく管理されることをテスト
      */
-    describe('AgManagerグローバル変数の一貫性', () => {
+    describe('Then: [正常] - AgManager global variable consistency is maintained', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should maintain same reference between createManager return value and AgManager', () => {
+      it('Then: [正常] - should maintain same reference between createManager return value and AgManager', () => {
         const manager = createManager();
         expect(AgManager).toBe(manager);
       });
 
       // 2番目のテスト追加
-      it('should provide same reference as AgLoggerManager.getManager', () => {
+      it('Then: [正常] - should provide same reference as AgLoggerManager.getManager', () => {
         createManager();
         const staticManager = AgLoggerManager.getManager();
         expect(AgManager).toBe(staticManager);
       });
 
       // 3番目のテスト追加（BDDカテゴリ3完了）
-      it('should reset AgManager to undefined after resetSingleton', () => {
+      it('Then: [正常] - should reset AgManager to undefined after resetSingleton', () => {
         createManager();
         expect(AgManager).toBeDefined();
         AgLoggerManager.resetSingleton();
@@ -136,22 +135,22 @@ describe('manager utility functions', () => {
    *
    * @description getLoggerユーティリティ関数の動作をテスト
    */
-  describe('getLogger ユーティリティ関数', () => {
+  describe('When using getLogger utility function', () => {
     /**
      * カテゴリ1: AgManager初期化済み時の動作
      *
      * @description AgManagerが初期化済みの場合のAgLoggerインスタンス取得をテスト
      */
-    describe('AgManager初期化済み時の動作', () => {
+    describe('Then: [正常] - works correctly when AgManager is initialized', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should return AgLogger instance when AgManager is initialized', () => {
+      it('Then: [正常] - should return AgLogger instance when AgManager is initialized', () => {
         createManager();
         const logger = getLogger();
         expect(logger).toBeInstanceOf(AgLogger);
       });
 
       // 2番目のテスト追加
-      it('should return same AgLogger instance as AgManager.getLogger()', () => {
+      it('Then: [正常] - should return same AgLogger instance as AgManager.getLogger()', () => {
         const manager = createManager();
         const managerLogger = manager.getLogger();
         const utilityLogger = getLogger();
@@ -159,7 +158,7 @@ describe('manager utility functions', () => {
       });
 
       // 3番目のテスト追加（BDDカテゴリ1完了）
-      it('should work after AgLoggerManager.createManager without createManager utility', () => {
+      it('Then: [正常] - should work after AgLoggerManager.createManager without createManager utility', () => {
         AgLoggerManager.createManager();
         const logger = getLogger();
         expect(logger).toBeInstanceOf(AgLogger);
@@ -171,19 +170,19 @@ describe('manager utility functions', () => {
      *
      * @description AgManagerが未初期化の場合にエラーを投げる動作をテスト
      */
-    describe('AgManager未初期化時のエラー制御', () => {
+    describe('Then: [異常] - is controlled with errors when AgManager is uninitialized', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should throw error when AgManager is undefined', () => {
+      it('Then: [異常] - should throw error when AgManager is undefined', () => {
         expect(() => getLogger()).toThrow(/not created/i);
       });
 
       // 2番目のテスト追加
-      it('should throw error with appropriate error message', () => {
+      it('Then: [異常] - should throw error with appropriate error message', () => {
         expect(() => getLogger()).toThrow(/Logger instance not created/i);
       });
 
       // 3番目のテスト追加（BDDカテゴリ2完了）
-      it('should throw error after resetSingleton', () => {
+      it('Then: [異常] - should throw error after resetSingleton', () => {
         createManager();
         AgLoggerManager.resetSingleton();
         expect(() => getLogger()).toThrow(/not created/i);
@@ -195,9 +194,9 @@ describe('manager utility functions', () => {
      *
      * @description 既存のAgLoggerManager APIとの一貫性をテスト
      */
-    describe('既存APIとの一貫性', () => {
+    describe('Then: [正常] - consistency with existing APIs is maintained', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should provide same interface as AgLoggerManager.getManager().getLogger()', () => {
+      it('Then: [正常] - should provide same interface as AgLoggerManager.getManager().getLogger()', () => {
         createManager();
         const managerLogger = AgLoggerManager.getManager().getLogger();
         const utilityLogger = getLogger();
@@ -206,7 +205,7 @@ describe('manager utility functions', () => {
       });
 
       // 2番目のテスト追加
-      it('should work consistently with AgManager global variable', () => {
+      it('Then: [正常] - should work consistently with AgManager global variable', () => {
         createManager();
         const logger = getLogger();
         expect(logger).toBeInstanceOf(AgLogger);
@@ -214,7 +213,7 @@ describe('manager utility functions', () => {
       });
 
       // 3番目のテスト追加（BDDカテゴリ3完了）
-      it('should throw same error type as AgLoggerManager methods when uninitialized', () => {
+      it('Then: [異常] - should throw same error type as AgLoggerManager methods when uninitialized', () => {
         let managerError: unknown;
         let utilityError: unknown;
 
@@ -242,15 +241,15 @@ describe('manager utility functions', () => {
    *
    * @description createManagerとgetLoggerの連携動作をテスト
    */
-  describe('統合動作', () => {
+  describe('When using createManager and getLogger together', () => {
     /**
      * カテゴリ1: createManager -> getLogger フロー
      *
      * @description 典型的な使用パターンでの動作をテスト
      */
-    describe('createManager -> getLogger フロー', () => {
+    describe('Then: [正常] - createManager to getLogger flow works correctly', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should work in typical usage pattern', () => {
+      it('Then: [正常] - should work in typical usage pattern', () => {
         const manager = createManager();
         const logger = getLogger();
         expect(manager).toBeInstanceOf(AgLoggerManager);
@@ -258,7 +257,7 @@ describe('manager utility functions', () => {
       });
 
       // 2番目のテスト追加
-      it('should provide consistent logger instance across multiple getLogger calls', () => {
+      it('Then: [正常] - should provide consistent logger instance across multiple getLogger calls', () => {
         createManager();
         const logger1 = getLogger();
         const logger2 = getLogger();
@@ -266,7 +265,7 @@ describe('manager utility functions', () => {
       });
 
       // 3番目のテスト追加（BDDカテゴリ1完了）
-      it('should maintain manager and logger consistency with options', () => {
+      it('Then: [正常] - should maintain manager and logger consistency with options', () => {
         const options: AgLoggerOptions = { logLevel: 2 };
         const manager = createManager(options);
         const logger = getLogger();
@@ -279,16 +278,16 @@ describe('manager utility functions', () => {
      *
      * @description エラー条件下での両関数の一貫した動作をテスト
      */
-    describe('エラー状態での一貫性', () => {
+    describe('Then: [異常] - consistency in error states is maintained', () => {
       // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('should both fail consistently when manager is not created', () => {
+      it('Then: [異常] - should both fail consistently when manager is not created', () => {
         expect(() => createManager()).not.toThrow(); // 初回は成功
         expect(() => createManager()).toThrow(); // 二回目は失敗
         expect(() => getLogger()).not.toThrow(); // getLoggerは成功（既に作成済み）
       });
 
       // 2番目のテスト追加
-      it('should both fail consistently after resetSingleton', () => {
+      it('Then: [異常] - should both fail consistently after resetSingleton', () => {
         createManager();
         AgLoggerManager.resetSingleton();
         expect(() => getLogger()).toThrow(/not created/i);
@@ -296,7 +295,7 @@ describe('manager utility functions', () => {
       });
 
       // 3番目のテスト追加（BDDカテゴリ2完了）
-      it('should handle multiple reset and recreation cycles', () => {
+      it('Then: [正常] - should handle multiple reset and recreation cycles', () => {
         // 最初のサイクル
         createManager();
         expect(getLogger()).toBeInstanceOf(AgLogger);

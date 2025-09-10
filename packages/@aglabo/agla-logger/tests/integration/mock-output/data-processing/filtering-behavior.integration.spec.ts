@@ -66,7 +66,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
   describe('Given log level filtering is configured', () => {
     describe('When filtering by specific levels', () => {
       // 目的: すべての構成要素で一貫したフィルタリングが行われる
-      it('Then should only output messages at or above configured level', (_ctx) => {
+      it('Then: [正常] - should only output messages at or above configured level', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: WARN レベルで設定されたロガー
@@ -93,7 +93,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
 
     describe('When log level is set to OFF', () => {
       // 目的: OFFレベル時に全レベルで出力が抑止される
-      it('Then should suppress all log output completely', (_ctx) => {
+      it('Then: [正常] - should suppress all log output completely', (_ctx) => {
         const { mockLogger } = setupTestContext();
 
         // Given: OFFレベルで設定されたロガー
@@ -121,7 +121,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
 
     describe('When log level changes dynamically', () => {
       // 目的: 動的なログレベル変更が即座に反映される
-      it('Then should immediately apply new filtering rules', (_ctx) => {
+      it('Then: [正常] - should immediately apply new filtering rules', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: DEBUG レベルで設定されたロガー
@@ -159,7 +159,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
   describe('Given dynamic level changes occur', () => {
     describe('When using verbose mode', () => {
       // 目的: Verboseモード有効時に詳細な出力が行われる
-      it('Then should output all messages including debug traces', (_ctx) => {
+      it('Then: [正常] - should output all messages including debug traces', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
 
         // Given: Verboseモード有効なロガー
@@ -186,7 +186,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
 
     describe('When disabling verbose mode', () => {
       // 目的: Verboseモード無効時に簡潔な出力が行われる
-      it('Then should provide concise output formatting', (_ctx) => {
+      it('Then: [正常] - should provide concise output formatting', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: 初期はVerboseモード有効
@@ -216,7 +216,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
   describe('Given complex filtering scenarios exist', () => {
     describe('When log level, verbose mode, and logger map are combined', () => {
       // 目的: 複合設定での統合フィルタリング動作
-      it('Then should coordinate all filtering settings appropriately', (_ctx) => {
+      it('Then: [正常] - should coordinate all filtering settings appropriately', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: 複合的な設定
@@ -250,7 +250,7 @@ describe('Mock Output Filtering Behavior Integration', () => {
 
     describe('When filtering with standard log level validation', () => {
       // 目的: 標準ログレベル検証との統合
-      it('Then should work correctly with log level validators', (_ctx) => {
+      it('Then: [正常] - should work correctly with log level validators', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: 標準ログレベル検証と統合

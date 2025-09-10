@@ -16,7 +16,7 @@ import { AgMockFormatter } from '../AgMockFormatter';
  * BDD Tests for AgMockFormatter class implementation
  * Following atsushifx式BDD with Red-Green-Refactor cycles
  */
-describe('Feature: AgMockFormatter統計機能', () => {
+describe('Feature: AgMockFormatter statistics functionality', () => {
   let mockMessage: AgLogMessage;
 
   beforeEach(() => {
@@ -28,8 +28,8 @@ describe('Feature: AgMockFormatter統計機能', () => {
     };
   });
 
-  describe('Feature: フォーマッタの呼び出し回数のカウント', () => {
-    it('should increment callCount when execute is called', () => {
+  describe('When: tracking formatter call count', () => {
+    it('Then: [正常] - should increment callCount when execute is called', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -43,7 +43,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(stats.callCount).toBe(2);
     });
 
-    it('should start with callCount as 0', () => {
+    it('Then: [正常] - should start with callCount as 0', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -54,8 +54,8 @@ describe('Feature: AgMockFormatter統計機能', () => {
     });
   });
 
-  describe('Feature: 最終メッセージの取得処理', () => {
-    it('should store lastMessage when execute is called', () => {
+  describe('When: tracking last message', () => {
+    it('Then: [正常] - should store lastMessage when execute is called', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -68,7 +68,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(stats.lastMessage).toEqual(mockMessage);
     });
 
-    it('should update lastMessage with the most recent message', () => {
+    it('Then: [正常] - should update lastMessage with the most recent message', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -84,7 +84,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(stats.lastMessage).toEqual(secondMessage);
     });
 
-    it('should start with lastMessage as null', () => {
+    it('Then: [正常] - should start with lastMessage as null', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -95,8 +95,8 @@ describe('Feature: AgMockFormatter統計機能', () => {
     });
   });
 
-  describe('Feature: 設定されたフォーマットルーチンの呼び出し', () => {
-    it('should call the provided format routine and return its result', () => {
+  describe('When: executing format routines', () => {
+    it('Then: [正常] - should call the provided format routine and return its result', () => {
       // Arrange
       const customRoutine: AgFormatRoutine = (msg) => `CUSTOM: ${msg.message}`;
       const formatter = new AgMockFormatter(customRoutine);
@@ -108,7 +108,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(result).toBe('CUSTOM: test message');
     });
 
-    it('should pass the correct message to the format routine', () => {
+    it('Then: [正常] - should pass the correct message to the format routine', () => {
       // Arrange
       let receivedMessage: AgLogMessage | null = null;
       const spyRoutine: AgFormatRoutine = (msg) => {
@@ -124,7 +124,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(receivedMessage).toEqual(mockMessage);
     });
 
-    it('should handle JSON format routine correctly', () => {
+    it('Then: [正常] - should handle JSON format routine correctly', () => {
       // Arrange
       const jsonRoutine: AgFormatRoutine = (msg) =>
         JSON.stringify({
@@ -145,7 +145,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(parsed.timestamp).toBe('2025-01-01T12:00:00.000Z');
     });
 
-    it('should handle passthrough routine correctly', () => {
+    it('Then: [正常] - should handle passthrough routine correctly', () => {
       // Arrange
       const passthroughRoutine: AgFormatRoutine = (msg) => msg;
       const formatter = new AgMockFormatter(passthroughRoutine);
@@ -158,8 +158,8 @@ describe('Feature: AgMockFormatter統計機能', () => {
     });
   });
 
-  describe('Feature: reset()でstatsのクリア処理', () => {
-    it('should reset callCount to 0', () => {
+  describe('When: resetting statistics', () => {
+    it('Then: [正常] - should reset callCount to 0', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -174,7 +174,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(stats.callCount).toBe(0);
     });
 
-    it('should reset lastMessage to null', () => {
+    it('Then: [正常] - should reset lastMessage to null', () => {
       // Arrange
       const messageOnlyRoutine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(messageOnlyRoutine);
@@ -189,13 +189,13 @@ describe('Feature: AgMockFormatter統計機能', () => {
     });
   });
 
-  describe('Feature: AgMockConstructor interface compliance', () => {
-    it('should have __isMockConstructor property set to true', () => {
+  describe('When: validating AgMockConstructor interface compliance', () => {
+    it('Then: [正常] - should have __isMockConstructor property set to true', () => {
       // Assert
       expect(AgMockFormatter.__isMockConstructor).toBe(true);
     });
 
-    it('should be instantiable with AgFormatRoutine', () => {
+    it('Then: [正常] - should be instantiable with AgFormatRoutine', () => {
       // Arrange
       const routine: AgFormatRoutine = (msg) => msg.message;
 
@@ -203,7 +203,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(() => new AgMockFormatter(routine)).not.toThrow();
     });
 
-    it('should provide execute method that returns formatted message', () => {
+    it('Then: [正常] - should provide execute method that returns formatted message', () => {
       // Arrange
       const routine: AgFormatRoutine = (msg) => `formatted: ${msg.message}`;
       const formatter = new AgMockFormatter(routine);
@@ -216,7 +216,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(result).toBe('formatted: test message');
     });
 
-    it('should provide getStats method that returns statistics object', () => {
+    it('Then: [正常] - should provide getStats method that returns statistics object', () => {
       // Arrange
       const routine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(routine);
@@ -231,7 +231,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(typeof stats.callCount).toBe('number');
     });
 
-    it('should provide reset method', () => {
+    it('Then: [正常] - should provide reset method', () => {
       // Arrange
       const routine: AgFormatRoutine = (msg) => msg.message;
       const formatter = new AgMockFormatter(routine);
@@ -242,8 +242,8 @@ describe('Feature: AgMockFormatter統計機能', () => {
     });
   });
 
-  describe('Feature: ErrorThrowルーチンでのエラー処理', () => {
-    it('should throw error when error routine is provided', () => {
+  describe('When: handling error throw routines', () => {
+    it('Then: [異常] - should throw error when error routine is provided', () => {
       // Arrange
       const errorRoutine: AgFormatRoutine = (_msg): never => {
         throw new Error('Test error from routine');
@@ -254,7 +254,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(() => formatter.execute(mockMessage)).toThrow('Test error from routine');
     });
 
-    it('should still increment callCount even when error is thrown', () => {
+    it('Then: [エッジケース] - should still increment callCount even when error is thrown', () => {
       // Arrange
       const errorRoutine: AgFormatRoutine = (_msg): never => {
         throw new Error('Test error');
@@ -273,7 +273,7 @@ describe('Feature: AgMockFormatter統計機能', () => {
       expect(stats.callCount).toBe(1);
     });
 
-    it('should still store lastMessage even when error is thrown', () => {
+    it('Then: [エッジケース] - should still store lastMessage even when error is thrown', () => {
       // Arrange
       const errorRoutine: AgFormatRoutine = (_msg): never => {
         throw new Error('Test error');

@@ -44,63 +44,65 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  * Expects:
  * - 計測が可能で、主要経路が健全
  */
-describe('Performance Monitoring Infrastructure', () => {
-  // Red Phase: expect import failures before implementation
-  // 監視用インポートが適切でない場合の失敗をテストする
-  it('should fail without proper monitoring imports', () => {
-    // This will fail - AgLogger not imported yet
-    expect(typeof AgLogger.createLogger).toBe('function');
-  });
-
-  // E2eMockLoggerのインポートなしでの失敗をテストする
-  it('should fail without E2eMockLogger import', () => {
-    // This will fail - E2eMockLogger not imported yet
-    expect(typeof E2eMockLogger).toBe('function');
-  });
-
-  // Green Phase: basic imports now working
-  // AgLoggerの正常インポートを検証する
-  it('should import AgLogger successfully', () => {
-    expect(typeof AgLogger.createLogger).toBe('function');
-    expect(AgLogger.createLogger).toBeDefined();
-  });
-
-  // PlainFormatterとE2eMockLoggerの正常インポートを検証する
-  it('should import PlainFormatter and E2eMockLogger successfully', () => {
-    expect(PlainFormatter).toBeDefined();
-    expect(typeof E2eMockLogger).toBe('function');
-    expect(E2eMockLogger).toBeDefined();
-  });
-
-  // Refactor Phase: organized imports and monitoring utilities
-  // 監視専用インポートの適切な整理を検証する
-  it('should organize monitoring-specific imports properly', () => {
-    // Verify all monitoring-related imports are properly organized
-    expect(AgLogger).toBeDefined();
-    expect(PlainFormatter).toBeDefined();
-    expect(E2eMockLogger).toBeDefined();
-    expect(AG_LOGLEVEL).toBeDefined();
-    expect(AG_LOGLEVEL.INFO).toBe(4);
-  });
-
-  // 監視ユーティリティの基盤確立をテストする
-  it('should establish monitoring utility foundations', (ctx: TestContext) => {
-    // Test the setupE2eMockLogger helper function
-    const mockLogger = setupE2eMockLogger('monitoring-foundation-test', ctx);
-
-    const logger = AgLogger.createLogger({
-      defaultLogger: mockLogger.createLoggerFunction(),
-      formatter: PlainFormatter,
+describe('Given: E2E monitoring infrastructure is prepared', () => {
+  describe('When: initializing and validating monitoring infrastructure', () => {
+    // Red Phase: expect import failures before implementation
+    // 監視用インポートが適切でない場合の失敗をテストする
+    it('Then: [異常] - should fail without proper monitoring imports', () => {
+      // This will fail - AgLogger not imported yet
+      expect(typeof AgLogger.createLogger).toBe('function');
     });
-    logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
 
-    expect(mockLogger).toBeInstanceOf(E2eMockLogger);
-    expect(logger).toBeDefined();
-    expect(typeof logger.info).toBe('function');
+    // E2eMockLoggerのインポートなしでの失敗をテストする
+    it('Then: [異常] - should fail without E2eMockLogger import', () => {
+      // This will fail - E2eMockLogger not imported yet
+      expect(typeof E2eMockLogger).toBe('function');
+    });
 
-    // Test that logger can capture monitoring messages
-    logger.info('Test monitoring foundation established');
-    expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
+    // Green Phase: basic imports now working
+    // AgLoggerの正常インポートを検証する
+    it('Then: [正常] - should import AgLogger successfully', () => {
+      expect(typeof AgLogger.createLogger).toBe('function');
+      expect(AgLogger.createLogger).toBeDefined();
+    });
+
+    // PlainFormatterとE2eMockLoggerの正常インポートを検証する
+    it('Then: [正常] - should import PlainFormatter and E2eMockLogger successfully', () => {
+      expect(PlainFormatter).toBeDefined();
+      expect(typeof E2eMockLogger).toBe('function');
+      expect(E2eMockLogger).toBeDefined();
+    });
+
+    // Refactor Phase: organized imports and monitoring utilities
+    // 監視専用インポートの適切な整理を検証する
+    it('Then: [正常] - should organize monitoring-specific imports properly', () => {
+      // Verify all monitoring-related imports are properly organized
+      expect(AgLogger).toBeDefined();
+      expect(PlainFormatter).toBeDefined();
+      expect(E2eMockLogger).toBeDefined();
+      expect(AG_LOGLEVEL).toBeDefined();
+      expect(AG_LOGLEVEL.INFO).toBe(4);
+    });
+
+    // 監視ユーティリティの基盤確立をテストする
+    it('Then: [正常] - should establish monitoring utility foundations', (ctx: TestContext) => {
+      // Test the setupE2eMockLogger helper function
+      const mockLogger = setupE2eMockLogger('monitoring-foundation-test', ctx);
+
+      const logger = AgLogger.createLogger({
+        defaultLogger: mockLogger.createLoggerFunction(),
+        formatter: PlainFormatter,
+      });
+      logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
+
+      expect(mockLogger).toBeInstanceOf(E2eMockLogger);
+      expect(logger).toBeDefined();
+      expect(typeof logger.info).toBe('function');
+
+      // Test that logger can capture monitoring messages
+      logger.info('Test monitoring foundation established');
+      expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
+    });
   });
 });
 
@@ -116,59 +118,60 @@ describe('Performance Monitoring Infrastructure', () => {
  * - 各カテゴリのメトリクスが収集・評価される
  * - 閾値超過/復帰が一貫したログで追跡可能
  */
-describe('System Performance Indicators Tracking', () => {
-  // Task 8.3.2a Red Phase: Performance monitoring environment setup (Red phase confirmed)
-  // Red phase test was confirmed failing as expected - now commented out
-  // it('should fail performance metrics logging without setup', () => {
-  //   const mockLogger = new E2eMockLogger('performance-fail-test');
-  //   expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
-  // });
+describe('Given: E2E system performance indicators tracking enabled', () => {
+  describe('When: configuring performance monitoring environment', () => {
+    // Task 8.3.2a Red Phase: Performance monitoring environment setup (Red phase confirmed)
+    // Red phase test was confirmed failing as expected - now commented out
+    // it('should fail performance metrics logging without setup', () => {
+    //   const mockLogger = new E2eMockLogger('performance-fail-test');
+    //   expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
+    // });
 
-  // Task 8.3.2a Green Phase: Setup mockLogger with PlainFormatter for readable metrics
-  // 読みやすいメトリクス用にPlainFormatterでmockLoggerを設定する
-  it('should setup mockLogger with PlainFormatter for readable metrics', (ctx: TestContext) => {
-    const mockLogger = setupE2eMockLogger('monitoring-performance-setup', ctx);
+    // Task 8.3.2a Green Phase: Setup mockLogger with PlainFormatter for readable metrics
+    // 読みやすいメトリクス用にPlainFormatterでmockLoggerを設定する
+    it('Then: [正常] - should setup mockLogger with PlainFormatter for readable metrics', (ctx: TestContext) => {
+      const mockLogger = setupE2eMockLogger('monitoring-performance-setup', ctx);
 
-    const logger = AgLogger.createLogger({
-      defaultLogger: mockLogger.createLoggerFunction(),
-      formatter: PlainFormatter,
+      const logger = AgLogger.createLogger({
+        defaultLogger: mockLogger.createLoggerFunction(),
+        formatter: PlainFormatter,
+      });
+      logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
+
+      // Test basic performance monitoring setup
+      logger.info('Performance monitoring initialized', {
+        timestamp: Date.now(),
+        monitoringType: 'performance',
+      });
+
+      expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
+      expect(mockLogger.getMessageCount(AG_LOGLEVEL.INFO)).toBe(1);
     });
-    logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
 
-    // Test basic performance monitoring setup
-    logger.info('Performance monitoring initialized', {
-      timestamp: Date.now(),
-      monitoringType: 'performance',
+    // Task 8.3.2a Refactor Phase: Configure appropriate log levels for production monitoring
+    // 本番監視用に適切なログレベルを設定する
+    it('Then: [正常] - should configure appropriate log levels for production monitoring', (ctx: TestContext) => {
+      const mockLogger = setupE2eMockLogger('monitoring-production-config', ctx);
+
+      const logger = AgLogger.createLogger({
+        defaultLogger: mockLogger.createLoggerFunction(),
+        formatter: PlainFormatter,
+      });
+      logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
+
+      // Test that debug level is properly set for comprehensive monitoring
+      expect(logger.logLevel).toBe(AG_LOGLEVEL.DEBUG);
+
+      // Test multi-level monitoring capability
+      logger.debug('Performance monitoring debug info');
+      logger.info('Performance monitoring status update');
+      logger.warn('Performance threshold approaching');
+
+      expect(mockLogger.hasMessages(AG_LOGLEVEL.DEBUG)).toBe(true);
+      expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
+      expect(mockLogger.hasMessages(AG_LOGLEVEL.WARN)).toBe(true);
     });
-
-    expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
-    expect(mockLogger.getMessageCount(AG_LOGLEVEL.INFO)).toBe(1);
   });
-
-  // Task 8.3.2a Refactor Phase: Configure appropriate log levels for production monitoring
-  // 本番監視用に適切なログレベルを設定する
-  it('should configure appropriate log levels for production monitoring', (ctx: TestContext) => {
-    const mockLogger = setupE2eMockLogger('monitoring-production-config', ctx);
-
-    const logger = AgLogger.createLogger({
-      defaultLogger: mockLogger.createLoggerFunction(),
-      formatter: PlainFormatter,
-    });
-    logger.logLevel = AG_LOGLEVEL.DEBUG; // Set appropriate log level for monitoring
-
-    // Test that debug level is properly set for comprehensive monitoring
-    expect(logger.logLevel).toBe(AG_LOGLEVEL.DEBUG);
-
-    // Test multi-level monitoring capability
-    logger.debug('Performance monitoring debug info');
-    logger.info('Performance monitoring status update');
-    logger.warn('Performance threshold approaching');
-
-    expect(mockLogger.hasMessages(AG_LOGLEVEL.DEBUG)).toBe(true);
-    expect(mockLogger.hasMessages(AG_LOGLEVEL.INFO)).toBe(true);
-    expect(mockLogger.hasMessages(AG_LOGLEVEL.WARN)).toBe(true);
-  });
-
   // Task 8.3.2b: CPU usage rate logging and tracking
   /**
    * @suite Monitoring | CPU Usage
@@ -181,9 +184,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - 閾値に応じたログ/アラートが一貫
    */
-  describe('CPU Usage Rate Tracking', () => {
+  describe('When: tracking CPU usage metrics', () => {
     // CPU使用率ログの存在を期待する
-    it('should expect CPU usage log existence', (ctx: TestContext) => {
+    it('Then: [正常] - should expect CPU usage log existence', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('cpu-usage-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -198,7 +201,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2b Green Phase: CPU usage logging with threshold context
     // 閾値データ付きCPU使用率をログに記録する
-    it('should log CPU usage with threshold data', (ctx: TestContext) => {
+    it('Then: [正常] - should log CPU usage with threshold data', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('cpu-usage-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -219,7 +222,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2b Refactor Phase: Enhanced CPU monitoring
     // CPU使用率のトレンド分析と履歴データ文脈の追加をテストする
-    it('should add CPU usage trend analysis and historical context', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add CPU usage trend analysis and historical context', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('cpu-usage-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -260,9 +263,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - 主要メトリクスがログで追跡可能
    */
-  describe('Memory Usage Tracking', () => {
+  describe('When: tracking memory usage metrics', () => {
     // メモリ使用量ログの存在を期待する
-    it('should expect memory usage log existence', (ctx: TestContext) => {
+    it('Then: [正常] - should expect memory usage log existence', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('memory-usage-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -277,7 +280,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2c Green Phase: Memory usage logging with availability info
     // 利用可能メモリデータ付きでメモリ使用量をログに記録する
-    it('should log memory usage with available memory data', (ctx: TestContext) => {
+    it('Then: [正常] - should log memory usage with available memory data', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('memory-usage-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -298,7 +301,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2c Refactor Phase: Enhanced memory monitoring
     // メモリトレンド分析とリーク検出指標の追加をテストする
-    it('should add memory trend analysis and leak detection indicators', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add memory trend analysis and leak detection indicators', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('memory-usage-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -347,9 +350,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - 主要指標がログで確認できる
    */
-  describe('Response Time Measurement', () => {
+  describe('When: measuring response times', () => {
     // 応答時間ログの存在を期待する
-    it('should expect response time logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect response time logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('response-time-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -364,7 +367,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2d Green Phase: Response time logging with target metrics
     // 目標メトリクスと比較した応答時間をログに記録する
-    it('should log response time with target comparison', (ctx: TestContext) => {
+    it('Then: [正常] - should log response time with target comparison', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('response-time-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -385,7 +388,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2d Refactor Phase: Advanced response time analytics
     // 応答時間分布とパーセンタイル追跡の追加をテストする
-    it('should add response time distribution and percentile tracking', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add response time distribution and percentile tracking', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('response-time-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -436,9 +439,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - しきい値に応じたWARN/ERRORが一貫
    */
-  describe('Error Rate Tracking', () => {
+  describe('When: monitoring error rates', () => {
     // エラー率ログの存在を期待する
-    it('should expect error rate logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect error rate logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('error-rate-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -453,7 +456,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2e Green Phase: Error rate logging with threshold alerts
     // 閾値警告付きでエラー率をログに記録する
-    it('should log error rate with threshold warnings', (ctx: TestContext) => {
+    it('Then: [異常] - should log error rate with threshold warnings', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('error-rate-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -474,7 +477,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2e Refactor Phase: Comprehensive error rate monitoring
     // エラー率トレンド分析と影響評価の追加をテストする
-    it('should add error rate trend analysis and impact assessment', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add error rate trend analysis and impact assessment', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('error-rate-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -524,9 +527,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - 重複抑止と復帰通知が適切に機能
    */
-  describe('Threshold Exceeded Alerting', () => {
+  describe('When: handling threshold alerts', () => {
     // 閾値超過アラートの存在を期待する
-    it('should expect threshold breach alerts', (ctx: TestContext) => {
+    it('Then: [異常] - should expect threshold breach alerts', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('threshold-alerts-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -541,7 +544,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2f Green Phase: CPU threshold breach alerting
     // CPU閾値超過アラートをログに記録する
-    it('should log CPU threshold exceeded alerts', (ctx: TestContext) => {
+    it('Then: [異常] - should log CPU threshold exceeded alerts', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('threshold-alerts-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -562,7 +565,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2f Refactor Phase: Advanced alerting system
     // エスカレーションロジックとアラート優先順位付けの追加をテストする
-    it('should add escalation logic and alert prioritization', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add escalation logic and alert prioritization', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('threshold-alerts-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -617,9 +620,9 @@ describe('System Performance Indicators Tracking', () => {
    * Expects:
    * - 統合的な監視ログが得られる
    */
-  describe('Performance Monitoring Integration', () => {
+  describe('When: integrating performance metrics', () => {
     // 包括的パフォーマンス監視の存在を期待する
-    it('should expect comprehensive performance monitoring', (ctx: TestContext) => {
+    it('Then: [正常] - should expect comprehensive performance monitoring', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('metrics-integration-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -634,7 +637,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2g Green Phase: Complete metrics correlation
     // 全パフォーマンス指標の収集と相関付けを検証する
-    it('should verify all performance indicators are captured and correlated', (ctx: TestContext) => {
+    it('Then: [正常] - should verify all performance indicators are captured and correlated', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('metrics-integration-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -667,7 +670,7 @@ describe('System Performance Indicators Tracking', () => {
 
     // Task 8.3.2g Refactor Phase: Optimized monitoring system
     // パフォーマンスデータ収集と分析の最適化をテストする
-    it('should optimize performance data collection and analysis', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should optimize performance data collection and analysis', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('metrics-integration-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -730,7 +733,7 @@ describe('System Performance Indicators Tracking', () => {
  * Expects:
  * - 一貫した相関キーで復元が可能
  */
-describe('User Action Correlation Workflows', () => {
+describe('Given: E2E monitoring environment for user action correlation scenarios', () => {
   // Task 8.3.3a: Session-based logging setup
   /**
    * @suite Monitoring | Session Correlation
@@ -743,9 +746,9 @@ describe('User Action Correlation Workflows', () => {
    * Expects:
    * - INFOログからセッションが追跡可能
    */
-  describe('Session-Based User Action Correlation', () => {
+  describe('When: initializing session-based user action correlation', () => {
     // セッション相関ユーザー行動ログの存在を期待する
-    it('should expect session-correlated user action logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect session-correlated user action logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('session-correlation-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -760,7 +763,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3a Green Phase: Session ID management
     // 一貫したセッションIDでセッション追跡を設定する
-    it('should setup session tracking with consistent session IDs', (ctx: TestContext) => {
+    it('Then: [正常] - should setup session tracking with consistent session IDs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('session-correlation-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -781,7 +784,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3a Refactor Phase: Advanced session handling
     // セッション管理と相関機能の拡張をテストする
-    it('should enhance session management and correlation capabilities', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should enhance session management and correlation capabilities', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('session-correlation-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -824,9 +827,9 @@ describe('User Action Correlation Workflows', () => {
    * Expects:
    * - 行動と文脈の突合が可能
    */
-  describe('User Actions with Session Context', () => {
+  describe('When: logging user actions with session context', () => {
     // セッションID付きユーザー行動ログの存在を期待する
-    it('should expect user action logs with session IDs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect user action logs with session IDs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('user-actions-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -841,7 +844,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3b Green Phase: User action logging with session data
     // セッションデータ付きでユーザーログイン行動をログに記録する
-    it('should log user login action with session context', (ctx: TestContext) => {
+    it('Then: [正常] - should log user login action with session context', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('user-actions-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -862,7 +865,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3b Refactor Phase: Enhanced user action tracking
     // 包括的ユーザー行動分類とメタデータの追加をテストする
-    it('should add comprehensive user action classification and metadata', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add comprehensive user action classification and metadata', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('user-actions-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -919,9 +922,9 @@ describe('User Action Correlation Workflows', () => {
    * Expects:
    * - 応答が行動と相関して追跡可能
    */
-  describe('System Behavior with Session Correlation', () => {
+  describe('When: correlating system behavior with sessions', () => {
     // 相関システム動作ログの存在を期待する
-    it('should expect correlated system behavior logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect correlated system behavior logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('system-behavior-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -936,7 +939,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3c Green Phase: System behavior tracking with session correlation
     // 一致するセッションIDでシステム応答をログに記録する
-    it('should log system responses with matching session IDs', (ctx: TestContext) => {
+    it('Then: [正常] - should log system responses with matching session IDs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('system-behavior-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -958,7 +961,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3c Refactor Phase: Comprehensive system behavior analysis
     // システム動作分類とパフォーマンスメトリクスの追加をテストする
-    it('should add system behavior classification and performance metrics', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add system behavior classification and performance metrics', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('system-behavior-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1019,7 +1022,7 @@ describe('User Action Correlation Workflows', () => {
    */
   describe('Advanced Log Correlation Search', () => {
     // パターンマッチングを使用したセッションベースログ相関の存在を期待する
-    it('should expect session-based log correlation using pattern matching', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should expect session-based log correlation using pattern matching', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('log-correlation-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1034,7 +1037,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3d Green Phase: Session-based log search functionality
     // セッションベースログフィルタリングユーティリティを実装する
-    it('should implement session-based log filtering utility', (ctx: TestContext) => {
+    it('Then: [正常] - should implement session-based log filtering utility', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('log-correlation-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1063,7 +1066,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3d Refactor Phase: Sophisticated correlation analysis
     // 高度な相関アルゴリズムとパターン検出の追加をテストする
-    it('should add advanced correlation algorithms and pattern detection', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add advanced correlation algorithms and pattern detection', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('log-correlation-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1117,9 +1120,9 @@ describe('User Action Correlation Workflows', () => {
    * Expects:
    * - E2Eでの一貫したトレースが可能
    */
-  describe('Complete Transaction Traceability', () => {
+  describe('When: tracing transactions end-to-end', () => {
     // 完全トランザクション追跡機能の存在を期待する
-    it('should expect complete transaction tracing capability', (ctx: TestContext) => {
+    it('Then: [正常] - should expect complete transaction tracing capability', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('transaction-trace-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1134,7 +1137,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3e Green Phase: Comprehensive transaction tracking
     // ユーザー行動を跨ぐエンドツーエンドトランザクション追跡可能性を検証する
-    it('should verify end-to-end transaction traceability across user actions', (ctx: TestContext) => {
+    it('Then: [正常] - should verify end-to-end transaction traceability across user actions', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('transaction-trace-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1172,7 +1175,7 @@ describe('User Action Correlation Workflows', () => {
 
     // Task 8.3.3e Refactor Phase: Optimized transaction tracing system
     // 追跡完全性と相関精度の向上をテストする
-    it('should enhance tracing completeness and correlation accuracy', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should enhance tracing completeness and correlation accuracy', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('transaction-trace-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1228,7 +1231,7 @@ describe('User Action Correlation Workflows', () => {
  * Expects:
  * - アラート内容と対応が追跡可能
  */
-describe('Security Incident Detection Workflows', () => {
+describe('Given: E2E monitoring environment for security incident detection scenarios', () => {
   // Task 8.3.4a: Normal access pattern baseline
   /**
    * @suite Security | Baseline
@@ -1241,9 +1244,9 @@ describe('Security Incident Detection Workflows', () => {
    * Expects:
    * - 基準プロファイルが参照可能
    */
-  describe('Security Baseline Pattern Establishment', () => {
+  describe('When: establishing security baseline patterns', () => {
     // 正常アクセスパターン認識の存在を期待する
-    it('should expect normal access pattern recognition', (ctx: TestContext) => {
+    it('Then: [正常] - should expect normal access pattern recognition', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-baseline-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1258,7 +1261,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4a Green Phase: Normal behavior pattern generation
     // 典型的ユーザーアクセスパターンと動作を生成する
-    it('should generate typical user access patterns and behaviors', (ctx: TestContext) => {
+    it('Then: [正常] - should generate typical user access patterns and behaviors', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-baseline-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1288,7 +1291,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4a Refactor Phase: Sophisticated baseline profiling
     // 包括的正常動作プロファイルの確立をテストする
-    it('should establish comprehensive normal behavior profiles', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should establish comprehensive normal behavior profiles', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-baseline-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1345,7 +1348,7 @@ describe('Security Incident Detection Workflows', () => {
    */
   describe('Suspicious Access Pattern Detection', () => {
     // 不審アクセス検知の存在を期待する
-    it('should expect suspicious access detection', (ctx: TestContext) => {
+    it('Then: [異常] - should expect suspicious access detection', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('suspicious-access-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1360,7 +1363,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4b Green Phase: Anomalous behavior simulation
     // 異常なアクセスパターンをシミュレートする
-    it('should simulate unusual access patterns', (ctx: TestContext) => {
+    it('Then: [異常] - should simulate unusual access patterns', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('suspicious-access-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1390,7 +1393,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4b Refactor Phase: Comprehensive threat modeling
     // 現実的セキュリティ脅威シナリオの作成をテストする
-    it('should create realistic security threat scenarios', (ctx: TestContext) => {
+    it('Then: [異常] - should create realistic security threat scenarios', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('suspicious-access-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1462,7 +1465,7 @@ describe('Security Incident Detection Workflows', () => {
    */
   describe('Security Alert Generation', () => {
     // セキュリティアラートログの存在を期待する
-    it('should expect security alert logs', (ctx: TestContext) => {
+    it('Then: [異常] - should expect security alert logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-alerts-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1477,7 +1480,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4c Green Phase: Pattern-based alerting
     // 不審パターンに基づくセキュリティアラートを生成する
-    it('should generate security alerts based on suspicious patterns', (ctx: TestContext) => {
+    it('Then: [異常] - should generate security alerts based on suspicious patterns', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-alerts-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1507,7 +1510,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4c Refactor Phase: Sophisticated alert management
     // アラート分類と重要度評価の拡張をテストする
-    it('should enhance alert classification and severity assessment', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should enhance alert classification and severity assessment', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('security-alerts-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1578,7 +1581,7 @@ describe('Security Incident Detection Workflows', () => {
    */
   describe('Incident Response Logging', () => {
     // インシデント対応手順ログの存在を期待する
-    it('should expect incident response procedure logs', (ctx: TestContext) => {
+    it('Then: [異常] - should expect incident response procedure logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('incident-response-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1593,7 +1596,7 @@ describe('Security Incident Detection Workflows', () => {
 
     // Task 8.3.4d Green Phase: Comprehensive response logging
     // インシデント対応行動と結果をログに記録する
-    it('should log incident response actions and outcomes', (ctx: TestContext) => {
+    it('Then: [異常] - should log incident response actions and outcomes', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('incident-response-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1622,7 +1625,7 @@ describe('Security Incident Detection Workflows', () => {
     });
 
     // Task 8.3.4d Refactor Phase: Advanced response coordination
-    it('should add incident response coordination and escalation tracking', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add incident response coordination and escalation tracking', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('incident-response-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1693,7 +1696,7 @@ describe('Security Incident Detection Workflows', () => {
  * Expects:
  * - 予兆/検知/対応が一貫して記録
  */
-describe('Capacity Management Workflows', () => {
+describe('Given: E2E monitoring environment for capacity management scenarios', () => {
   // Task 8.3.5a: Normal usage pattern logging
   /**
    * @suite Capacity | Baseline
@@ -1707,7 +1710,7 @@ describe('Capacity Management Workflows', () => {
    * - ベースライン参照で異常検知が容易
    */
   describe('Capacity Baseline Establishment', () => {
-    it('should expect baseline capacity usage logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect baseline capacity usage logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('capacity-baseline-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1721,7 +1724,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5a Green Phase: Normal usage pattern logging
-    it('should log normal resource usage patterns and trends', (ctx: TestContext) => {
+    it('Then: [正常] - should log normal resource usage patterns and trends', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('capacity-baseline-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1754,7 +1757,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5a Refactor Phase: Advanced usage analytics
-    it('should add historical usage analysis and pattern recognition', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add historical usage analysis and pattern recognition', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('capacity-baseline-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1821,7 +1824,7 @@ describe('Capacity Management Workflows', () => {
    * - ピーク挙動が再現/追跡可能
    */
   describe('Peak Usage Pattern Detection', () => {
-    it('should expect peak usage detection and logging', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should expect peak usage detection and logging', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('peak-usage-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1835,7 +1838,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5b Green Phase: Peak usage pattern recognition
-    it('should log peak usage patterns and resource stress indicators', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should log peak usage patterns and resource stress indicators', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('peak-usage-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1873,7 +1876,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5b Refactor Phase: Predictive capacity analysis
-    it('should add peak usage prediction and capacity forecasting', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add peak usage prediction and capacity forecasting', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('peak-usage-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1938,7 +1941,7 @@ describe('Capacity Management Workflows', () => {
    * - 適切な警告と次アクションが示される
    */
   describe('Resource Shortage Warning System', () => {
-    it('should expect resource shortage alerts', (ctx: TestContext) => {
+    it('Then: [異常] - should expect resource shortage alerts', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('resource-shortage-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1952,7 +1955,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5c Green Phase: Shortage warning system
-    it('should implement resource shortage warnings and threshold monitoring', (ctx: TestContext) => {
+    it('Then: [異常] - should implement resource shortage warnings and threshold monitoring', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('resource-shortage-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -1983,7 +1986,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5c Refactor Phase: Predictive shortage analysis
-    it('should add predictive shortage detection and early warning systems', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add predictive shortage detection and early warning systems', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('resource-shortage-refactor', ctx);
 
       const logger = AgLogger.createLogger({
@@ -2048,7 +2051,7 @@ describe('Capacity Management Workflows', () => {
    * - スケーリングの意思決定が追跡可能
    */
   describe('Scaling Actions Tracking', () => {
-    it('should expect scaling action logs', (ctx: TestContext) => {
+    it('Then: [正常] - should expect scaling action logs', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('scaling-actions-red', ctx);
 
       const logger = AgLogger.createLogger({
@@ -2062,7 +2065,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5d Green Phase: Scaling action logging
-    it('should log scaling decisions and execution results', (ctx: TestContext) => {
+    it('Then: [正常] - should log scaling decisions and execution results', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('scaling-actions-green', ctx);
 
       const logger = AgLogger.createLogger({
@@ -2095,7 +2098,7 @@ describe('Capacity Management Workflows', () => {
     });
 
     // Task 8.3.5d Refactor Phase: Advanced scaling analytics
-    it('should add scaling effectiveness analysis and optimization tracking', (ctx: TestContext) => {
+    it('Then: [エッジケース] - should add scaling effectiveness analysis and optimization tracking', (ctx: TestContext) => {
       const mockLogger = setupE2eMockLogger('scaling-actions-refactor', ctx);
 
       const logger = AgLogger.createLogger({
