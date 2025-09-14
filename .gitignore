@@ -60,6 +60,7 @@ $~*
 # mcp server's folder
 .serena/
 .lsmcp
+**/.spec-workflow
 
 #  Test Result
 **/*results/*
