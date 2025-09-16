@@ -76,7 +76,7 @@ describe('Mock Output Complex Data Handling Integration', () => {
   describe('Given complex data structures exist', () => {
     describe('When processing circular references', () => {
       // 目的: 循環参照を含むデータでも安全に処理継続
-      it('Then should handle circular references safely without infinite loops', (_ctx) => {
+      it('Then: [正常] - should handle circular references safely without infinite loops', (_ctx) => {
         const { mockLogger } = setupTestContext();
         const circularFormatter = (logMessage: AgFormattedLogMessage): string => {
           try {
@@ -116,7 +116,7 @@ describe('Mock Output Complex Data Handling Integration', () => {
 
     describe('When processing nested circular structures', () => {
       // 目的: 複雑にネストした循環参照の安全な処理
-      it('Then should safely handle deeply nested circular structures', (_ctx) => {
+      it('Then: [正常] - should safely handle deeply nested circular structures', (_ctx) => {
         const { mockLogger } = setupTestContext(_ctx);
 
         const circularCheckFormatter = (logMessage: AgFormattedLogMessage): string => {
@@ -175,7 +175,7 @@ describe('Mock Output Complex Data Handling Integration', () => {
   describe('Given complex data structures exist', () => {
     describe('When processing deeply nested objects', () => {
       // 目的: 深くネストしたオブジェクトの安全な処理
-      it('Then should handle deeply nested objects without stack overflow', (_ctx) => {
+      it('Then: [エッジケース] - should handle deeply nested objects without stack overflow', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
 
         // Given: 深いネスト対応ロガー
@@ -213,7 +213,7 @@ describe('Mock Output Complex Data Handling Integration', () => {
   describe('Given special data values exist', () => {
     describe('When processing custom error objects', () => {
       // 目的: カスタムプロパティ付きErrorの取り扱い
-      it('Then should extract error information properly', (_ctx) => {
+      it('Then: [正常] - should extract error information properly', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
 
         // Given: Errorオブジェクト対応ロガー
@@ -265,7 +265,7 @@ describe('Mock Output Complex Data Handling Integration', () => {
   describe('Given special data values exist', () => {
     describe('When processing undefined and null values', () => {
       // 目的: 特殊JavaScript値の安全な処理
-      it('Then should handle special values appropriately', (_ctx) => {
+      it('Then: [エッジケース] - should handle special values appropriately', (_ctx) => {
         const { mockLogger } = setupTestContext();
 
         // Given: 特殊値対応ロガー

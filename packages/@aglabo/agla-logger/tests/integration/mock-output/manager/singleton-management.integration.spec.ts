@@ -47,7 +47,7 @@ describe('Mock Output Singleton Management Integration', () => {
   describe('Given multiple access points to manager', () => {
     describe('When accessing manager from different contexts', () => {
       // 目的: getManager呼び出し間でシングルトン性が維持される
-      it('Then should return identical singleton instance consistently', () => {
+      it('Then: [正常] - should return identical singleton instance consistently', () => {
         setupTestContext();
 
         // When: マネージャーを作成し、複数回取得
@@ -64,7 +64,7 @@ describe('Mock Output Singleton Management Integration', () => {
 
     describe('When accessing configuration from multiple instances', () => {
       // 目的: 複数回アクセス時に設定の一貫性が保たれる
-      it('Then should maintain consistent configuration across access attempts', () => {
+      it('Then: [正常] - should maintain consistent configuration across access attempts', () => {
         setupTestContext();
 
         // Given: 設定済みマネージャー
@@ -94,7 +94,7 @@ describe('Mock Output Singleton Management Integration', () => {
   describe('Given initialization conflicts', () => {
     describe('When encountering concurrent initialization attempts', () => {
       // 目的: 複数回の初期化パラメータ指定で設定が更新される挙動を確認
-      it('Then should handle initialization conflicts gracefully', () => {
+      it('Then: [異常] - should handle initialization conflicts gracefully', () => {
         setupTestContext();
 
         // Given: 異なる設定パラメータ
@@ -120,7 +120,7 @@ describe('Mock Output Singleton Management Integration', () => {
 
     describe('When initialization occurs after singleton reset', () => {
       // 目的: リセット後の再初期化が正常動作することを確認
-      it('Then should allow re-initialization after singleton reset', () => {
+      it('Then: [正常] - should allow re-initialization after singleton reset', () => {
         setupTestContext();
 
         // Given: 初期のマネージャー設定
@@ -151,7 +151,7 @@ describe('Mock Output Singleton Management Integration', () => {
   describe('Given singleton state consistency requirements', () => {
     describe('When verifying state consistency across access points', () => {
       // 目的: 並行アクセス時のマネージャー状態一貫性
-      it('Then should maintain consistent state regardless of access method', () => {
+      it('Then: [エッジケース] - should maintain consistent state regardless of access method', () => {
         setupTestContext();
 
         // Given: 初期マネージャー

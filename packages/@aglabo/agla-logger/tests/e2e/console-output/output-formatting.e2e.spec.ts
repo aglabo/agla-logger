@@ -44,7 +44,7 @@ describe('Output Formatting Scenarios', () => {
     // Development to Production（Plain→JSON移行）
     describe('When migrating from development to production', () => {
       // Plain→JSON 切替後に2件目がJSONで出力される
-      it('should output JSON after switching from Plain', (_ctx) => {
+      it('Then: [正常] - should output JSON after switching from Plain', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -69,7 +69,7 @@ describe('Output Formatting Scenarios', () => {
     // Multi-Consumer Support（汎用log/JSON基礎）
     describe('When supporting multiple log consumers', () => {
       // JsonFormatterでINFOが1回出力
-      it('should output a single INFO with JsonFormatter', (_ctx) => {
+      it('Then: [正常] - should output a single INFO with JsonFormatter', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -78,7 +78,7 @@ describe('Output Formatting Scenarios', () => {
       });
 
       // JSONのキーがlevel/message/argsである
-      it('should match JSON keys level/message/args', (_ctx) => {
+      it('Then: [正常] - should match JSON keys level/message/args', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -90,14 +90,14 @@ describe('Output Formatting Scenarios', () => {
       });
 
       // generic log() は1回出力、JSONでlevelなし、args一致
-      it('should output generic log once (JSON)', (_ctx) => {
+      it('Then: [正常] - should output generic log once (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.log('Generic log message', { data: 'test' });
         expect(mockConsole.log).toHaveBeenCalledTimes(1);
       });
 
-      it('should omit level and match args in generic log', (_ctx) => {
+      it('Then: [正常] - should omit level and match args in generic log', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.log('Generic log message', { data: 'test' });
@@ -112,7 +112,7 @@ describe('Output Formatting Scenarios', () => {
     // Format Optimization（レベル別フォーマット最適化）
     describe('When optimizing formatting by log level', () => {
       // INFOのフォーマットが正しい（Plain）
-      it('should format INFO correctly', (_ctx) => {
+      it('Then: [正常] - should format INFO correctly', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -121,7 +121,7 @@ describe('Output Formatting Scenarios', () => {
       });
 
       // DEBUGのフォーマットが正しい（Plain）
-      it('should format DEBUG correctly', (_ctx) => {
+      it('Then: [正常] - should format DEBUG correctly', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -132,7 +132,7 @@ describe('Output Formatting Scenarios', () => {
       });
 
       // WARNのフォーマットが正しい（Plain）
-      it('should format WARN correctly', (_ctx) => {
+      it('Then: [正常] - should format WARN correctly', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -141,7 +141,7 @@ describe('Output Formatting Scenarios', () => {
       });
 
       // ERRORのフォーマットが正しい（Plain）
-      it('should format ERROR correctly', (_ctx) => {
+      it('Then: [正常] - should format ERROR correctly', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -153,7 +153,7 @@ describe('Output Formatting Scenarios', () => {
     // Legacy Integration（JSON→Plain移行）
     describe('When switching back for legacy integration', () => {
       // JSON→Plain 切替後に2件目がPlainで出力される
-      it('should output Plain after switching from JSON', (_ctx) => {
+      it('Then: [正常] - should output Plain after switching from JSON', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;

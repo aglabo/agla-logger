@@ -20,15 +20,15 @@ import { AgLoggerGetMessage } from '../AgLoggerGetMessage';
  * Verifies correct parsing and structuring of log messages
  * from variable input arguments including primitives, objects, and timestamps.
  */
-describe('AgLoggerGetMessage', () => {
+describe('Feature: AgLoggerGetMessage message parsing and structuring', () => {
   /**
    * Tests typical log messages without object parameters.
    */
-  describe('Normal log messages (no objects in arguments)', () => {
+  describe('When: processing normal log messages without object parameters', () => {
     /**
      * Concatenates multiple primitive arguments into a single message string.
      */
-    it('concatenates user id argument', () => {
+    it('Then: [正常] - should concatenate user id argument', () => {
       const userid = 'u1029165';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.INFO, 'userid=', userid);
       expect(result.logLevel).toEqual(AG_LOGLEVEL.INFO);
@@ -39,7 +39,7 @@ describe('AgLoggerGetMessage', () => {
     /**
      * Tests template string expansion in message arguments.
      */
-    it('handles variable interpolation with backticks', () => {
+    it('Then: [正常] - should handle variable interpolation with backticks', () => {
       const userid = 'u1029165';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.DEBUG, `userid=${userid}`);
 
@@ -51,7 +51,7 @@ describe('AgLoggerGetMessage', () => {
     /**
      * Concatenates multiple primitive parameters into one message.
      */
-    it('concatenates multiple parameters', () => {
+    it('Then: [正常] - should concatenate multiple parameters', () => {
       const dtDate = '2022-06-10';
       const dtTime = '10:30:00';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.WARN, 'date:', dtDate, 'time:', dtTime);
@@ -63,7 +63,7 @@ describe('AgLoggerGetMessage', () => {
     /**
      * Handles multiple primitive types concatenated into message string.
      */
-    it('handles primitive types', () => {
+    it('Then: [正常] - should handle primitive types', () => {
       const result = AgLoggerGetMessage(AG_LOGLEVEL.ERROR, 'number:', 123, 'string:', 'abc', 'boolean:', true);
       expect(result.logLevel).toEqual(AG_LOGLEVEL.ERROR);
       expect(result.message).toEqual('number: 123 string: abc boolean: true');
@@ -74,11 +74,11 @@ describe('AgLoggerGetMessage', () => {
   /**
    * Tests log messages with object arguments.
    */
-  describe('Log messages with parameters (simple object attached)', () => {
+  describe('When: processing log messages with object parameters', () => {
     /**
      * Processes a simple object as a separate argument.
      */
-    it('processes a simple object', () => {
+    it('Then: [正常] - should process simple object', () => {
       const result = AgLoggerGetMessage(AG_LOGLEVEL.TRACE, 'user:', { name: 'John Doe' });
       expect(result.logLevel).toEqual(AG_LOGLEVEL.TRACE);
       expect(result.message).toEqual('user:');
@@ -89,11 +89,11 @@ describe('AgLoggerGetMessage', () => {
   /**
    * Tests log messages with timestamp prefix.
    */
-  describe('Messages with timestamp', () => {
+  describe('When: processing messages with timestamp prefixes', () => {
     /**
      * Parses ISO datetime string as timestamp.
      */
-    it('sets timestamp when first argument is ISO datetime string', () => {
+    it('Then: [正常] - should set timestamp when first argument is ISO datetime string', () => {
       const timestampStr = '2025-01-15T10:30:00.000Z';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.FATAL, timestampStr, 'test message');
 
@@ -106,7 +106,7 @@ describe('AgLoggerGetMessage', () => {
     /**
      * Parses other valid datetime string as timestamp.
      */
-    it('sets timestamp when first argument is valid datetime string', () => {
+    it('Then: [正常] - should set timestamp when first argument is valid datetime string', () => {
       const timestampStr = '2025-06-18 15:45:30';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.INFO, timestampStr, 'log entry');
 
@@ -119,7 +119,7 @@ describe('AgLoggerGetMessage', () => {
     /**
      * Handles multiple arguments and object with timestamp.
      */
-    it('handles multiple arguments and object with timestamp', () => {
+    it('Then: [正常] - should handle multiple arguments and object with timestamp', () => {
       const timestampStr = '2025-01-01T00:00:00.000Z';
       const result = AgLoggerGetMessage(AG_LOGLEVEL.DEBUG, timestampStr, 'user:', 'john', { id: 123 });
 

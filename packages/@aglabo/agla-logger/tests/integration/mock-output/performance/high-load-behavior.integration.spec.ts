@@ -60,7 +60,7 @@ describe('AgLogger Performance High Load Integration', () => {
   describe('Given high-frequency logging scenarios exist', () => {
     describe('When outputting large volumes of log messages continuously', () => {
       // 目的: 高頻度ログ出力時の処理性能維持
-      it('Then should maintain performance with high-frequency logging', (_ctx) => {
+      it('Then: [正常] - should maintain performance with high-frequency logging', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTest(_ctx);
 
         // Given: パフォーマンス重視の設定
@@ -89,7 +89,7 @@ describe('AgLogger Performance High Load Integration', () => {
 
     describe('When processing large data payloads at high frequency', () => {
       // 目的: 大量データを含む高頻度ログの性能
-      it('Then should handle large payloads efficiently at high frequency', (_ctx) => {
+      it('Then: [エッジケース] - should handle large payloads efficiently at high frequency', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
 
         // Given: 大量データ対応の設定
@@ -130,7 +130,7 @@ describe('AgLogger Performance High Load Integration', () => {
   describe('Given log level filtering environments exist', () => {
     describe('When many messages are suppressed by filtering', () => {
       // 目的: フィルタリングによる出力抑制時の低オーバーヘッド
-      it('Then should minimize overhead when messages are filtered out', (_ctx) => {
+      it('Then: [正常] - should minimize overhead when messages are filtered out', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
 
         // Given: 厳格なフィルタリング設定（ERROR レベルのみ）
@@ -167,7 +167,7 @@ describe('AgLogger Performance High Load Integration', () => {
   describe('Given concurrent execution environments exist', () => {
     describe('When multiple async processes log simultaneously', () => {
       // 目的: 同時実行時の安全性とパフォーマンス
-      it('Then should handle concurrent logging safely and efficiently', async (_ctx) => {
+      it('Then: [エッジケース] - should handle concurrent logging safely and efficiently', async (_ctx) => {
         const { mockLogger, mockFormatter } = setupTest(_ctx);
 
         // Given: 同時実行対応の設定
@@ -208,7 +208,7 @@ describe('AgLogger Performance High Load Integration', () => {
   describe('Given complex configuration combinations exist', () => {
     describe('When executing high-load processing with all features enabled', () => {
       // 目的: フル機能有効時の統合パフォーマンス
-      it('Then should maintain stable performance with full feature interaction', (_ctx) => {
+      it('Then: [エッジケース] - should maintain stable performance with full feature interaction', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
 
         // Given: 全機能有効の複雑な設定
@@ -290,7 +290,7 @@ describe('AgLogger Performance High Load Integration', () => {
      */
     describe('When high-load processing with message integrity is executed in E2E environment', () => {
       // E2E環境での高負荷時のメッセージ整合性維持
-      it('Then should maintain E2E message integrity under high load conditions', (ctx) => {
+      it('Then: [正常] - should maintain E2E message integrity under high load conditions', (ctx) => {
         const { mockLogger } = setupE2ETest(ctx);
 
         // Given: E2E環境での高負荷パフォーマンス設定
@@ -320,7 +320,7 @@ describe('AgLogger Performance High Load Integration', () => {
      */
     describe('When large dataset processing is executed in E2E environment', () => {
       // E2E環境での大量データセット処理性能
-      it('Then should process large datasets within acceptable E2E performance limits', (ctx) => {
+      it('Then: [エッジケース] - should process large datasets within acceptable E2E performance limits', (ctx) => {
         const { mockLogger } = setupE2ETest(ctx);
 
         // Given: E2E環境での大量データ処理設定

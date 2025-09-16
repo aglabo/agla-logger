@@ -24,7 +24,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
    * Feature: AgFormatRoutine type validation
    */
   describe('AgFormatRoutine: Format routine function type', () => {
-    it('should accept AgLogMessage and return AgFormattedLogMessage', () => {
+    it('Then: [正常] - should accept AgLogMessage and return AgFormattedLogMessage', () => {
       // This test will fail initially (RED phase)
       const mockMessage: AgLogMessage = {
         logLevel: 4 as AgLogLevel, // AG_LOGLEVEL.INFO
@@ -42,7 +42,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(result).toBe('test message');
     });
 
-    it('should accept AgLogMessage and throw error when specified', () => {
+    it('Then: [異常] - should accept AgLogMessage and throw error when specified', () => {
       const mockMessage: AgLogMessage = {
         logLevel: 2 as AgLogLevel, // AG_LOGLEVEL.ERROR
         timestamp: new Date(),
@@ -62,7 +62,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
    * Feature: AgMockConstructor interface validation
    */
   describe('AgMockConstructor: Mock constructor interface', () => {
-    it('should have __isMockConstructor property as true', () => {
+    it('Then: [正常] - should have __isMockConstructor property as true', () => {
       // Mock implementation for testing
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
@@ -79,7 +79,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(mockConstructor.__isMockConstructor).toBe(true);
     });
 
-    it('should accept required AgFormatRoutine in constructor', () => {
+    it('Then: [正常] - should accept required AgFormatRoutine in constructor', () => {
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
         private routine: AgFormatRoutine;
@@ -111,7 +111,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(instance.execute(mockMessage)).toBe('CUSTOM: test');
     });
 
-    it('should have execute method returning AgFormattedLogMessage', () => {
+    it('Then: [正常] - should have execute method returning AgFormattedLogMessage', () => {
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
 
@@ -140,7 +140,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(result).toBe('[3] warning');
     });
 
-    it('should have getStats method returning statistics object', () => {
+    it('Then: [正常] - should have getStats method returning statistics object', () => {
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
 
@@ -165,7 +165,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(stats.callCount).toBe(5);
     });
 
-    it('should have reset method for clearing statistics', () => {
+    it('Then: [正常] - should have reset method for clearing statistics', () => {
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
 
@@ -190,7 +190,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
    * Feature: AgFormatterInput union type validation
    */
   describe('AgFormatterInput: Formatter input union type', () => {
-    it('should accept AgFormatFunction as valid input', () => {
+    it('Then: [正常] - should accept AgFormatFunction as valid input', () => {
       const formatFunction: AgFormatterInput = (msg: AgLogMessage): AgFormattedLogMessage => {
         return msg.message;
       };
@@ -209,7 +209,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       }
     });
 
-    it('should accept AgMockConstructor as valid input', () => {
+    it('Then: [正常] - should accept AgMockConstructor as valid input', () => {
       class TestMockConstructor {
         static readonly __isMockConstructor = true as const;
 
@@ -234,7 +234,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
    * Feature: Type compatibility validation
    */
   describe('Type compatibility: Integration with existing types', () => {
-    it('should work with existing AgLogMessage type', () => {
+    it('Then: [正常] - should work with existing AgLogMessage type', () => {
       const mockMessage: AgLogMessage = {
         logLevel: 4,
         timestamp: new Date(),
@@ -250,7 +250,7 @@ describe('Feature: AgMockConstructor type definitions', () => {
       expect(result).toBe('compatibility test - args: 1');
     });
 
-    it('should work with existing AgFormattedLogMessage type', () => {
+    it('Then: [正常] - should work with existing AgFormattedLogMessage type', () => {
       // Test string return
       const stringRoutine: AgFormatRoutine = (_msg: AgLogMessage): string => 'string result';
 

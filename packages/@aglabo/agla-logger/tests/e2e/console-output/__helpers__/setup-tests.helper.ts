@@ -1,3 +1,14 @@
+// src: /tests/e2e/console-output/__helpers__/setup-tests.helper.ts
+// @(#) : E2E Console Output Test Setup Helper
+//
+// Console mock setup utilities for E2E testing with automatic cleanup
+// Provides ConsoleMock type and setupTest function for console output verification
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 import { type MockInstance, vi } from 'vitest';
 import type { TestContext } from 'vitest';
 

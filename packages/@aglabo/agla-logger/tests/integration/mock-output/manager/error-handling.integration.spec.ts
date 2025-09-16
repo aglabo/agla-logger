@@ -65,7 +65,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
   describe('Given invalid log level access scenarios exist', () => {
     describe('When accessing non-existent or invalid log levels', () => {
       // 目的: 無効ログレベル時に例外が投げられることを確認
-      it('Then should throw appropriate error for invalid log level', (_ctx) => {
+      it('Then: [異常] - should throw appropriate error for invalid log level', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: 正常なマネージャー設定
@@ -91,7 +91,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
   describe('Given empty or invalid logger maps exist', () => {
     describe('When accessing with invalid map configurations', () => {
       // 目的: 空のロガーマップ指定時の挙動確認
-      it('Then should handle empty logger map gracefully', (_ctx) => {
+      it('Then: [正常] - should handle empty logger map gracefully', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
 
         // Given: 空のロガーマップ設定
@@ -120,7 +120,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
 
     describe('When handling null or undefined logger map values', () => {
       // 目的: null/undefined値を含むマップの安定性
-      it('Then should maintain stability with null/undefined map values', (_ctx) => {
+      it('Then: [エッジケース] - should maintain stability with null/undefined map values', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
 
         // Given: undefined値を含むマップ設定
@@ -156,7 +156,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
   describe('Given plugin errors occur in the environment', () => {
     describe('When formatter or logger errors are encountered', () => {
       // 目的: プラグインエラー発生時のマネージャー安定性
-      it('Then should maintain manager stability during plugin errors', (_ctx) => {
+      it('Then: [正常] - should maintain manager stability during plugin errors', (_ctx) => {
         const { mockLogger } = setupTestContext(_ctx);
 
         const workingLogger = mockLogger.default;
@@ -180,7 +180,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
 
     describe('When recovering from plugin errors', () => {
       // 目的: プラグインエラー後の回復能力
-      it('Then should recover gracefully after plugin error resolution', (_ctx) => {
+      it('Then: [正常] - should recover gracefully after plugin error resolution', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
 
         // Given: 初期の問題のある設定
@@ -213,7 +213,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
   describe('Given concurrent access conflicts occur', () => {
     describe('When configuration changes and access occur simultaneously', () => {
       // 目的: 同時アクセス時のマネージャー安定性
-      it('Then should handle concurrent operations without deadlock or inconsistency', (_ctx) => {
+      it('Then: [エッジケース] - should handle concurrent operations without deadlock or inconsistency', (_ctx) => {
         const { mockFormatter } = setupTestContext();
 
         // Given: 同時アクセス対応の設定
@@ -250,7 +250,7 @@ describe('AgLoggerManager Error Handling Integration', () => {
   describe('Given memory leak risks exist in the environment', () => {
     describe('When frequent configuration changes occur', () => {
       // 目的: 頻繁な設定変更時のメモリリーク防止
-      it('Then should operate without memory leaks during frequent changes', (_ctx) => {
+      it('Then: [エッジケース] - should operate without memory leaks during frequent changes', (_ctx) => {
         const { mockFormatter } = setupTestContext(_ctx);
 
         // Given: 頻繁変更対応の設定

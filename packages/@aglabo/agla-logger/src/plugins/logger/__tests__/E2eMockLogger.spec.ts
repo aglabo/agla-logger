@@ -15,14 +15,14 @@ import { AG_LOGLEVEL } from '../../../../shared/types';
 // test target
 import { E2eMockLogger } from '../E2eMockLogger';
 
-describe('E2eMockLogger', () => {
+describe('Feature: E2eMockLogger test ID management and basic functionality', () => {
   let mockLogger: E2eMockLogger;
 
   // Initialize mockLogger for tests
   mockLogger = new E2eMockLogger('test-id');
 
-  describe('testID管理: IDの切り替えと管理', () => {
-    it('should allow switching to different test ID after construction', (ctx) => {
+  describe('When: managing test IDs and their switching', () => {
+    it('Then: [正常] - should allow switching to different test ID after construction', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -31,7 +31,7 @@ describe('E2eMockLogger', () => {
       expect(mockLogger.getMessages(AG_LOGLEVEL.INFO)).toEqual(['test message']);
     });
 
-    it('should throw error when trying to log after ending current test', (ctx) => {
+    it('Then: [異常] - should throw error when trying to log after ending current test', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       mockLogger.endTest(); // End test manually to test error condition
       ctx.onTestFinished(() => {
@@ -43,8 +43,8 @@ describe('E2eMockLogger', () => {
     });
   });
 
-  describe('基本機能: errorメッセージを配列に保存できる', () => {
-    it('should store error messages in array', (ctx) => {
+  describe('When: storing error messages in array', () => {
+    it('Then: [正常] - should store error messages in array', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -56,8 +56,8 @@ describe('E2eMockLogger', () => {
     });
   });
 
-  describe('基本機能: 最後のerrorメッセージを取得できる', () => {
-    it('should return last error message', (ctx) => {
+  describe('When: retrieving last error message', () => {
+    it('Then: [正常] - should return last error message', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -68,7 +68,7 @@ describe('E2eMockLogger', () => {
       expect(lastError).toBe('Second error');
     });
 
-    it('should return null when no error messages', (ctx) => {
+    it('Then: [エッジケース] - should return null when no error messages', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -77,8 +77,8 @@ describe('E2eMockLogger', () => {
     });
   });
 
-  describe('基本機能: errorメッセージをクリアできる', () => {
-    it('should clear error messages', (ctx) => {
+  describe('When: clearing error messages', () => {
+    it('Then: [正常] - should clear error messages', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -93,8 +93,8 @@ describe('E2eMockLogger', () => {
     });
   });
 
-  describe('統一API設計: getLastMessage(logLevel)で統一', () => {
-    it('should get last message for each level using unified method', (ctx) => {
+  describe('When: using unified API design with getLastMessage(logLevel)', () => {
+    it('Then: [正常] - should get last message for each level using unified method', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -108,7 +108,7 @@ describe('E2eMockLogger', () => {
       expect(mockLogger.getLastMessage(AG_LOGLEVEL.WARN)).toBeNull();
     });
 
-    it('should get messages for each level using unified method', (ctx) => {
+    it('Then: [正常] - should get messages for each level using unified method', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 
@@ -122,7 +122,7 @@ describe('E2eMockLogger', () => {
       expect(mockLogger.getMessages(AG_LOGLEVEL.INFO)).toEqual([]);
     });
 
-    it('should clear messages for specific level using unified method', (ctx) => {
+    it('Then: [正常] - should clear messages for specific level using unified method', (ctx) => {
       mockLogger.startTest(ctx.task.id);
       ctx.onTestFinished(() => mockLogger.endTest());
 

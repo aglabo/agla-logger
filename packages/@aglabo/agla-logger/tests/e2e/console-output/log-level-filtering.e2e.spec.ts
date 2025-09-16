@@ -51,7 +51,7 @@ describe('Log Level Management Scenarios', () => {
      */
     describe('When Production Monitoring (INFO+)', () => {
       // INFOレベル時、DEBUGは出力されない（Plain）
-      it('should not output DEBUG at INFO level (Plain)', (_ctx) => {
+      it('Then: [正常] - should not output DEBUG at INFO level (Plain)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -60,7 +60,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOレベル時、INFOは1回出力される（Plain）
-      it('should output INFO once at INFO level (Plain)', (_ctx) => {
+      it('Then: [正常] - should output INFO once at INFO level (Plain)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -69,7 +69,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOレベル時、DEBUGは出力されない（JSON）
-      it('should not output DEBUG at INFO level (JSON)', (_ctx) => {
+      it('Then: [正常] - should not output DEBUG at INFO level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -78,7 +78,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOレベル時、INFOは1回出力される（JSON）
-      it('should output INFO once at INFO level (JSON)', (_ctx) => {
+      it('Then: [正常] - should output INFO once at INFO level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -87,7 +87,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOレベル時、WARNは1回出力される（JSON）
-      it('should output WARN once at INFO level (JSON)', (_ctx) => {
+      it('Then: [正常] - should output WARN once at INFO level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -102,7 +102,7 @@ describe('Log Level Management Scenarios', () => {
      */
     describe('When Critical Debugging (DEBUG+)', () => {
       // DEBUGレベル時、ERRORは1回出力される
-      it('should output ERROR once at DEBUG level', (_ctx) => {
+      it('Then: [正常] - should output ERROR once at DEBUG level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -111,7 +111,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // DEBUGレベル時、WARNは1回出力される
-      it('should output WARN once at DEBUG level', (_ctx) => {
+      it('Then: [正常] - should output WARN once at DEBUG level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -120,7 +120,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // DEBUGレベル時、INFOは1回出力される
-      it('should output INFO once at DEBUG level', (_ctx) => {
+      it('Then: [正常] - should output INFO once at DEBUG level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -129,7 +129,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // DEBUGレベル時、DEBUGは1回出力される
-      it('should output DEBUG once at DEBUG level', (_ctx) => {
+      it('Then: [正常] - should output DEBUG once at DEBUG level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -144,7 +144,7 @@ describe('Log Level Management Scenarios', () => {
      */
     describe('When Maintenance Mode (ERROR+ / OFF)', () => {
       // ERRORレベル時、INFOは出力されない
-      it('should not output INFO at ERROR level', (_ctx) => {
+      it('Then: [正常] - should not output INFO at ERROR level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -153,7 +153,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // ERRORレベル時、WARNは出力されない
-      it('should not output WARN at ERROR level', (_ctx) => {
+      it('Then: [正常] - should not output WARN at ERROR level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -162,7 +162,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // ERRORレベル時、ERRORは1回出力される
-      it('should output ERROR once at ERROR level', (_ctx) => {
+      it('Then: [正常] - should output ERROR once at ERROR level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -171,7 +171,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // OFFレベル時、ERRORは出力されない
-      it('should not output ERROR when OFF', (_ctx) => {
+      it('Then: [正常] - should not output ERROR when OFF', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.OFF;
@@ -180,7 +180,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // OFFレベル時、WARNは出力されない
-      it('should not output WARN when OFF', (_ctx) => {
+      it('Then: [正常] - should not output WARN when OFF', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.OFF;
@@ -189,7 +189,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // OFFレベル時、INFOは出力されない
-      it('should not output INFO when OFF', (_ctx) => {
+      it('Then: [正常] - should not output INFO when OFF', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.OFF;
@@ -198,7 +198,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // OFFレベル時、DEBUGは出力されない
-      it('should not output DEBUG when OFF', (_ctx) => {
+      it('Then: [正常] - should not output DEBUG when OFF', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.OFF;
@@ -213,7 +213,7 @@ describe('Log Level Management Scenarios', () => {
      */
     describe('When Dynamic Adjustment at Runtime', () => {
       // ERRORレベル時、INFOは出力されない
-      it('should not output INFO while at ERROR level', (_ctx) => {
+      it('Then: [正常] - should not output INFO while at ERROR level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -222,7 +222,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // ERRORレベル時、ERRORは1回出力される
-      it('should output ERROR once while at ERROR level', (_ctx) => {
+      it('Then: [正常] - should output ERROR once while at ERROR level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -231,7 +231,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOへ変更後、INFOは1回出力される
-      it('should output INFO once after changing to INFO level', (_ctx) => {
+      it('Then: [正常] - should output INFO once after changing to INFO level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -241,7 +241,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // INFOへ変更後でも、DEBUGは出力されない
-      it('should still suppress DEBUG after changing to INFO level', (_ctx) => {
+      it('Then: [正常] - should still suppress DEBUG after changing to INFO level', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.ERROR;
@@ -257,7 +257,7 @@ describe('Log Level Management Scenarios', () => {
      */
     describe('When WARN level JSON validation', () => {
       // WARNレベル時、INFOは出力されない（JSON）
-      it('should not output INFO at WARN level (JSON)', (_ctx) => {
+      it('Then: [正常] - should not output INFO at WARN level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.WARN;
@@ -266,7 +266,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // WARNレベル時、WARNは1回出力される（JSON）
-      it('should output WARN once at WARN level (JSON)', (_ctx) => {
+      it('Then: [正常] - should output WARN once at WARN level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.WARN;
@@ -275,7 +275,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // WARNレベルのJSON構造が正しい
-      it('should have correct WARN JSON structure', (_ctx) => {
+      it('Then: [正常] - should have correct WARN JSON structure', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.WARN;
@@ -286,7 +286,7 @@ describe('Log Level Management Scenarios', () => {
       });
 
       // WARNレベル時、ERRORは1回出力される（JSON）
-      it('should output ERROR once at WARN level (JSON)', (_ctx) => {
+      it('Then: [正常] - should output ERROR once at WARN level (JSON)', (_ctx) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.WARN;

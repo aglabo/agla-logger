@@ -69,7 +69,7 @@ describe('Given QA automation environment', () => {
      */
     describe('Then verify large data integration', () => {
       // QA自動化環境において、JSON形式の注文パイプライン環境をセットアップする
-      it('should setup JSON-formatted order pipeline environment', (ctx) => {
+      it('Then: [正常] - should setup JSON-formatted order pipeline environment', (ctx) => {
         const mockLogger = setupE2eMockLogger('order-pipeline-qa', ctx);
         const logger = AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -117,7 +117,7 @@ describe('Given QA automation environment', () => {
      */
     describe('Then verify comprehensive pipeline logging', () => {
       // 完全なパイプラインを通じて注文を処理し、詳細なログを記録する
-      it('should process order through complete pipeline with detailed logging', (ctx) => {
+      it('Then: [正常] - should process order through complete pipeline with detailed logging', (ctx) => {
         const mockLogger = setupE2eMockLogger('order-complete-pipeline', ctx);
         const logger = AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -184,7 +184,7 @@ describe('Given QA automation environment', () => {
      */
     describe('Then maintain performance standards', () => {
       // 複数の注文を処理し、パフォーマンス監視を行う
-      it('should handle multiple orders with performance monitoring', (ctx) => {
+      it('Then: [正常] - should handle multiple orders with performance monitoring', (ctx) => {
         const mockLogger = setupE2eMockLogger('large-data-performance', ctx);
         const logger = AgLogger.createLogger({
           formatter: JsonFormatter,
@@ -258,7 +258,7 @@ describe('Given QA automation environment', () => {
      */
     describe('Then provide comprehensive error context', () => {
       // モジュール横断でエラーの詳細情報を捕捉する
-      it('should capture detailed error information across modules', (ctx) => {
+      it('Then: [異常] - should capture detailed error information across modules', (ctx) => {
         const mockLogger = setupE2eMockLogger('cross-module-errors', ctx);
         const logger = AgLogger.createLogger({
           formatter: JsonFormatter,

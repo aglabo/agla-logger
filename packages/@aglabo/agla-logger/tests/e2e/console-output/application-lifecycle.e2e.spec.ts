@@ -51,7 +51,7 @@ describe('Application Lifecycle Scenarios', () => {
      */
     describe('When startup phase initialization', () => {
       // 起動時、PlainFormatterでINFOが1回出力されること
-      it('should output INFO message for application start with PlainFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output INFO message for application start with PlainFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -60,7 +60,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、設定読み込みでDEBUGが1回出力されること（Plain）
-      it('should output DEBUG message for config loading with PlainFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output DEBUG message for config loading with PlainFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -69,7 +69,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、非推奨API使用でWARNが1回出力されること（Plain）
-      it('should output WARN message for deprecated API with PlainFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output WARN message for deprecated API with PlainFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -78,7 +78,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、DB接続失敗でERRORが1回出力されること（Plain）
-      it('should output ERROR message for database connection with PlainFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output ERROR message for database connection with PlainFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -87,7 +87,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、構造化データでINFOが1回出力されること（JSON）
-      it('should output INFO message with structured data using JsonFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output INFO message with structured data using JsonFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -96,7 +96,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、設定情報付きでDEBUGが1回出力されること（JSON）
-      it('should output DEBUG message with configuration data using JsonFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output DEBUG message with configuration data using JsonFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -105,7 +105,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、非推奨API使用でWARNが1回出力されること（JSON）
-      it('should output WARN message for deprecated API usage using JsonFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output WARN message for deprecated API usage using JsonFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -114,7 +114,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 起動時、DB障害でERRORが1回出力されること（JSON）
-      it('should output ERROR message for database failure using JsonFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should output ERROR message for database failure using JsonFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.DEBUG;
@@ -129,7 +129,7 @@ describe('Application Lifecycle Scenarios', () => {
      */
     describe('When processing phase operations', () => {
       // 処理フェーズ、高頻度INFOの回数とJSON構造が正しいこと
-      it('should handle high-volume request processing with correct count and JSON structure', (_ctx: TestContext) => {
+      it('Then: [正常] - should handle high-volume request processing with correct count and JSON structure', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -147,7 +147,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 処理フェーズ、複合データのPlain整形が正しいこと
-      it('should process complex data structures with PlainFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should process complex data structures with PlainFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: PlainFormatter });
         logger.logLevel = AG_LOGLEVEL.INFO;
@@ -164,7 +164,7 @@ describe('Application Lifecycle Scenarios', () => {
       });
 
       // 処理フェーズ、入れ子構造がJSONで保全されること
-      it('should maintain nested structure integrity with JsonFormatter', (_ctx: TestContext) => {
+      it('Then: [正常] - should maintain nested structure integrity with JsonFormatter', (_ctx: TestContext) => {
         const { mockConsole } = setupTest(_ctx);
         const logger = AgLogger.createLogger({ defaultLogger: ConsoleLogger, formatter: JsonFormatter });
         const complexData = {

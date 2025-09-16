@@ -27,7 +27,7 @@ import { NullLogger } from '@/plugins/logger/NullLogger';
  * @description Console出力での各種ロガーの振る舞いを保証するテスト
  * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
  */
-describe('Console Logger Behavior Integration', () => {
+describe('Feature: Console Logger Behavior Integration', () => {
   const setupTestContext = (): void => {
     vi.clearAllMocks();
     AgLogger.resetSingleton();
@@ -48,7 +48,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When console output is requested', () => {
       // ConsoleLoggerの基本統合動作とconsole.methodの呼び出しを確認
-      it('Then should output to appropriate console method', () => {
+      it('Then: [正常] - should output to appropriate console method', () => {
         setupTestContext();
 
         // Given: コンソール出力監視の設定
@@ -92,7 +92,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When level-specific console output is requested', () => {
       // ConsoleLoggerMap×JsonFormatterで適切なconsoleメソッドに振り分けを確認
-      it('Then should use correct console methods with JsonFormatter', () => {
+      it('Then: [正常] - should use correct console methods with JsonFormatter', () => {
         setupTestContext();
 
         // Given: 全consoleメソッド監視の設定
@@ -157,7 +157,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When log output suppression is requested', () => {
       // NullLogger使用時の安全な無出力動作を確認
-      it('Then should handle NullLogger with any formatter safely', () => {
+      it('Then: [正常] - should handle NullLogger with any formatter safely', () => {
         setupTestContext();
 
         // Given: NullLogger設定
@@ -181,7 +181,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When used as fallback in logger map', () => {
       // ロガーマップ内でのNullLogger使用時の安定性を確認
-      it('Then should work correctly as fallback logger in map configuration', () => {
+      it('Then: [正常] - should work correctly as fallback logger in map configuration', () => {
         setupTestContext();
 
         // Given: NullLoggerをフォールバックとする設定
@@ -224,7 +224,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When test mock behavior is requested', () => {
       // モックロガーの基本統合動作を確認
-      it('Then should work correctly with mock loggers', () => {
+      it('Then: [正常] - should work correctly with mock loggers', () => {
         setupTestContext();
 
         // Given: モックロガー設定
@@ -258,7 +258,7 @@ describe('Console Logger Behavior Integration', () => {
      */
     describe('When mock logger error scenarios occur', () => {
       // モックロガーエラー時の適切な処理を確認
-      it('Then should propagate mock logger errors correctly', () => {
+      it('Then: [異常] - should propagate mock logger errors correctly', () => {
         setupTestContext();
 
         // Given: エラーを投げるモックロガー

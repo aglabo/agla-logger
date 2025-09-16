@@ -81,6 +81,101 @@ describe('NewFeature', () => {
 });
 ```
 
+### テスト階層統一ルール（必須遵守）
+
+#### 3階層BDD構造の厳格適用
+
+**すべてのテストファイルで以下の統一形式を遵守:**
+
+```typescript
+// パターンA: Given開始（前提条件ベース）
+describe('Given: [前提条件の詳細記述]', () => {
+  describe('When: [具体的な操作・実行内容]', () => {
+    it('Then: [正常]/[異常]/[エッジケース] - should [期待される動作]', () => {
+      // テスト実装
+    });
+  });
+});
+
+// パターンB: Feature開始（機能単位テスト）
+describe('Feature: [機能名・特徴の記述]', () => {
+  describe('When: [具体的な操作・実行内容]', () => {
+    it('Then: [正常]/[異常]/[エッジケース] - should [期待される動作]', () => {
+      // テスト実装
+    });
+  });
+});
+```
+
+#### Then句の分類タグ（必須）
+
+- **[正常]**: 期待された入力・条件での正常動作確認
+- **[異常]**: エラー入力・異常条件での適切なエラー処理確認
+- **[エッジケース]**: 境界値・特殊条件・極端な状況での動作確認
+
+#### DescribeにThen句がある場合の特別ルール
+
+```typescript
+// Describe句自体でThen句を使用する場合
+describe('Then: [正常]/[異常]/[エッジケース] - [詳細な期待結果の記述]', () => {
+  // テスト実装またはネストしたテストグループ
+});
+```
+
+#### 複数TOPレベルdescribe許可構造
+
+```typescript
+// 同一ファイル内で複数のGiven/Featureを直接TOPレベルに配置可能
+describe('Given: ログマネージャーが初期化済み', () => {
+  describe('When: ログレベルを変更', () => {
+    it('Then: [正常] - should apply new log level immediately', () => {});
+  });
+});
+
+describe('Given: 無効な設定ファイル', () => {
+  describe('When: ロガー初期化試行', () => {
+    it('Then: [異常] - should throw configuration error', () => {});
+  });
+});
+
+describe('Feature: 高負荷シナリオ処理', () => {
+  describe('When: 1000件の同時ログ出力', () => {
+    it('Then: [エッジケース] - should complete within time limit', () => {});
+  });
+});
+```
+
+#### 実装パターン例（実際の使用例）
+
+```typescript
+// Unit Test例
+describe('Given: AgLogger singleton instance', () => {
+  describe('When: calling info() with string message', () => {
+    it('Then: [正常] - should output formatted message to console', () => {
+      const logger = AgLogger.getInstance();
+      const spy = vi.spyOn(console, 'log');
+
+      logger.info('test message');
+
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining('test message'));
+    });
+  });
+});
+
+// E2E Test例
+describe('Feature: Application Lifecycle Management', () => {
+  describe('When: initializing logger with custom configuration', () => {
+    it('Then: [正常] - should setup logger with specified formatters and loggers', () => {
+      // E2E implementation
+    });
+
+    it('Then: [異常] - should handle invalid configuration gracefully', () => {
+      // Error scenario implementation
+    });
+  });
+});
+```
+
 ### Phase 2: 最小実装（GREEN）
 
 #### MCPツールによる既存パターン調査

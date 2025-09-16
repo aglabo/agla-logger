@@ -1,6 +1,15 @@
-// src/AgManagerUtils.ts
+// src: /src/AgManagerUtils.ts
+// @(#) : AgLoggerManager Utility Functions and Initialization
+//
 // AgLoggerManager 用のユーティリティ関数(createManager, getLogger) と初期化(setupManager)
+// シングルトンパターンの管理とLogger インスタンスの生成・取得機能を提供
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
 
+import { ErrorSeverity } from '@aglabo/agla-error';
 import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
 import type { AgLoggerOptions } from '../shared/types/AgLogger.interface';
 import { AgLoggerError } from '../shared/types/AgLoggerError.types';
@@ -23,6 +32,7 @@ export const getLogger = (): AgLogger => {
       return manager.getLogger();
     } catch {
       throw new AgLoggerError(
+        ErrorSeverity.FATAL,
         ERROR_TYPES.INITIALIZATION,
         AG_LOGGER_ERROR_MESSAGES[ERROR_TYPES.INITIALIZATION].LOGGER_NOT_CREATED,
       );

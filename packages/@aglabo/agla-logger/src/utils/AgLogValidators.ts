@@ -1,16 +1,15 @@
+// src: /src/utils/AgLogValidators.ts
+// @(#) : AgLogger Validator Functions
+//
+// Log level validation and input validation utility functions
+// Provides type-safe validation for AgLogLevel values and error handling
+//
 // Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// src/utils/AgLogLevelValidators.ts
-// @(#) : AgLogger validator functions
-
-// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
-//
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
-
+import { ErrorSeverity } from '@aglabo/agla-error';
 import { AgLoggerError } from 'shared/types/AgLoggerError.types';
 import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../../shared/constants/agErrorMessages';
 import { AG_LOGLEVEL } from '../../shared/types';
@@ -38,6 +37,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
     // Detailed error reporting for specific failure cases
     if (input === undefined) {
       throw new AgLoggerError(
+        ErrorSeverity.ERROR,
         ERROR_TYPES.VALIDATION,
         `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (undefined)`,
       );
@@ -45,6 +45,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
 
     if (input === null) {
       throw new AgLoggerError(
+        ErrorSeverity.ERROR,
         ERROR_TYPES.VALIDATION,
         `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (null)`,
       );
@@ -52,6 +53,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
 
     if (typeof input !== 'number') {
       throw new AgLoggerError(
+        ErrorSeverity.ERROR,
         ERROR_TYPES.VALIDATION,
         `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (${valueToString(input)} - expected number)`,
       );
@@ -59,6 +61,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
 
     if (!Number.isFinite(input)) {
       throw new AgLoggerError(
+        ErrorSeverity.ERROR,
         ERROR_TYPES.VALIDATION,
         `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (${input} - must be finite number)`,
       );
@@ -66,6 +69,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
 
     if (!Number.isInteger(input)) {
       throw new AgLoggerError(
+        ErrorSeverity.ERROR,
         ERROR_TYPES.VALIDATION,
         `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (${input} - must be integer)`,
       );
@@ -73,6 +77,7 @@ export const validateLogLevel = (input: unknown): AgLogLevel => {
 
     // If we reach here, it must be out of range
     throw new AgLoggerError(
+      ErrorSeverity.ERROR,
       ERROR_TYPES.VALIDATION,
       `${AG_LOGGER_ERROR_MESSAGES.VALIDATION.INVALID_LOG_LEVEL} (${input} - out of valid range)`,
     );
@@ -99,6 +104,7 @@ export const isValidFormatter = (formatter: unknown): boolean => {
 export const validateFormatter = (formatter: unknown): void => {
   if (!isValidFormatter(formatter)) {
     throw new AgLoggerError(
+      ErrorSeverity.ERROR,
       ERROR_TYPES.CONFIG,
       AG_LOGGER_ERROR_MESSAGES.CONFIG.INVALID_FORMATTER,
     );
@@ -124,6 +130,7 @@ export const isValidLogger = (logger: unknown): boolean => {
 export const validateLogger = (logger: unknown): void => {
   if (!isValidLogger(logger)) {
     throw new AgLoggerError(
+      ErrorSeverity.ERROR,
       ERROR_TYPES.CONFIG,
       AG_LOGGER_ERROR_MESSAGES.CONFIG.INVALID_LOGGER,
     );

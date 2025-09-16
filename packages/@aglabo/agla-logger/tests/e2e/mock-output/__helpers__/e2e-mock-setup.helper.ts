@@ -1,3 +1,14 @@
+// src: /tests/e2e/mock-output/__helpers__/e2e-mock-setup.helper.ts
+// @(#) : E2E Mock Output Test Setup Helper
+//
+// E2eMockLogger setup utilities with automatic test lifecycle management
+// Provides setupE2eMockLogger function for mock output testing with AgLogger reset
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 import { AgLogger } from '@/AgLogger.class';
 import { E2eMockLogger } from '@/plugins/logger/E2eMockLogger';
 import type { TestContext } from 'vitest';
