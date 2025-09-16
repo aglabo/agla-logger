@@ -34,50 +34,26 @@ ag-logger/
 
 ## パッケージ分類
 
-### @agla-* パッケージ（レガシー・移行中）
-
-`packages/@agla-*/` に配置:
-
-#### @agla-utils/
-
-- `ag-logger`: **メインロガーパッケージ**
-  - プラグイン式アーキテクチャ（Strategy Pattern）
-  - カスタムフォーマッター・ロガー対応（9種類のプラグイン）
-  - 包括的4層テストスイート（47テストファイル）
-  - 126シンボルの完全な型安全設計
-
-#### @agla-e2e/
-
-- `fileio-framework`: E2E テストフレームワーク
-  - ファイル I/O テスト支援
-  - テスト実行環境の提供
-
-### @aglabo/ パッケージ（メインロガー）
+### @aglabo/ パッケージ（統一パッケージ群）
 
 `packages/@aglabo/` に配置:
 
-#### @aglabo/ag-logger
+#### @aglabo/agla-logger
 
-- メインロガーパッケージ
-- プラグイン式アーキテクチャ
-- 包括的テストスイート
+- **メインロガーパッケージ**
+  - プラグイン式アーキテクチャ（Strategy Pattern）
+  - カスタムフォーマッター・ロガー対応（9種類のプラグイン）
+  - 包括的4層テストスイート
+  - 完全な型安全設計
 
-### Shared パッケージ
+#### @aglabo/agla-error
 
-`shared/packages/` に配置:
-
-#### constants/
-
-- 全パッケージ共通の定数
-- 終了コード、ディレクトリパス等
-
-#### types/
-
-- 共有 TypeScript 型定義
-- **AglaError システム**: 統一エラーハンドリング型
+- **エラーハンドリングフレームワーク**
+  - 統一エラーハンドリングシステム
   - `AglaError`: 拡張エラークラス
   - `AglaErrorContext`: 構造化コンテキスト情報
   - `ErrorSeverity`: エラー重要度レベル
+  - JSON シリアライゼーション対応
 
 ## ag-logger パッケージ詳細
 
@@ -136,16 +112,9 @@ ag-logger/
 モノレポ全体でクリーンなインポートを実現:
 
 ```typescript
-// Shared パッケージ
-import { someConstant } from '@shared/constants';
-import { SomeType } from '@shared/types';
-
-// AGLA パッケージ
-import { FileioFramework } from '@agla-e2e/fileio-framework';
-import { AgLogger } from '@agla-utils/ag-logger';
-
-// AGLABO パッケージ
-import { AgLogger } from '@aglabo/ag-logger';
+// AGLABO パッケージ（統一パッケージ群）
+import { AglaError, ErrorSeverity } from '@aglabo/agla-error';
+import { AgLogger } from '@aglabo/agla-logger';
 ```
 
 ## パッケージ構造パターン
@@ -190,9 +159,9 @@ packages/@category/package-name/
 
 ### パッケージ整理状況
 
-**現在進行中の大規模リファクタリング**
+**完了済みパッケージ統合**
 
-- 一部パッケージは移行中または最近移動・リネームされた状態
+- @aglabo パッケージ群への統一完了
 - パッケージ間依存関係の最適化
 - 設定の中央集約化
 
@@ -200,9 +169,9 @@ packages/@category/package-name/
 
 ### 依存関係フロー
 
-- **特定パッケージ** → **shared パッケージ**
+- **@aglabo/agla-logger** → **@aglabo/agla-error**（依存関係）
 - **@aglabo/*** パッケージが主要フォーカス
-- **@agla-*** パッケージは移行中
+- 統一されたパッケージアーキテクチャ
 
 ### ワークスペース管理
 

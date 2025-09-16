@@ -81,12 +81,9 @@ pnpm run build
 
 ```
 packages/
-├── @agla-utils/          # ユーティリティ（コマンド実行・設定ローダー）
-└── @aglabo/             # メインロガーパッケージ
-
-shared/packages/
-├── types/                # 共有TypeScript型定義
-└── constants/            # 共有定数
+└── @aglabo/             # メインパッケージ群
+    ├── agla-logger/     # 構造化ロガーパッケージ
+    └── agla-error/      # エラーハンドリングフレームワーク
 ```
 
 ### 技術スタック
@@ -127,6 +124,7 @@ shared/packages/
 - AglaError基本実装完了
 - ドキュメント体系化完了（13ファイル作成）
 - 品質保証システム確立
+- パッケージ構造の最適化（@aglabo統一）
 
 ## 🔍 詳細情報へのアクセス
 
