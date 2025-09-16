@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest';
 import { ErrorSeverity } from '../../../shared/types/ErrorSeverity.types.js';
 
 // Test utilities
-import { TestAglaError } from '../helpers/TestAglaError.class.ts';
+import { BasicAglaError } from '../helpers/TestAglaError.class.ts';
 
 // Test cases
 /**
@@ -32,7 +32,7 @@ describe('Complete Workflows', () => {
   describe('Error chaining workflow', () => {
     // Test: Complete chaining workflow with message, property, and context handling
     it('combines messages, preserves errorType, and merges context', () => {
-      const originalError = new TestAglaError(
+      const originalError = new BasicAglaError(
         'WORKFLOW_ERROR',
         'Original workflow message',
         {
@@ -89,7 +89,7 @@ describe('Complete Workflows', () => {
         system: { hostname: 'server01', pid: 1234, memory: 512 },
       };
 
-      const error = new TestAglaError(
+      const error = new BasicAglaError(
         'COMPLEX_SERIALIZATION_ERROR',
         'Complex data serialization test',
         {
