@@ -23,12 +23,17 @@ import { createMockFormatter, MockFormatter } from '../MockFormatter';
 import { AgLoggerConfig } from '../../../internal/AgLoggerConfig.class';
 
 /**
- * MockFormatter Test Suite
- *
- * atsushifx式BDD厳格プロセスに従い、it/expect単位でテストケースを分割
- * Red-Green-Refactorサイクルを維持した実装
+ * @suite MockFormatter Function | Unit
+ * @description Tests for createMockFormatter function basic behavior and routines
+ * @testType unit
+ * Scenarios: Custom routine creation, Mock constructor markers, Instance binding, Execution validation, Statistics inheritance
  */
 describe('Feature: createMockFormatter function basic behavior', () => {
+  /**
+   * @context When
+   * @scenario Custom routine provision
+   * @description Test createMockFormatter with custom routine provisions
+   */
   describe('When: providing custom routine to createMockFormatter', () => {
     it('Then: [正常] - should return class constructor when custom routine is provided', () => {
       const customRoutine: AgFormatRoutine = (msg) => `custom: ${msg.message}`;
@@ -90,7 +95,18 @@ describe('Feature: createMockFormatter function basic behavior', () => {
   });
 });
 
+/**
+ * @suite MockFormatter Static Methods | Unit
+ * @description Tests for MockFormatter static methods and preset functionality
+ * @testType unit
+ * Scenarios: Factory methods, JSON presets, Message-only output, Timestamped formatting, Prefixed output, Error throwing
+ */
 describe('Feature: MockFormatter static methods', () => {
+  /**
+   * @context When
+   * @scenario Factory method usage
+   * @description Test withRoutine factory method behavior
+   */
   describe('When: using withRoutine method', () => {
     it('Then: [正常] - should behave same as createMockFormatter', () => {
       const customRoutine: AgFormatRoutine = (msg) => `factory: ${msg.message}`;
@@ -114,6 +130,11 @@ describe('Feature: MockFormatter static methods', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario JSON preset usage
+   * @description Test JSON preset formatter behavior
+   */
   describe('When: using json preset', () => {
     it('Then: [正常] - should output message in JSON format', () => {
       const FormatterClass = MockFormatter.json;
@@ -136,6 +157,11 @@ describe('Feature: MockFormatter static methods', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Message-only preset usage
+   * @description Test message-only preset formatter behavior
+   */
   describe('When: using messageOnly preset', () => {
     it('Then: [正常] - should output message part only', () => {
       const FormatterClass = MockFormatter.messageOnly;
@@ -154,6 +180,11 @@ describe('Feature: MockFormatter static methods', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Timestamped preset usage
+   * @description Test timestamped preset formatter behavior
+   */
   describe('When: using timestamped preset', () => {
     it('Then: [正常] - should output message with timestamp', () => {
       const FormatterClass = MockFormatter.timestamped;
@@ -175,6 +206,11 @@ describe('Feature: MockFormatter static methods', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Prefixed factory usage
+   * @description Test prefixed factory formatter behavior
+   */
   describe('When: using prefixed factory', () => {
     it('Then: [正常] - should output message with specified prefix', () => {
       const FormatterClass = MockFormatter.prefixed('DEBUG');
@@ -193,6 +229,11 @@ describe('Feature: MockFormatter static methods', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Error-throwing formatter usage
+   * @description Test errorThrow dynamic error message formatter behavior
+   */
   describe('When: using errorThrow dynamic error message formatter', () => {
     it('Then: [異常] - should throw Error with default error message', () => {
       const FormatterClass = MockFormatter.errorThrow;
@@ -313,7 +354,18 @@ describe('Feature: MockFormatter static methods', () => {
   });
 });
 
+/**
+ * @suite MockFormatter AgLoggerConfig Integration | Unit
+ * @description Tests for MockFormatter integration with AgLoggerConfig
+ * @testType unit
+ * Scenarios: Config auto-instantiation, JSON formatter integration
+ */
 describe('Feature: AgLoggerConfig integration', () => {
+  /**
+   * @context When
+   * @scenario Config integration
+   * @description Test AgLoggerConfig integration patterns
+   */
   describe('When: integrating with AgLoggerConfig', () => {
     it('Then: [正常] - should auto-instantiate createFormatter in AgLoggerConfig', () => {
       const config = new AgLoggerConfig();

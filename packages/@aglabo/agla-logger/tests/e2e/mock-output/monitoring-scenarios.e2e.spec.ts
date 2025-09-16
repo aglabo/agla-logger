@@ -34,17 +34,17 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  */
 
 /**
- * @suite Monitoring | Infrastructure
- * @description 監視基盤(ログ/メトリクス/相関)の初期化と準備を検証。
+ * @suite Monitoring Scenarios | Performance/User Correlation/Security/Capacity Management
+ * @description 本番監視シナリオ（性能監視・ユーザー相関・セキュリティ検知・容量管理）検証。
  * @testType e2e
- * @coverage メトリクス収集/ログ整形/出力
- * Scenarios:
- * - 収集/整形/出力パスの初期化手順を記録
- * - 主要エンドポイント/ハンドラの有効性を確認
- * Expects:
- * - 計測が可能で、主要経路が健全
+ * Scenarios: Performance Monitoring, User Action Correlation, Security Incident Detection, Capacity Management
  */
 describe('Given: E2E monitoring infrastructure is prepared', () => {
+  /**
+   * @context When
+   * @scenario Monitoring Infrastructure Initialization
+   * @description 監視基盤初期化（ログ・メトリクス・相関）および検証実行。
+   */
   describe('When: initializing and validating monitoring infrastructure', () => {
     // Red Phase: expect import failures before implementation
     // 監視用インポートが適切でない場合の失敗をテストする

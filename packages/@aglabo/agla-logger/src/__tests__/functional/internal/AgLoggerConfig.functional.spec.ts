@@ -42,13 +42,20 @@ import { NullLogger } from '../../../plugins/logger/NullLogger';
 import { validateLogLevel } from '../../../utils/AgLogValidators';
 
 /**
- * Test suite for AgLoggerConfig internal class.
- * Verifies configuration management functionality using BDD structure.
+ * @suite AgLoggerConfig Configuration Management | Functional Tests
+ * @description Comprehensive configuration management functionality testing with secure defaults, validation, and bulk configuration application
+ * @testType functional
+ * Scenarios: Instance creation, Logger retrieval, Configuration updates, Output decision logic, Bulk configuration, Individual logger assignment
  */
 describe('Feature: AgLoggerConfig configuration management functionality', () => {
   // ============================================================================
   // Feature: Initial configuration and default values
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Instance creation
+   * @description Testing AgLoggerConfig instance creation and initialization
+   */
   describe('When: creating new AgLoggerConfig instance', () => {
     it('Then: [正常] - should create instance successfully', () => {
       const config = new AgLoggerConfig();
@@ -56,6 +63,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Default configuration values
+   * @description Testing access to default configuration values (NullLogger, NullFormatter, OFF level, verbose false)
+   */
   describe('When: accessing default configuration values', () => {
     it('Then: [正常] - should return NullLogger as default logger', () => {
       const config = new AgLoggerConfig();
@@ -97,6 +109,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Logger function retrieval functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Valid logger retrieval
+   * @description Testing logger function retrieval for valid log levels
+   */
   describe('When: requesting logger for valid log levels', () => {
     it('Then: [正常] - should return configured logger for each level', () => {
       const config = new AgLoggerConfig();
@@ -112,6 +129,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Invalid logger retrieval
+   * @description Testing logger function retrieval for invalid log levels with graceful fallback
+   */
   describe('When: requesting logger for invalid log levels', () => {
     it('Then: [異常] - should return NullLogger for boundary violations', () => {
       const config = new AgLoggerConfig();
@@ -145,6 +167,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Configuration getter functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Configuration property access
+   * @description Testing access to configuration properties (formatter, logLevel, verbose)
+   */
   describe('When: accessing configuration properties', () => {
     it('Then: [正常] - should return configured formatter', () => {
       const config = new AgLoggerConfig();
@@ -166,6 +193,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Configuration update functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Log level configuration updates
+   * @description Testing log level configuration updates with validation
+   */
   describe('When: updating log level configuration', () => {
     it('Then: [正常] - should update to valid log levels', () => {
       const config = new AgLoggerConfig();
@@ -220,6 +252,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Verbose configuration updates
+   * @description Testing verbose flag configuration updates and state management
+   */
   describe('When: updating verbose configuration', () => {
     it('Then: [正常] - should update verbose flag correctly', () => {
       const config = new AgLoggerConfig();
@@ -253,6 +290,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Log output decision functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Log level output eligibility
+   * @description Testing log output decision logic based on level hierarchy
+   */
   describe('When: checking output eligibility by log level', () => {
     it('Then: [正常] - should respect log level hierarchy', () => {
       const config = new AgLoggerConfig();
@@ -296,6 +338,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Verbose output eligibility
+   * @description Testing verbose output decision logic
+   */
   describe('When: checking verbose output eligibility', () => {
     it('Then: [正常] - should return true when verbose enabled', () => {
       const config = new AgLoggerConfig();
@@ -325,6 +372,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Bulk configuration application functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Bulk configuration application
+   * @description Testing bulk configuration application via setLoggerConfig method
+   */
   describe('When: applying configuration via setLoggerConfig', () => {
     it('Then: [正常] - should handle empty options gracefully', () => {
       const config = new AgLoggerConfig();
@@ -422,6 +474,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Complex configuration combinations
+   * @description Testing complex configuration scenarios with defaultLogger and loggerMap interactions
+   */
   describe('When: applying complex configuration combinations', () => {
     it('Then: [正常] - should allow loggerMap to override defaultLogger for specified levels', () => {
       const config = new AgLoggerConfig();
@@ -540,6 +597,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Log level validation functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Log level validation
+   * @description Testing log level validation functionality with error handling
+   */
   describe('When: validating log levels', () => {
     it('Then: [正常] - should accept valid log levels', () => {
       // Test all valid log levels
@@ -571,6 +633,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
   // ============================================================================
   // Feature: Individual logger configuration functionality
   // ============================================================================
+  /**
+   * @context When
+   * @scenario Individual logger configuration
+   * @description Testing individual logger assignment for specific levels
+   */
   describe('When: setting logger for specific levels', () => {
     it('Then: [正常] - should have setLogger method that can be called', () => {
       const config = new AgLoggerConfig();
@@ -649,6 +716,11 @@ describe('Feature: AgLoggerConfig configuration management functionality', () =>
     });
   });
 
+  /**
+   * @context When
+   * @scenario Invalid logger configuration
+   * @description Testing error handling for invalid logger configuration parameters
+   */
   describe('When: attempting to set logger with invalid parameters', () => {
     it('Then: [異常] - should reject invalid log levels', () => {
       const config = new AgLoggerConfig();

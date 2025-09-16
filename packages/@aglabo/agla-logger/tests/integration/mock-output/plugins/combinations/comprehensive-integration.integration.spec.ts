@@ -47,21 +47,23 @@ const setupTest = (ctx: TestContext): { mockLogger: E2eMockLogger } => {
 };
 
 /**
- * AgLogger E2eMockLogger Integration Tests
- *
+ * @suite Mock Output Comprehensive Integration | Integration
  * @description AgLoggerとE2eMockLoggerのシステム間連携統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: システム統合基本操作, 複雑データ処理, JSON出力統合, 高負荷処理, ログレベル管理
  */
 describe('Mock Output Comprehensive Integration', () => {
   /**
-   * Given: PlainFormatter統合シナリオが存在する場合
-   * When: 基本ログ操作が実行された時
-   * Then: 包括的なメッセージ検証で正しく統合される
-   *
-   * @description PlainFormatterとE2eMockLoggerの基本統合動作テスト
-   * システム間連携での基本ログレベル動作と内容検証を実施
+   * @context Given
+   * @scenario システム統合基本操作
+   * @description 完全なシステム統合シナリオが存在する場合のテスト
    */
   describe('Given complete system integration scenarios', () => {
+    /**
+     * @context When
+     * @scenario PlainFormatter基本操作統合
+     * @description PlainFormatterを使用した基本操作実行時のテスト
+     */
     describe('When using plain formatter with basic operations', () => {
       it('Then: [正常] - should integrate formatting with data handling seamlessly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
@@ -93,6 +95,11 @@ describe('Mock Output Comprehensive Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 複雑データ処理統合
+     * @description 複雑なデータオブジェクトを処理する時のテスト
+     */
     describe('When processing complex data objects', () => {
       it('Then: [正常] - should integrate formatting with complex data correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
@@ -120,14 +127,16 @@ describe('Mock Output Comprehensive Integration', () => {
   });
 
   /**
-   * Given: JsonFormatter統合シナリオが存在する場合
-   * When: JSON出力処理が実行された時
-   * Then: JSON構造と高頻度ログの検証で正しく統合される
-   *
-   * @description JsonFormatterとE2eMockLoggerの統合動作テスト
-   * JSON出力形式でのシステム間連携と高頻度ログ処理性能を検証
+   * @context Given
+   * @scenario フォーマッターとロガー組み合わせ
+   * @description フォーマッターとロガーの組み合わせが存在する場合のテスト
    */
   describe('Given formatter and logger combinations', () => {
+    /**
+     * @context When
+     * @scenario JSON出力統合処理
+     * @description JSON出力とモックロガーの連携処理時のテスト
+     */
     describe('When coordinating JSON output with mock logger', () => {
       it('Then: [正常] - should produce structured output correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);
@@ -152,6 +161,11 @@ describe('Mock Output Comprehensive Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 高負荷ログ処理
+     * @description 大容量ログ操作を処理する時のテスト
+     */
     describe('When processing high-volume logging operations', () => {
       it('Then: [エッジケース] - should maintain performance under load conditions', (ctx) => {
         const { mockLogger } = setupTest(ctx);
@@ -179,14 +193,16 @@ describe('Mock Output Comprehensive Integration', () => {
   });
 
   /**
-   * Given: ログレベル管理シナリオが存在する場合
-   * When: ログフィルタリングと動的変更が適用された時
-   * Then: 統合環境で正しくログをフィルタリングし、実行時変更を処理する
-   *
-   * @description ログレベル管理でのシステム間連携テスト
-   * フィルタリング動作と動的レベル変更での統合動作を検証
+   * @context Given
+   * @scenario ログレベル管理統合
+   * @description ログレベル管理シナリオが存在する場合のテスト
    */
   describe('Given log level management scenarios', () => {
+    /**
+     * @context When
+     * @scenario レベル変更とフォーマッター連携
+     * @description アクティブなフォーマッターでログレベル変更を管理する時のテスト
+     */
     describe('When managing log level changes with active formatters', () => {
       it('Then: [正常] - should synchronize level changes across components', (ctx) => {
         const { mockLogger } = setupTest(ctx);
@@ -209,6 +225,11 @@ describe('Mock Output Comprehensive Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 動的レベル変更処理
+     * @description 動的レベル変更が発生する時のテスト
+     */
     describe('When dynamic level changes occur', () => {
       it('Then: [正常] - should handle runtime level changes correctly', (ctx) => {
         const { mockLogger } = setupTest(ctx);

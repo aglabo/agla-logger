@@ -27,10 +27,10 @@ import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
 
 /**
- * Mock Plugin Combinations Integration Tests
- *
+ * @suite Mock Output Plugin Combination Integration | Integration
  * @description Mock出力でのフォーマッターとロガーの組み合わせ統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: 高負荷プラグイン組み合わせ, 複雑データ処理, エラー復旧, 初期化エッジケース, 状態管理
  */
 describe('Mock Output Plugin Combination Integration', () => {
   const setupTestContext = (_ctx?: TestContext): {
@@ -55,11 +55,16 @@ describe('Mock Output Plugin Combination Integration', () => {
   };
 
   /**
-   * Given: 高負荷処理環境でプラグイン組み合わせが使用される場合
-   * When: 大量のログメッセージを処理した時
-   * Then: 組み合わせでも安定したパフォーマンスを維持する
+   * @context Given
+   * @scenario 高負荷プラグイン組み合わせ
+   * @description 高負荷処理環境でプラグイン組み合わせが使用される場合のテスト
    */
   describe('Given high-load plugin combinations', () => {
+    /**
+     * @context When
+     * @scenario 高負荷時プラグイン組み合わせ
+     * @description 負荷状態で複数プラグインを組み合わせる時のテスト
+     */
     describe('When combining multiple plugins under load', () => {
       // 目的: 高頻度ログ出力時の組み合わせ処理性能
       it('Then: [エッジケース] - should maintain stability and performance across all plugins', () => {
@@ -90,6 +95,11 @@ describe('Mock Output Plugin Combination Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario フィルターとプラグイン組み合わせ
+     * @description アクティブなプラグイン組み合わせでフィルターを適用する時のテスト
+     */
     describe('When applying filters with active plugin combinations', () => {
       // 目的: フィルタリングによる出力抑制時の組み合わせ低オーバーヘッド
       it('Then: [正常] - should coordinate filtering behavior across all components', () => {
@@ -122,11 +132,16 @@ describe('Mock Output Plugin Combination Integration', () => {
   });
 
   /**
-   * Given: 複雑データ処理でプラグイン組み合わせが使用される場合
-   * When: 複雑データ構造を各組み合わせで処理した時
-   * Then: データ整合性を保って適切に処理される
+   * @context Given
+   * @scenario 複雑データプラグイン組み合わせ
+   * @description 複雑データ処理でプラグイン組み合わせが使用される場合のテスト
    */
   describe('Given complex data plugin combinations', () => {
+    /**
+     * @context When
+     * @scenario 複雑データプラグイン処理
+     * @description プラグイン組み合わせで複雑データを処理する時のテスト
+     */
     describe('When processing complex data through plugin combinations', () => {
       // 目的: 複雑オブジェクトを各プラグイン組合せで安定処理
       it('Then: [正常] - should handle data complexity across all plugin layers', () => {
@@ -182,6 +197,11 @@ describe('Mock Output Plugin Combination Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 大容量データセット処理
+     * @description 組み合わせで大容量データセットを処理する時のテスト
+     */
     describe('When processing large data sets across combinations', () => {
       // 目的: 大規模データ引数での組み合わせ性能検証
       it('Then: [エッジケース] - should handle large data sets efficiently across combinations', () => {
@@ -212,11 +232,16 @@ describe('Mock Output Plugin Combination Integration', () => {
   });
 
   /**
-   * Given: エラー復旧が必要な環境でプラグイン組み合わせが使用される場合
-   * When: 組み合わせ内でエラーが発生した時
-   * Then: 適切なエラー処理と復旧が行われる
+   * @context Given
+   * @scenario エラー復旧プラグイン組み合わせ
+   * @description エラー復旧が必要な環境でプラグイン組み合わせが使用される場合のテスト
    */
   describe('Given error recovery plugin combinations', () => {
+    /**
+     * @context When
+     * @scenario プラグイン組み合わせエラー発生
+     * @description プラグインが組み合わせでエラーに遇遇する時のテスト
+     */
     describe('When plugins encounter errors in combination', () => {
       // 目的: ロガー側エラー時でもフォーマッター呼出は実施
       it('Then: [異常] - should provide coordinated error recovery behavior', () => {
@@ -241,6 +266,11 @@ describe('Mock Output Plugin Combination Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario プラグインエラー復旧
+     * @description プラグインがエラーから復旧する時のテスト
+     */
     describe('When plugins recover from errors', () => {
       // 目的: プラグインエラー発生後もシステム安定性を維持
       it('Then: [正常] - should maintain system stability after combination errors', () => {
@@ -276,11 +306,16 @@ describe('Mock Output Plugin Combination Integration', () => {
   });
 
   /**
-   * Given: プラグイン初期化エッジケースが存在する場合
-   * When: プラグイン初期化時に予期しない状況が発生した時
-   * Then: 適切なエラー処理と復旧が実行される
+   * @context Given
+   * @scenario プラグイン初期化エッジケース
+   * @description プラグイン初期化エッジケースが存在する場合のテスト
    */
   describe('Given plugin initialization edge cases', () => {
+    /**
+     * @context When
+     * @scenario 初期化フェーズプラグイン失敗
+     * @description プラグインが初期化フェーズで失敗する時のテスト
+     */
     describe('When plugins fail during initialization phase', () => {
       // 目的: フォーマッター実行時失敗の適切なエラーハンドリング
       it('Then: [異常] - should handle formatter execution failures gracefully', () => {
@@ -364,6 +399,11 @@ describe('Mock Output Plugin Combination Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario プラグイン設定不整合発生
+     * @description プラグイン設定の不整合が発生する時のテスト
+     */
     describe('When plugin configuration inconsistencies occur', () => {
       // 目的: 設定オブジェクト不整合検出と修正
       it('Then: [正常] - should detect and handle configuration inconsistencies', () => {
@@ -446,6 +486,11 @@ describe('Mock Output Plugin Combination Integration', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario プラグイン状態管理エッジケース
+     * @description プラグイン状態管理がエッジケースに遇遇する時のテスト
+     */
     describe('When plugin state management encounters edge cases', () => {
       // 目的: プラグイン状態リセット時の一貫性
       it('Then: [正常] - should maintain plugin state consistency during resets', () => {

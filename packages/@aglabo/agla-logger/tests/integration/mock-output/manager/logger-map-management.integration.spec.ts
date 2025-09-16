@@ -13,6 +13,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AG_LOGLEVEL } from '@shared/types';
 import type { AgLoggerFunction, AgLogLevel } from '@shared/types';
 import type { AgLoggerMap } from '@shared/types';
+import type { AgMockConstructor } from '@shared/types';
 
 // テスト対象: マネージャ本体
 import { AgLoggerManager } from '@/AgLoggerManager.class';
@@ -27,13 +28,18 @@ import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
 import { NullLogger } from '@/plugins/logger/NullLogger';
 
 /**
- * AgLoggerManager Management Logger Map Integration Tests
- *
+ * @suite Mock Output Logger Map Management Integration | Integration
  * @description ロガーマップ管理機能の統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: ロガーマップ設定変更, 設定エッジケース, 動的ロガーマップ更新
  */
 describe('Mock Output Logger Map Management Integration', () => {
-  const setupTestContext = (): { mockLogger: AgMockBufferLogger; mockFormatter: typeof MockFormatter.passthrough } => {
+  /**
+   * テスト回使用setup
+   *
+   * @returns {{ mockLogger: AgMockBufferLogger; mockFormatter: typeof MockFormatter.passthrough }}
+   */
+  const setupTestContext = (): { mockLogger: AgMockBufferLogger; mockFormatter: AgMockConstructor } => {
     vi.clearAllMocks();
     // Reset singleton instance for clean test state
     AgLoggerManager.resetSingleton();
@@ -45,12 +51,17 @@ describe('Mock Output Logger Map Management Integration', () => {
   };
 
   /**
-   * Given: 複雑なロガーマップ設定が存在する場合
-   * When: 完全なロガーマップを上書き設定した時
-   * Then: 各レベルで適切なロガーが使用される
+   * @context Given
+   * @scenario ロガーマップ設定変更
+   * @description ロガーマップ設定変更が存在する環境での複雑なロガーマップ設定の完全上書きと部分更新を検証
    */
-  describe('Given logger map configuration changes', () => {
-    describe('When performing complete map override', () => {
+  describe('Given: logger map configuration changes', () => {
+    /**
+     * @context When
+     * @scenario 完全マップ上書き実行
+     * @description 完全マップ上書きを実行した時のロガーマップ全面上書きの適用を検証
+     */
+    describe('When: performing complete map override', () => {
       // 目的: ロガーマップ全面上書きの適用確認
       it('Then: [正常] - should replace entire configuration cleanly', () => {
         setupTestContext();
@@ -92,7 +103,12 @@ describe('Mock Output Logger Map Management Integration', () => {
       });
     });
 
-    describe('When applying partial configuration updates', () => {
+    /**
+     * @context When
+     * @scenario 部分的設定更新適用
+     * @description 部分的設定更新を適用した時の部分的なロガーマップ適用時のフォールバックを検証
+     */
+    describe('When: applying partial configuration updates', () => {
       // 目的: 部分的なロガーマップ適用時のフォールバック確認
       it('Then: [正常] - should merge new settings with existing configuration', () => {
         setupTestContext();
@@ -133,12 +149,17 @@ describe('Mock Output Logger Map Management Integration', () => {
   });
 
   /**
-   * Given: ロガーマップが未設定の環境が存在する場合
-   * When: マップエントリーが存在しないレベルにアクセスした時
-   * Then: デフォルトロガーへのフォールバックが発生する
+   * @context Given
+   * @scenario 設定エッジケース
+   * @description 設定エッジケースが存在する環境でのロガーマップ未設定や空設定時のデフォルトロガーフォールバックを検証
    */
-  describe('Given configuration edge cases', () => {
-    describe('When handling missing configuration entries', () => {
+  describe('Given: configuration edge cases', () => {
+    /**
+     * @context When
+     * @scenario 設定エントリ缺損処理
+     * @description 設定エントリが缺損した時のマップ未設定レベルでのdefaultロガーフォールバックを検証
+     */
+    describe('When: handling missing configuration entries', () => {
       // 目的: マップ未設定レベルでのdefaultロガーへのフォールバック
       it('Then: [正常] - should provide appropriate fallback behavior', () => {
         setupTestContext();
@@ -161,7 +182,12 @@ describe('Mock Output Logger Map Management Integration', () => {
       });
     });
 
-    describe('When processing empty logger map configuration', () => {
+    /**
+     * @context When
+     * @scenario 空ロガーマップ設定処理
+     * @description 空ロガーマップ設定を処理した時の空のロガーマップ指定時の適切な処理を検証
+     */
+    describe('When: processing empty logger map configuration', () => {
       // 目的: 空のロガーマップ指定時の挙動確認
       it('Then: [エッジケース] - should manage empty configurations without system failure', () => {
         setupTestContext();
@@ -190,12 +216,17 @@ describe('Mock Output Logger Map Management Integration', () => {
   });
 
   /**
-   * Given: undefined値を含むロガーマップが存在する場合
-   * When: undefined値のマップエントリーにアクセスした時
-   * Then: デフォルトロガーへの安全なフォールバックが発生する
+   * @context Given
+   * @scenario 設定エッジケース
+   * @description 設定エッジケースが存在する環境でのundefined値を含むロガーマップの安全なフォールバックを検証
    */
-  describe('Given configuration edge cases', () => {
-    describe('When processing undefined values', () => {
+  describe('Given: configuration edge cases', () => {
+    /**
+     * @context When
+     * @scenario undefined値処理
+     * @description undefined値を処理した時のロガーマップにundefinedを含む場合の安定性を検証
+     */
+    describe('When: processing undefined values', () => {
       // 目的: ロガーマップにundefinedを含む場合の安定性
       it('Then: [エッジケース] - should handle undefined inputs gracefully', () => {
         setupTestContext();
@@ -222,12 +253,17 @@ describe('Mock Output Logger Map Management Integration', () => {
   });
 
   /**
-   * Given: ロガーマップの動的更新が必要な環境が存在する場合
-   * When: 実行時にロガーマップを更新した時
-   * Then: 既存のロガーインスタンスに変更が即座に反映される
+   * @context Given
+   * @scenario 動的ロガーマップ更新
+   * @description 動的ロガーマップ更新が必要な環境での実行時ロガーマップ更新の即座反映と継続更新を検証
    */
-  describe('Given dynamic logger map updates are required', () => {
-    describe('When updating logger map at runtime', () => {
+  describe('Given: dynamic logger map updates are required', () => {
+    /**
+     * @context When
+     * @scenario 実行時ロガーマップ更新
+     * @description 実行時にロガーマップを更新した時の動的なロガーマップ更新の即時反映を検証
+     */
+    describe('When: updating logger map at runtime', () => {
       // 目的: 動的なロガーマップ更新の即時反映
       it('Then: [正常] - should immediately apply logger map updates to existing instances', () => {
         setupTestContext();
@@ -260,7 +296,12 @@ describe('Mock Output Logger Map Management Integration', () => {
       });
     });
 
-    describe('When performing multiple sequential logger map updates', () => {
+    /**
+     * @context When
+     * @scenario 複数連続ロガーマップ更新実行
+     * @description 複数連続ロガーマップ更新を実行した時の連続的なマップ更新の累積効果を検証
+     */
+    describe('When: performing multiple sequential logger map updates', () => {
       // 目的: 連続的なマップ更新の累積効果
       it('Then: [正常] - should handle sequential map updates with cumulative effects', () => {
         setupTestContext();

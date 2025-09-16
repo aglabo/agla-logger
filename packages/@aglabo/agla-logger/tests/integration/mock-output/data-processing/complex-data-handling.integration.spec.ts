@@ -21,7 +21,7 @@ import { AgLogger } from '@/AgLogger.class';
 import { createMockFormatter, MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types';
 
 // type definitions
 /**
@@ -62,19 +62,24 @@ const setupTestContext = (_ctx?: TestContext): {
 };
 
 /**
- * AgLogger Data Handling Complex Data Integration Tests
- *
+ * @suite Mock Output Complex Data Handling Integration | Integration
  * @description 循環参照オブジェクトなど特殊データの統合処理テスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: 複雑データ構造処理, 特殊データ値処理
  */
 describe('Mock Output Complex Data Handling Integration', () => {
   /**
-   * Given: 循環参照オブジェクトが存在する場合
-   * When: 循環参照を含むデータをログ出力した時
-   * Then: 安全に処理され、システムが継続動作する
+   * @context Given
+   * @scenario 複雑データ構造処理
+   * @description 複雑データ構造が存在する場合の循環参照や深いネストを含むデータの安全な処理を検証
    */
-  describe('Given complex data structures exist', () => {
-    describe('When processing circular references', () => {
+  describe('Given: complex data structures exist', () => {
+    /**
+     * @context When
+     * @scenario 循環参照処理
+     * @description 循環参照を処理した時の安全な処理とシステム継続動作を検証
+     */
+    describe('When: processing circular references', () => {
       // 目的: 循環参照を含むデータでも安全に処理継続
       it('Then: [正常] - should handle circular references safely without infinite loops', (_ctx) => {
         const { mockLogger } = setupTestContext();
@@ -114,7 +119,12 @@ describe('Mock Output Complex Data Handling Integration', () => {
       });
     });
 
-    describe('When processing nested circular structures', () => {
+    /**
+     * @context When
+     * @scenario ネスト循環構造処理
+     * @description ネストした循環構造を処理した時の安全な処理を検証
+     */
+    describe('When: processing nested circular structures', () => {
       // 目的: 複雑にネストした循環参照の安全な処理
       it('Then: [正常] - should safely handle deeply nested circular structures', (_ctx) => {
         const { mockLogger } = setupTestContext(_ctx);
@@ -168,12 +178,17 @@ describe('Mock Output Complex Data Handling Integration', () => {
   });
 
   /**
-   * Given: 深くネストしたオブジェクト構造が存在する場合
-   * When: 深いネスト構造のデータをログ出力した時
-   * Then: スタックオーバーフローなく安全に処理される
+   * @context Given
+   * @scenario 複雑データ構造処理
+   * @description 複雑データ構造が存在する場合の深いネストオブジェクトのスタックオーバーフローなしの安全な処理を検証
    */
-  describe('Given complex data structures exist', () => {
-    describe('When processing deeply nested objects', () => {
+  describe('Given: complex data structures exist', () => {
+    /**
+     * @context When
+     * @scenario 深いネストオブジェクト処理
+     * @description 深いネストオブジェクトを処理した時のスタックオーバーフローなしの安全な処理を検証
+     */
+    describe('When: processing deeply nested objects', () => {
       // 目的: 深くネストしたオブジェクトの安全な処理
       it('Then: [エッジケース] - should handle deeply nested objects without stack overflow', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
@@ -206,12 +221,17 @@ describe('Mock Output Complex Data Handling Integration', () => {
   });
 
   /**
-   * Given: カスタムプロパティ付きErrorオブジェクトが存在する場合
-   * When: 複雑なErrorオブジェクトをログ出力した時
-   * Then: Error固有プロパティも含めて適切に処理される
+   * @context Given
+   * @scenario 特殊データ値処理
+   * @description 特殊データ値が存在する場合のカスタムプロパティ付きErrorオブジェクトの適切な処理を検証
    */
-  describe('Given special data values exist', () => {
-    describe('When processing custom error objects', () => {
+  describe('Given: special data values exist', () => {
+    /**
+     * @context When
+     * @scenario カスタムエラーオブジェクト処理
+     * @description カスタムエラーオブジェクトを処理した時のError固有プロパティを含めた適切な処理を検証
+     */
+    describe('When: processing custom error objects', () => {
       // 目的: カスタムプロパティ付きErrorの取り扱い
       it('Then: [正常] - should extract error information properly', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
@@ -258,12 +278,17 @@ describe('Mock Output Complex Data Handling Integration', () => {
   });
 
   /**
-   * Given: 特殊なJavaScriptオブジェクトが存在する場合
-   * When: 特殊オブジェクト（undefined, null, Symbol等）をログ出力した時
-   * Then: 型安全に処理され、適切な文字列表現が生成される
+   * @context Given
+   * @scenario 特殊データ値処理
+   * @description 特殊データ値が存在する場合の特殊なJavaScriptオブジェクト（undefined, null, Symbol等）の型安全な処理を検証
    */
-  describe('Given special data values exist', () => {
-    describe('When processing undefined and null values', () => {
+  describe('Given: special data values exist', () => {
+    /**
+     * @context When
+     * @scenario undefinedとnull値処理
+     * @description undefinedとnull値を処理した時の型安全な処理と適切な文字列表現生成を検証
+     */
+    describe('When: processing undefined and null values', () => {
       // 目的: 特殊JavaScript値の安全な処理
       it('Then: [エッジケース] - should handle special values appropriately', (_ctx) => {
         const { mockLogger } = setupTestContext();

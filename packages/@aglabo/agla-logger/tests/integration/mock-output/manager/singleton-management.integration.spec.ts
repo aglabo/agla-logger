@@ -11,6 +11,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 // Shared types and constants: log levels and type definitions
 import { AG_LOGLEVEL } from '@shared/types';
+import type { AgMockConstructor } from '@shared/types';
 
 // Test targets: main classes under test
 import { AgLoggerManager } from '@/AgLoggerManager.class';
@@ -22,13 +23,18 @@ import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
 
 /**
- * AgLoggerManager Management Singleton Integration Tests
- *
+ * @suite Mock Output Singleton Management Integration | Integration
  * @description マネージャーのシングルトン動作を保証する統合テスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: 複数アクセスポイント, 初期化競合, シングルトン状態一貫性
  */
 describe('Mock Output Singleton Management Integration', () => {
-  const setupTestContext = (): { mockLogger: AgMockBufferLogger; mockFormatter: typeof MockFormatter.passthrough } => {
+  /**
+   * テスト開始用setup
+   *
+   * @returns {{ mockLogger: AgMockBufferLogger; mockFormatter: AgMockConstructor }}
+   */
+  const setupTestContext = (): { mockLogger: AgMockBufferLogger; mockFormatter: AgMockConstructor } => {
     vi.clearAllMocks();
     // Reset singleton instance for clean test state
     AgLoggerManager.resetSingleton();
@@ -40,12 +46,17 @@ describe('Mock Output Singleton Management Integration', () => {
   };
 
   /**
-   * Given: AgLoggerManagerの複数アクセスパターンが存在する場合
-   * When: 異なる方法でマネージャーにアクセスした時
-   * Then: 同一のシングルトンインスタンスが返される
+   * @context Given
+   * @scenario 複数アクセスポイント
+   * @description 複数アクセスポイントが存在する環境でのAgLoggerManagerの異なる方法でのアクセス時の同一シングルトンインスタンス取得を検証
    */
-  describe('Given multiple access points to manager', () => {
-    describe('When accessing manager from different contexts', () => {
+  describe('Given: multiple access points to manager', () => {
+    /**
+     * @context When
+     * @scenario 異なるコンテキストからのマネージャーアクセス
+     * @description 異なるコンテキストからマネージャーにアクセスした時のgetManager呼び出し間でのシングルトン性維持を検証
+     */
+    describe('When: accessing manager from different contexts', () => {
       // 目的: getManager呼び出し間でシングルトン性が維持される
       it('Then: [正常] - should return identical singleton instance consistently', () => {
         setupTestContext();
@@ -62,7 +73,12 @@ describe('Mock Output Singleton Management Integration', () => {
       });
     });
 
-    describe('When accessing configuration from multiple instances', () => {
+    /**
+     * @context When
+     * @scenario 複数インスタンスからの設定アクセス
+     * @description 複数インスタンスから設定にアクセスした時の複数回アクセス時の設定一貫性維持を検証
+     */
+    describe('When: accessing configuration from multiple instances', () => {
       // 目的: 複数回アクセス時に設定の一貫性が保たれる
       it('Then: [正常] - should maintain consistent configuration across access attempts', () => {
         setupTestContext();
@@ -87,12 +103,17 @@ describe('Mock Output Singleton Management Integration', () => {
   });
 
   /**
-   * Given: マネージャーの初期化競合シナリオが存在する場合
-   * When: 複数回の初期化を試行した時
-   * Then: 最初の初期化のみが有効となり、後続は適切にエラーとなる
+   * @context Given
+   * @scenario 初期化競合
+   * @description 初期化競合シナリオが存在する環境での複数回初期化試行時の最初初期化のみ有効、後続エラー処理を検証
    */
-  describe('Given initialization conflicts', () => {
-    describe('When encountering concurrent initialization attempts', () => {
+  describe('Given: initialization conflicts', () => {
+    /**
+     * @context When
+     * @scenario 同時初期化試行遇遇
+     * @description 同時初期化試行に遷遇した時の複数回初期化パラメータ指定での設定更新適切な処理を検証
+     */
+    describe('When: encountering concurrent initialization attempts', () => {
       // 目的: 複数回の初期化パラメータ指定で設定が更新される挙動を確認
       it('Then: [異常] - should handle initialization conflicts gracefully', () => {
         setupTestContext();
@@ -118,7 +139,12 @@ describe('Mock Output Singleton Management Integration', () => {
       });
     });
 
-    describe('When initialization occurs after singleton reset', () => {
+    /**
+     * @context When
+     * @scenario シングルトンリセット後の初期化
+     * @description シングルトンリセット後に初期化が発生した時のリセット後の再初期化正常動作を検証
+     */
+    describe('When: initialization occurs after singleton reset', () => {
       // 目的: リセット後の再初期化が正常動作することを確認
       it('Then: [正常] - should allow re-initialization after singleton reset', () => {
         setupTestContext();
@@ -144,12 +170,17 @@ describe('Mock Output Singleton Management Integration', () => {
   });
 
   /**
-   * Given: マネージャー状態の一貫性が重要な環境が存在する場合
-   * When: 状態変更と参照取得を並行して実行した時
-   * Then: 状態の一貫性が維持される
+   * @context Given
+   * @scenario シングルトン状態一貫性要件
+   * @description シングルトン状態一貫性要件が重要な環境での状態変更と参照取得並行実行時の状態一貫性維持を検証
    */
-  describe('Given singleton state consistency requirements', () => {
-    describe('When verifying state consistency across access points', () => {
+  describe('Given: singleton state consistency requirements', () => {
+    /**
+     * @context When
+     * @scenario アクセスポイント間の状態一貫性検証
+     * @description アクセスポイント間で状態一貫性を検証した時の並行アクセス時のマネージャー状態一貫性を検証
+     */
+    describe('When: verifying state consistency across access points', () => {
       // 目的: 並行アクセス時のマネージャー状態一貫性
       it('Then: [エッジケース] - should maintain consistent state regardless of access method', () => {
         setupTestContext();

@@ -40,8 +40,16 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  * Scenarios: Development→Production, Multi-Consumer Support, Format Optimization, Legacy Integration
  */
 describe('Output Formatting Scenarios', () => {
+  /**
+   * @context Given
+   * @scenario Production Format Management
+   * @description 本番フォーマット管理要件を前提とする（Plain/JSON相互移行・複数消費者対応）。
+   */
   describe('Given production format management requirements', () => {
-    // Development to Production（Plain→JSON移行）
+    /**
+     * @scenario Development→Production Migration
+     * @description 開発環境から本番環境への移行時のフォーマット切り替え（Plain→JSON）検証。
+     */
     describe('When migrating from development to production', () => {
       // Plain→JSON 切替後に2件目がJSONで出力される
       it('Then: [正常] - should output JSON after switching from Plain', (_ctx) => {
@@ -66,7 +74,10 @@ describe('Output Formatting Scenarios', () => {
       });
     });
 
-    // Multi-Consumer Support（汎用log/JSON基礎）
+    /**
+     * @scenario Multi-Consumer Support
+     * @description 複数ログ消費者対応（監視・分析・デバッグシステム向けフォーマット）検証。
+     */
     describe('When supporting multiple log consumers', () => {
       // JsonFormatterでINFOが1回出力
       it('Then: [正常] - should output a single INFO with JsonFormatter', (_ctx) => {
@@ -109,7 +120,10 @@ describe('Output Formatting Scenarios', () => {
       });
     });
 
-    // Format Optimization（レベル別フォーマット最適化）
+    /**
+     * @scenario Format Optimization by Log Level
+     * @description レベル別フォーマット最適化（パフォーマンス vs. 可読性バランス）検証。
+     */
     describe('When optimizing formatting by log level', () => {
       // INFOのフォーマットが正しい（Plain）
       it('Then: [正常] - should format INFO correctly', (_ctx) => {
@@ -150,7 +164,10 @@ describe('Output Formatting Scenarios', () => {
       });
     });
 
-    // Legacy Integration（JSON→Plain移行）
+    /**
+     * @scenario Legacy Integration Support
+     * @description レガシーシステム統合対応（JSON→Plain逆方向移行）検証。
+     */
     describe('When switching back for legacy integration', () => {
       // JSON→Plain 切替後に2件目がPlainで出力される
       it('Then: [正常] - should output Plain after switching from JSON', (_ctx) => {

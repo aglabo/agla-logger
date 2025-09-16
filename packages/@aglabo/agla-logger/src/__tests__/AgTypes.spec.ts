@@ -21,15 +21,17 @@ import type { AgFormatFunction, AgLoggerOptions, AgLogLevel, AgLogMessage } from
 import { AgLoggerError } from '../../shared/types';
 
 /**
- * AgLogger Type System Consolidated Test Suite
- *
- * @description Comprehensive tests for all type definitions and interfaces
- * Organized by type category with behavioral testing
- */
-/**
- * Given: AgLogLevel type definitions
+ * @suite AgLogger Type System | Unit Tests
+ * @description Comprehensive testing of AgLogger type definitions, interfaces, and type compatibility
+ * @testType unit
+ * Scenarios: LogLevel types, LogMessage types, LoggerOptions types, LoggerError types, Error base interface, Type integration
  */
 describe('Given AgLogLevel type definitions', () => {
+  /**
+   * @context When
+   * @scenario Enum values verification
+   * @description Testing AgLogLevel enum values and their numeric mappings
+   */
   describe('When verifying enum values', () => {
     it('Then: [正常] - should have all expected log level values', () => {
       const expectedLogLevels = [
@@ -68,6 +70,11 @@ describe('Given AgLogLevel type definitions', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Type compatibility verification
+   * @description Testing AgLogLevel type compatibility and usage patterns
+   */
   describe('When verifying type compatibility', () => {
     it('Then: [正常] - should accept valid AgLogLevel values', () => {
       const validLevels: AgLogLevel[] = [
@@ -93,7 +100,18 @@ describe('Given AgLogLevel type definitions', () => {
 /**
  * Given: AgLogMessage type definitions
  */
+/**
+ * @suite AgLogMessage Type Definitions | Unit Tests
+ * @description Testing AgLogMessage interface structure and property validation
+ * @testType unit
+ * Scenarios: Message structure verification
+ */
 describe('Given AgLogMessage type definitions', () => {
+  /**
+   * @context When
+   * @scenario Message structure verification
+   * @description Testing AgLogMessage interface properties and structure validation
+   */
   describe('When verifying message structure', () => {
     it('Then: [正常] - should create valid AgLogMessage with required properties', () => {
       const logMessage: AgLogMessage = {
@@ -147,7 +165,18 @@ describe('Given AgLogMessage type definitions', () => {
 /**
  * Given: AgLoggerOptions type definitions
  */
+/**
+ * @suite AgLoggerOptions Type Definitions | Unit Tests
+ * @description Testing AgLoggerOptions interface structure and configuration validation
+ * @testType unit
+ * Scenarios: Option structure verification
+ */
 describe('Given AgLoggerOptions type definitions', () => {
+  /**
+   * @context When
+   * @scenario Option structure verification
+   * @description Testing AgLoggerOptions interface properties and configuration validation
+   */
   describe('When verifying option structure', () => {
     it('Then: [正常] - should accept minimal valid options', () => {
       const options: AgLoggerOptions = {};
@@ -192,7 +221,18 @@ describe('Given AgLoggerOptions type definitions', () => {
 /**
  * Given: AgLoggerError type definitions
  */
+/**
+ * @suite AgLoggerError Type Definitions | Unit Tests
+ * @description Testing AgLoggerError interface structure and error handling validation
+ * @testType unit
+ * Scenarios: Error structure verification
+ */
 describe('Given AgLoggerError type definitions', () => {
+  /**
+   * @context When
+   * @scenario Error structure verification
+   * @description Testing AgLoggerError interface properties and error handling validation
+   */
   describe('When verifying error structure', () => {
     it('Then: [正常] - should create AgLoggerError with stack trace', () => {
       const error = new AgLoggerError(ErrorSeverity.ERROR, 'VALIDATION', 'Test error');
@@ -206,7 +246,18 @@ describe('Given AgLoggerError type definitions', () => {
 /**
  * Given: AgError base interface definitions
  */
+/**
+ * @suite AgError Base Interface Definitions | Unit Tests
+ * @description Testing AgError base interface structure and inheritance validation
+ * @testType unit
+ * Scenarios: Base error interface verification
+ */
 describe('Given AgError base interface definitions', () => {
+  /**
+   * @context When
+   * @scenario Base error interface verification
+   * @description Testing AgError base interface properties and inheritance structure
+   */
   describe('When verifying base error interface', () => {
     it('Then: [正常] - should define proper error structure', () => {
       const error: AglaError = {
@@ -234,7 +285,18 @@ describe('Given AgError base interface definitions', () => {
 /**
  * Given: Type integration scenarios
  */
+/**
+ * @suite Type Integration Scenarios | Unit Tests
+ * @description Testing type system integration and cross-type compatibility
+ * @testType unit
+ * Scenarios: Type interoperability verification
+ */
 describe('Given type integration scenarios', () => {
+  /**
+   * @context When
+   * @scenario Type interoperability verification
+   * @description Testing cross-type compatibility and integration patterns
+   */
   describe('When verifying type interoperability', () => {
     it('Then: [正常] - should work together in realistic scenarios', () => {
       const logLevel: AgLogLevel = AG_LOGLEVEL.INFO;

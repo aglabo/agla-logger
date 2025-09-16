@@ -19,23 +19,17 @@ import { JsonFormatter } from '../../../../plugins/formatter/JsonFormatter';
 // test main
 
 /**
- * JsonFormatterプラグインのユニットテストスイート
- *
- * @description JSON形式でのログメッセージフォーマット機能を検証する
- * Given/When/Then構造によりテストケースを体系化し、
- * 正常系・異常系・エッジケースを明確に分離して品質を向上
- *
- * @testType Unit Test
- * @testTarget JsonFormatter Plugin
- * @coverage
- * - 基本ログメッセージのJSON構造化
- * - 引数・配列・オブジェクトの適切なシリアライゼーション
- * - 全ログレベルでの正確なレベル表示
- * - タイムスタンプの正確な形式
- * - 循環参照・null/undefined・例外処理
- * - 有効なJSON文字列の出力保証
+ * @suite JsonFormatter Valid Structures | Unit
+ * @description Tests for JsonFormatter with valid log message structures
+ * @testType unit
+ * Scenarios: Basic formatting, All log levels, Edge case inputs
  */
 describe('Given: JsonFormatter with valid log message structures', () => {
+  /**
+   * @context When
+   * @scenario Basic message formatting
+   * @description Test basic log message formatting to JSON
+   */
   describe('When: formatting basic log messages', () => {
     it('Then: [正常] - should format basic log message as JSON', () => {
       const logMessage: AgLogMessage = {
@@ -97,6 +91,11 @@ describe('Given: JsonFormatter with valid log message structures', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario All log level formatting
+   * @description Test formatting across all standard log levels
+   */
   describe('When: formatting with all log levels', () => {
     it('Then: [正常] - should format correctly for all standard log levels', () => {
       const baseMessage: Omit<AgLogMessage, 'logLevel'> = {
@@ -139,6 +138,11 @@ describe('Given: JsonFormatter with valid log message structures', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Edge case input formatting
+   * @description Test formatting with edge case inputs and validation
+   */
   describe('When: formatting edge case inputs', () => {
     it('Then: [エッジケース] - should format correctly with empty message', () => {
       const logMessage: AgLogMessage = {
@@ -173,7 +177,18 @@ describe('Given: JsonFormatter with valid log message structures', () => {
   });
 });
 
+/**
+ * @suite JsonFormatter Problematic Inputs | Unit
+ * @description Tests for JsonFormatter with problematic input handling
+ * @testType unit
+ * Scenarios: Circular references, Null/undefined handling, Large data structures
+ */
 describe('Given: JsonFormatter with problematic inputs', () => {
+  /**
+   * @context When
+   * @scenario Circular reference processing
+   * @description Test handling of circular reference structures
+   */
   describe('When: processing circular references', () => {
     it('Then: [異常] - should throw Converting circular structure to JSON error', () => {
       const circularObj: { name: string; self?: unknown } = { name: 'test' };
@@ -190,6 +205,11 @@ describe('Given: JsonFormatter with problematic inputs', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Null/undefined argument processing
+   * @description Test handling of null and undefined values
+   */
   describe('When: processing null/undefined arguments', () => {
     it('Then: [エッジケース] - should handle null arguments correctly', () => {
       const logMessage: AgLogMessage = {
@@ -221,6 +241,11 @@ describe('Given: JsonFormatter with problematic inputs', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Large data structure processing
+   * @description Test handling of large and deeply nested data structures
+   */
   describe('When: processing large data structures', () => {
     it('Then: [エッジケース] - should handle deeply nested objects without error', () => {
       const createDeepObject = (depth: number): unknown => {

@@ -22,10 +22,10 @@ import { ConsoleLogger, ConsoleLoggerMap } from '@/plugins/logger/ConsoleLogger'
 import { NullLogger } from '@/plugins/logger/NullLogger';
 
 /**
- * Console Logger Behavior Integration Tests
- *
+ * @suite Console Logger Behavior Integration | Integration
  * @description Console出力での各種ロガーの振る舞いを保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: ConsoleLogger基本動作, ConsoleLoggerMapレベル振り分け, NullLogger出力抑制, モックロガーテスト
  */
 describe('Feature: Console Logger Behavior Integration', () => {
   const setupTestContext = (): void => {
@@ -34,19 +34,17 @@ describe('Feature: Console Logger Behavior Integration', () => {
   };
 
   /**
-   * Given: ConsoleLogger が使用される環境が存在する場合
-   * When: コンソール出力が要求された時
-   * Then: 適切なconsole.methodで出力される
-   *
+   * @context Given
+   * @scenario ConsoleLoggerが使用される環境が存在する場合
    * @description ConsoleLoggerの基本統合動作とconsole呼び出し確認テスト
-   * 実際のconsole.methodが適切に呼び出されることを検証
    */
-  describe('Given ConsoleLogger is used in the environment', () => {
+  describe('Given: ConsoleLogger is used in the environment', () => {
     /**
+     * @context When
+     * @scenario コンソール出力が要求された時
      * @description コンソール出力要求時の適切なconsole.method呼び出しテスト
-     * ConsoleLoggerが指定されたレベルのconsole.methodを正しく使用することを検証
      */
-    describe('When console output is requested', () => {
+    describe('When: console output is requested', () => {
       // ConsoleLoggerの基本統合動作とconsole.methodの呼び出しを確認
       it('Then: [正常] - should output to appropriate console method', () => {
         setupTestContext();
@@ -78,19 +76,17 @@ describe('Feature: Console Logger Behavior Integration', () => {
   });
 
   /**
-   * Given: ConsoleLoggerMap が使用される環境が存在する場合
-   * When: レベル固有のコンソール出力が要求された時
-   * Then: 各レベルに応じた適切なconsole.methodで出力される
-   *
+   * @context Given
+   * @scenario ConsoleLoggerMapが使用される環境が存在する場合
    * @description ConsoleLoggerMapのレベル固有動作統合テスト
-   * 各ログレベルに応じて適切なconsole.methodに振り分けられることを検証
    */
-  describe('Given ConsoleLoggerMap is used in the environment', () => {
+  describe('Given: ConsoleLoggerMap is used in the environment', () => {
     /**
+     * @context When
+     * @scenario レベル固有のコンソール出力が要求された時
      * @description レベル固有コンソール出力要求時の適切なmethod振り分けテスト
-     * ConsoleLoggerMapが各ログレベルに対して正しいconsole.methodを使用することを検証
      */
-    describe('When level-specific console output is requested', () => {
+    describe('When: level-specific console output is requested', () => {
       // ConsoleLoggerMap×JsonFormatterで適切なconsoleメソッドに振り分けを確認
       it('Then: [正常] - should use correct console methods with JsonFormatter', () => {
         setupTestContext();
@@ -143,19 +139,17 @@ describe('Feature: Console Logger Behavior Integration', () => {
   });
 
   /**
-   * Given: NullLogger が使用される環境が存在する場合
-   * When: ログ出力抑制が要求された時
-   * Then: 何も出力されず、エラーも発生しない
-   *
+   * @context Given
+   * @scenario NullLoggerが使用される環境が存在する場合
    * @description NullLoggerによるログ出力抑制動作統合テスト
-   * ログ出力を抑制し、エラーなく安全に動作することを検証
    */
-  describe('Given NullLogger is used in the environment', () => {
+  describe('Given: NullLogger is used in the environment', () => {
     /**
+     * @context When
+     * @scenario ログ出力抑制が要求された時
      * @description ログ出力抑制要求時の安全な無出力動作テスト
-     * NullLoggerが出力を行わず、エラーも発生しないことを検証
      */
-    describe('When log output suppression is requested', () => {
+    describe('When: log output suppression is requested', () => {
       // NullLogger使用時の安全な無出力動作を確認
       it('Then: [正常] - should handle NullLogger with any formatter safely', () => {
         setupTestContext();
@@ -176,10 +170,11 @@ describe('Feature: Console Logger Behavior Integration', () => {
     });
 
     /**
+     * @context When
+     * @scenario ロガーマップ内でフォールバックとして使用された時
      * @description ロガーマップ内でのNullLoggerフォールバック使用テスト
-     * LoggerMap内でのNullLogger使用時の安定性を検証
      */
-    describe('When used as fallback in logger map', () => {
+    describe('When: used as fallback in logger map', () => {
       // ロガーマップ内でのNullLogger使用時の安定性を確認
       it('Then: [正常] - should work correctly as fallback logger in map configuration', () => {
         setupTestContext();
@@ -210,19 +205,17 @@ describe('Feature: Console Logger Behavior Integration', () => {
   });
 
   /**
-   * Given: モックロガーが使用される環境が存在する場合
-   * When: テスト用のモック動作が要求された時
-   * Then: 期待される動作でモック処理が実行される
-   *
+   * @context Given
+   * @scenario モックロガーが使用される環境が存在する場合
    * @description モックロガーの統合動作テスト
-   * テスト環境でのモックロガーの適切な動作を検証
    */
-  describe('Given mock loggers are used in the environment', () => {
+  describe('Given: mock loggers are used in the environment', () => {
     /**
+     * @context When
+     * @scenario テスト用のモック動作が要求された時
      * @description テスト用モック動作要求時の適切な処理テスト
-     * モックロガーが期待される動作で正しく処理されることを検証
      */
-    describe('When test mock behavior is requested', () => {
+    describe('When: test mock behavior is requested', () => {
       // モックロガーの基本統合動作を確認
       it('Then: [正常] - should work correctly with mock loggers', () => {
         setupTestContext();
@@ -253,10 +246,11 @@ describe('Feature: Console Logger Behavior Integration', () => {
     });
 
     /**
+     * @context When
+     * @scenario モックロガーエラーシナリオが発生した時
      * @description モックロガーエラーシナリオ発生時の処理テスト
-     * モックロガーでエラーが発生した場合の適切な伝播を検証
      */
-    describe('When mock logger error scenarios occur', () => {
+    describe('When: mock logger error scenarios occur', () => {
       // モックロガーエラー時の適切な処理を確認
       it('Then: [異常] - should propagate mock logger errors correctly', () => {
         setupTestContext();

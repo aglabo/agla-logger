@@ -15,12 +15,23 @@ import { AG_LOGLEVEL } from '../../../../shared/types';
 // プラグインシステム
 import { E2eMockLogger } from '../E2eMockLogger';
 
+/**
+ * @suite E2eMockLogger Test Management | Unit
+ * @description Tests for E2eMockLogger test ID management and basic functionality
+ * @testType unit
+ * Scenarios: Test ID switching, Message storage, Last message retrieval, Message clearing, Unified API design
+ */
 describe('Feature: E2eMockLogger test ID management and basic functionality', () => {
   let mockLogger: E2eMockLogger;
 
   // Initialize mockLogger for tests
   mockLogger = new E2eMockLogger('test-id');
 
+  /**
+   * @context When
+   * @scenario Test ID management
+   * @description Test ID switching and lifecycle management
+   */
   describe('When: managing test IDs and their switching', () => {
     it('Then: [正常] - should allow switching to different test ID after construction', (ctx) => {
       mockLogger.startTest(ctx.task.id);
@@ -43,6 +54,11 @@ describe('Feature: E2eMockLogger test ID management and basic functionality', ()
     });
   });
 
+  /**
+   * @context When
+   * @scenario Error message storage
+   * @description Test error message array storage behavior
+   */
   describe('When: storing error messages in array', () => {
     it('Then: [正常] - should store error messages in array', (ctx) => {
       mockLogger.startTest(ctx.task.id);
@@ -56,6 +72,11 @@ describe('Feature: E2eMockLogger test ID management and basic functionality', ()
     });
   });
 
+  /**
+   * @context When
+   * @scenario Last message retrieval
+   * @description Test last error message retrieval functionality
+   */
   describe('When: retrieving last error message', () => {
     it('Then: [正常] - should return last error message', (ctx) => {
       mockLogger.startTest(ctx.task.id);
@@ -77,6 +98,11 @@ describe('Feature: E2eMockLogger test ID management and basic functionality', ()
     });
   });
 
+  /**
+   * @context When
+   * @scenario Message clearing
+   * @description Test error message clearing functionality
+   */
   describe('When: clearing error messages', () => {
     it('Then: [正常] - should clear error messages', (ctx) => {
       mockLogger.startTest(ctx.task.id);
@@ -93,6 +119,11 @@ describe('Feature: E2eMockLogger test ID management and basic functionality', ()
     });
   });
 
+  /**
+   * @context When
+   * @scenario Unified API usage
+   * @description Test unified API design with getLastMessage and related methods
+   */
   describe('When: using unified API design with getLastMessage(logLevel)', () => {
     it('Then: [正常] - should get last message for each level using unified method', (ctx) => {
       mockLogger.startTest(ctx.task.id);

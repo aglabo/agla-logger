@@ -11,12 +11,23 @@ import { describe, expect, it } from 'vitest';
 
 // 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
-import type { AgLogMessage } from '../../../../../shared/types/AgLogger.types';
+import type { AgLogMessage } from '../../../../../shared/types';
 
 // プラグインシステム
 import { PlainFormatter } from '../../../../plugins/formatter/PlainFormatter';
 
+/**
+ * @suite PlainFormatter Valid Structures | Unit
+ * @description Tests for PlainFormatter with valid log message structures
+ * @testType unit
+ * Scenarios: Basic formatting, All log levels, Edge case inputs
+ */
 describe('Given: PlainFormatter with valid log message structures', () => {
+  /**
+   * @context When
+   * @scenario Basic message formatting
+   * @description Test basic log message formatting to plain text
+   */
   describe('When: formatting basic log messages', () => {
     it('Then: [正常] - should format basic log message as plain text', () => {
       const logMessage: AgLogMessage = {
@@ -59,6 +70,11 @@ describe('Given: PlainFormatter with valid log message structures', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario All log level formatting
+   * @description Test formatting across all standard log levels
+   */
   describe('When: formatting with all log levels', () => {
     it('Then: [正常] - should format correctly for all standard log levels', () => {
       const baseMessage: Omit<AgLogMessage, 'logLevel'> = {
@@ -94,6 +110,11 @@ describe('Given: PlainFormatter with valid log message structures', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Edge case input formatting
+   * @description Test formatting with edge case inputs and validation
+   */
   describe('When: formatting edge case inputs', () => {
     it('Then: [エッジケース] - should format correctly with empty message', () => {
       const logMessage: AgLogMessage = {
@@ -121,7 +142,18 @@ describe('Given: PlainFormatter with valid log message structures', () => {
   });
 });
 
+/**
+ * @suite PlainFormatter Problematic Inputs | Unit
+ * @description Tests for PlainFormatter with problematic input handling
+ * @testType unit
+ * Scenarios: Circular references, Null/undefined handling, Special characters, Large data structures
+ */
 describe('Given: PlainFormatter with problematic inputs', () => {
+  /**
+   * @context When
+   * @scenario Circular reference processing
+   * @description Test handling of circular reference structures
+   */
   describe('When: processing circular references', () => {
     it('Then: [異常] - should throw Converting circular structure to JSON error', () => {
       const circularObj: { name: string; self?: unknown } = { name: 'test' };
@@ -138,6 +170,11 @@ describe('Given: PlainFormatter with problematic inputs', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Null/undefined argument processing
+   * @description Test handling of null and undefined values
+   */
   describe('When: processing null/undefined arguments', () => {
     it('Then: [エッジケース] - should handle null arguments correctly', () => {
       const logMessage: AgLogMessage = {
@@ -166,6 +203,11 @@ describe('Given: PlainFormatter with problematic inputs', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Special character processing
+   * @description Test handling of special characters in arguments
+   */
   describe('When: processing special character arguments', () => {
     it('Then: [エッジケース] - should handle arguments with special characters', () => {
       const logMessage: AgLogMessage = {
@@ -196,6 +238,11 @@ describe('Given: PlainFormatter with problematic inputs', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Large data structure processing
+   * @description Test handling of large and deeply nested data structures
+   */
   describe('When: processing large data structures', () => {
     it('Then: [エッジケース] - should handle deeply nested objects without error', () => {
       const createDeepObject = (depth: number): unknown => {

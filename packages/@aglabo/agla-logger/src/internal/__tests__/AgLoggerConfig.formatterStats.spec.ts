@@ -8,25 +8,27 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ (Vitest)
 import { describe, expect, it } from 'vitest';
 
-// internal
-import { AgLoggerConfig } from '../AgLoggerConfig.class';
-
-// types
+// 型定義・インターフェース - ログメッセージとモックフォーマッター入力型
 import type { AgLogMessage } from '../../../shared/types';
 import type { AgFormatRoutine, AgFormatterInput } from '../../../shared/types/AgMockConstructor.class';
 
-// plugins
+// 定数・設定・エラーメッセージ - ログレベル列挙体
+import { AG_LOGLEVEL } from '../../../shared/types';
+
+// 内部実装・コアクラス - AgLoggerConfig本体
+import { AgLoggerConfig } from '../AgLoggerConfig.class';
+
+// プラグインシステム - 各フォーマッター実装
 import { AgMockFormatter } from '../../plugins/formatter/AgMockFormatter';
 import { JsonFormatter } from '../../plugins/formatter/JsonFormatter';
 import { MockFormatter } from '../../plugins/formatter/MockFormatter';
 
-// constants
-import { AG_LOGLEVEL } from '../../../shared/types';
-
 /**
  * テスト用ヘルパー: 標準的なテストメッセージを作成
+ * 読みやすい固定タイムスタンプとINFOレベルを用意し、ステータス検証時のノイズを排除する。
  */
 const createTestMessage = (message = 'Test message'): AgLogMessage => ({
   timestamp: new Date('2025-01-01T00:00:00.000Z'),
@@ -36,19 +38,17 @@ const createTestMessage = (message = 'Test message'): AgLogMessage => ({
 });
 
 /**
- * AgLoggerConfig FormatterStats機能のatsushifx式BDDテスト
- *
- * @description フォーマッター統計機能の正常系・異常系・エッジケースを網羅したテストスイート
- * atsushifx式BDD: Given-When-Then形式で自然言語記述による仕様定義
- */
-
-/**
- * Feature: Mock Formatter Instance Storage
- * Given: AgMockConstructorを使用したフォーマッター設定
- * When: setLoggerConfigでMockFormatterを設定した時
- * Then: _formatterInstanceが正しく保存される
+ * @suite Mock Formatter Instance Storage | AgLoggerConfig
+ * @description MockFormatter統計管理が仕様通りに保存・切替されるかを検証する
+ * @testType unit
+ * Scenarios: MockFormatter保存, 標準フォーマッター切替, コンフィグ間独立性
  */
 describe('Feature: Mock Formatter Instance Storage', () => {
+  /**
+   * @context When
+   * @scenario MockFormatterを設定する
+   * @description setLoggerConfigにMockFormatterを渡した際のインスタンス保存挙動を確認する
+   */
   describe('When setting MockFormatter via setLoggerConfig', () => {
     // パラメータ化テスト: 各MockFormatterの共通動作テスト
     const mockFormatterTestCases = [
@@ -76,6 +76,11 @@ describe('Feature: Mock Formatter Instance Storage', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 標準フォーマッターへ切り替える
+   * @description MockFormatter設定後に通常フォーマッターへ切り替えた際のインスタンスクリア挙動を検証する
+   */
   describe('When setting non-MockFormatter via setLoggerConfig', () => {
     it('Then [正常]: clear instance for standard formatters', () => {
       // Arrange: 最初にMockFormatterを設定
@@ -101,12 +106,17 @@ describe('Feature: Mock Formatter Instance Storage', () => {
 });
 
 /**
- * Feature: Statistics Access
- * Given: MockFormatterインスタンスが保存されている状態
- * When: 統計情報にアクセスした時
- * Then: 正しい統計データが取得できる
+ * @suite Statistics Access | AgLoggerConfig
+ * @description MockFormatter統計情報の取得挙動が期待通りであることを確認する
+ * @testType unit
+ * Scenarios: 初期統計取得, 統計更新, 非Mock設定時の挙動
  */
 describe('Feature: Statistics Access', () => {
+  /**
+   * @context When
+   * @scenario MockFormatter統計にアクセスする
+   * @description MockFormatterが保存されている状態で統計を取得した場合の結果を検証する
+   */
   describe('When accessing formatter statistics with MockFormatter stored', () => {
     it('Then should return initial statistics (callCount: 0, lastMessage: null)', () => {
       // Arrange
@@ -183,6 +193,11 @@ describe('Feature: Statistics Access', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario MockFormatter未設定で統計にアクセスする
+   * @description MockFormatterが保存されていない状態で統計取得した際の安全性を確認する
+   */
   describe('When accessing formatter statistics with no MockFormatter stored', () => {
     it('Then should return null for uninitialized config', () => {
       // Arrange
@@ -212,12 +227,17 @@ describe('Feature: Statistics Access', () => {
 });
 
 /**
- * Feature: Statistics Reset
- * Given: MockFormatterが使用されて統計が蓄積された状態
- * When: resetFormatterStatsを実行した時
- * Then: 統計がリセットされる
+ * @suite Statistics Reset | AgLoggerConfig
+ * @description resetFormatterStatsの動作が統計蓄積状況に応じて正しくリセットされるかを検証する
+ * @testType unit
+ * Scenarios: 蓄積後リセット, 再蓄積, 未設定時リセット
  */
 describe('Feature: Statistics Reset', () => {
+  /**
+   * @context When
+   * @scenario 統計蓄積状態でリセットする
+   * @description MockFormatter使用後にresetFormatterStatsを呼び出した場合のリセット挙動を確認する
+   */
   describe('When calling resetFormatterStats with accumulated statistics', () => {
     it('Then [正常]: reset stats to 0/null', () => {
       // Arrange: 統計を蓄積
@@ -267,6 +287,11 @@ describe('Feature: Statistics Reset', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario MockFormatter未設定でリセットする
+   * @description MockFormatterが登録されていない場合にresetFormatterStatsを呼び出した際の安全性を検証する
+   */
   describe('When calling resetFormatterStats with no MockFormatter stored', () => {
     it('Then should do nothing for uninitialized config', () => {
       // Arrange
@@ -296,12 +321,17 @@ describe('Feature: Statistics Reset', () => {
 });
 
 /**
- * Feature: hasStatsFormatter Method
- * Given: 各種フォーマッター設定状態
- * When: hasStatsFormatterを呼び出した時
- * Then: 正しいブール値が返される
+ * @suite hasStatsFormatter Method | AgLoggerConfig
+ * @description hasStatsFormatterの戻り値が設定状況に応じて正しく変化するかを検証する
+ * @testType unit
+ * Scenarios: 初期状態確認, MockFormatter設定, 標準設定, 遷移動作
  */
 describe('Feature: hasStatsFormatter Method', () => {
+  /**
+   * @context When
+   * @scenario 各種設定状態でhasStatsFormatterを呼ぶ
+   * @description 様々なフォーマッター構成でhasStatsFormatterが期待通りの真偽値を返すかを確認する
+   */
   describe('When calling hasStatsFormatter with various configurations', () => {
     it('Then [エッジ]: false when uninitialized', () => {
       // Arrange
@@ -370,12 +400,17 @@ describe('Feature: hasStatsFormatter Method', () => {
 });
 
 /**
- * Feature: Error Handling and Edge Cases
- * Given: 異常な入力や境界条件
- * When: stats関連メソッドを呼び出した時
- * Then: 適切にエラーハンドリングされる
+ * @suite Error Handling and Edge Cases | AgLoggerConfig
+ * @description 異常入力や境界条件に対するstats系メソッドの堅牢性を確認する
+ * @testType unit
+ * Scenarios: 異常設定, 急速な切替, インスタンス独立性
  */
 describe('Feature: Error Handling and Edge Cases', () => {
+  /**
+   * @context When
+   * @scenario 異常入力でstats系メソッドを呼ぶ
+   * @description 異常値や境界値を与えた場合でもstats系メソッドが安全に動作するかを検証する
+   */
   describe('When calling stats-related methods with abnormal inputs', () => {
     it('Then should handle null formatter gracefully', () => {
       // Arrange

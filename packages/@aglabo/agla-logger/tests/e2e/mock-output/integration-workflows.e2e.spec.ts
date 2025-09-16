@@ -35,40 +35,21 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  */
 
 /**
- * @suite Integration | Microservices Workflows
- * @description 分散システム連携の主要パターンを網羅的に検証。
+ * @suite Integration Workflows | Microservices Communication/Circuit Breaker/Error Correlation
+ * @description マイクロサービス統合ワークフロー（遮断機・API統合・エラー相関・分散Tx）の網羅検証。
  * @testType e2e
- * @coverage Circuit Breaker, API統合, エラー相関, 分散Tx
- * Scenarios:
- * - 主要連携パターン(遮断/失敗/相関/分散Tx)のセットアップ
- * - 重要イベントと相関キーの一貫した記録
- * - 復旧戦略(リトライ/フォールバック/補償)の可視化
- * Expects:
- * - 相関つきで連携過程を時系列に再構築できる
+ * Scenarios: Circuit Breaker Patterns, API Integration Failures, Cross-Service Error Correlation, Distributed Transactions
  */
 describe('Given: E2E microservices integration workflows environment', () => {
   /**
-   * @suite When | Integration Requirements
-   * @description 連携要件(相関ID/リトライ/タイムアウト)の明示化。
-   * @testType e2e
-   * @coverage 前提条件のログ/設定反映
-   * Scenarios:
-   * - 相関ID/リトライ/超時設定を確立しログに反映
-   * - 以降のWhen/Thenで参照される前提を統一
-   * Expects:
-   * - 以降のテストで一貫した前提が満たされる
+   * @context When
+   * @scenario Distributed System Integration Requirements
+   * @description 分散システム統合要件（相関ID・リトライ・タイムアウト）の定義と設定反映。
    */
   describe('When: distributed system integration requirements are defined', () => {
     /**
-     * @suite Then | Integration Infrastructure
-     * @description 連携基盤(ログ/相関/監視)の確立過程を検証。
-     * @testType e2e
-     * @coverage 初期化ログ/相関ID注入/メトリクス出力
-     * Scenarios:
-     * - 初期化/登録/接続確認の手順を記録
-     * - 相関キーが各イベントに注入されている
-     * Expects:
-     * - 重要イベントが時系列で追跡可能
+     * @scenario Integration Infrastructure Establishment
+     * @description 統合基盤（ログ・相関・監視）確立過程の検証。
      */
     describe('Then: microservices integration infrastructure is established', () => {
       // Task 8.4.1a Red Phase: Create failing import structure for microservices integration
@@ -146,6 +127,10 @@ describe('Given: E2E microservices integration workflows environment', () => {
      * - 失敗率/連続失敗閾値/リトライ結果を記録
      * Expects:
      * - 状態/失敗率/試行結果が観測可能な形式で残る
+     */
+    /**
+     * @scenario Circuit Breaker Pattern Governance
+     * @description 遮断機パターンによるリモート呼び出し制御（状態管理・障害回復）実行。
      */
     describe('When: circuit breaker pattern governs remote calls', () => {
       // Task 8.4.3: Circuit Breaker Pattern State Logging
@@ -379,6 +364,10 @@ describe('Given: E2E microservices integration workflows environment', () => {
      * Expects:
      * - 試行回数/待機/最終結果が明確
      */
+    /**
+     * @scenario External API Integration Failures
+     * @description 外部API統合障害（失敗処理・フォールバック機構）対応実行。
+     */
     describe('When: external API integration may fail', () => {
       // Task 8.4.4: External API Integration Failure Handling
 
@@ -596,6 +585,10 @@ describe('Given: E2E microservices integration workflows environment', () => {
      * Expects:
      * - 伝播経路/影響範囲がログで再構築可能
      */
+    /**
+     * @scenario Cross-Service Error Correlation
+     * @description サービス間エラー相関（エラー追跡・回復調整）実行。
+     */
     describe('When: errors propagate across services with correlation', () => {
       // Task 8.4.5: Cross-Service Error Propagation with Message Correlation
 
@@ -812,6 +805,10 @@ describe('Given: E2E microservices integration workflows environment', () => {
      * - 失敗時に補償処理の発火と結果を記録
      * Expects:
      * - 各ステップの結果と補償が時系列で可視
+     */
+    /**
+     * @scenario Distributed Transaction Traceability
+     * @description 分散トランザクション追跡可能性（マルチサービス・Tx証跡）実行。
      */
     describe('When: distributed transactions need traceability', () => {
       // Task 8.4.2a Red Phase: Distributed transaction environment setup

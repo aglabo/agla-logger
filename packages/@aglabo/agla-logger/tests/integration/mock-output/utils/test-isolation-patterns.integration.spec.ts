@@ -21,6 +21,12 @@ import { MockFormatter } from '@/index';
 import { E2eMockLogger } from '@/plugins/logger/E2eMockLogger';
 
 // Test Utilities
+/**
+ * テスト初期化用setup
+ *
+ * @param _ctx  テストコンテキスト
+ * @returns mockLogger: E2eMockLogger
+ */
 const testSetup = (_ctx: TestContext): { mockLogger: E2eMockLogger } => {
   const _mockLogger = new E2eMockLogger(_ctx.task.id);
   // 初期設定
@@ -40,21 +46,23 @@ const testSetup = (_ctx: TestContext): { mockLogger: E2eMockLogger } => {
 };
 
 /**
- * E2E Test Isolation Integration Tests
- *
+ * @suite E2E Test Isolation Integration | Integration
  * @description E2Eテスト分離とライフサイクル管理、並行アクセスパターンの統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: テストID分離, インスタンス分離, 複数インスタンス管理, ライフサイクル管理, 並行アクセス
  */
 describe('E2E Test Isolation Integration', () => {
   /**
-   * Given: テストID分離シナリオが存在する場合
-   * When: 複数ケースでテストIDによる分離が適用された時
-   * Then: 複数ケースにわたってテストIDでメッセージを正しく分離する
-   *
-   * @description テストID分離での統合テスト
-   * 複数テストケースでのID分離によるメッセージ管理を検証
+   * @context Given
+   * @scenario テストID分離シナリオ
+   * @description テストID分離シナリオが存在する場合のテスト
    */
   describe('Given test ID isolation scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario テストID分離複数ケース適用
+     * @description 複数ケースでテストIDベースの分離が適用される時のテスト
+     */
     describe('When test ID-based isolation is applied across multiple cases', () => {
       it('Then: [正常] - should isolate messages correctly by test ID across multiple cases', (_ctx) => {
         const { mockLogger } = testSetup(_ctx);
@@ -89,14 +97,16 @@ describe('E2E Test Isolation Integration', () => {
   });
 
   /**
-   * Given: インスタンス分離シナリオが存在する場合
-   * When: 異なるロガーインスタンス間で分離が適用された時
-   * Then: 異なるロガーインスタンス間でメッセージを分離する
-   *
-   * @description インスタンス分離での統合テスト
-   * 複数ロガーインスタンス間でのメッセージ分離機能を検証
+   * @context Given
+   * @scenario インスタンス分離シナリオ
+   * @description インスタンス分離シナリオが存在する場合のテスト
    */
   describe('Given instance isolation scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario 異なるロガーインスタンス分離
+     * @description 異なるロガーインスタンス間で分離が適用される時のテスト
+     */
     describe('When isolation is applied between different logger instances', () => {
       it('Then: [正常] - should isolate messages between different logger instances', (ctx) => {
         vi.clearAllMocks();
@@ -131,14 +141,16 @@ describe('E2E Test Isolation Integration', () => {
   });
 
   /**
-   * Given: 複数インスタンス管理シナリオが存在する場合
-   * When: 複数インスタンスが同時に管理される時
-   * Then: メッセージ混在なしで複数インスタンスを管理する
-   *
-   * @description 複数インスタンス管理での統合テスト
-   * 同時実行される複数インスタンスでのメッセージ管理を検証
+   * @context Given
+   * @scenario 複数インスタンス管理シナリオ
+   * @description 複数インスタンス管理シナリオが存在する場合のテスト
    */
   describe('Given multiple instance management scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario 複数インスタンス同時管理
+     * @description 複数インスタンスを同時に管理する時のテスト
+     */
     describe('When managing multiple instances concurrently', () => {
       it('Then: [正常] - should manage multiple instances without message mixing', (ctx) => {
         vi.clearAllMocks();
@@ -176,14 +188,16 @@ describe('E2E Test Isolation Integration', () => {
   });
 
   /**
-   * Given: テストライフサイクル管理シナリオが存在する場合
-   * When: ライフサイクル管理が適用された時
-   * Then: 包括的なエラーハンドリングで適切なテストライフサイクルを強制する
-   *
-   * @description テストライフサイクル管理での統合テスト
-   * テストライフサイクル全体でのエラーハンドリングと制御を検証
+   * @context Given
+   * @scenario テストライフサイクル管理シナリオ
+   * @description テストライフサイクル管理シナリオが存在する場合のテスト
    */
   describe('Given test lifecycle management scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario ライフサイクル管理適用
+     * @description ライフサイクル管理が適用される時のテスト
+     */
     describe('When lifecycle management is applied', () => {
       it('Then: [正常] - should enforce proper test lifecycle with comprehensive error handling', (ctx) => {
         vi.clearAllMocks();
@@ -221,14 +235,16 @@ describe('E2E Test Isolation Integration', () => {
   });
 
   /**
-   * Given: 並行アクセスシナリオが存在する場合
-   * When: 並行アクセスパターンが実行された時
-   * Then: 並行アクセスパターンを安全かつ効率的に処理する
-   *
-   * @description 並行アクセスパターンでの統合テスト
-   * 並行実行環境でのアクセスパターンと安全性を検証
+   * @context Given
+   * @scenario 並行アクセスシナリオ
+   * @description 並行アクセスシナリオが存在する場合のテスト
    */
   describe('Given concurrent access scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario 並行アクセスパターン実行
+     * @description 並行アクセスパターンが実行される時のテスト
+     */
     describe('When concurrent access patterns are executed', () => {
       it('Then: [正常] - should handle concurrent access patterns safely and efficiently', (ctx) => {
         vi.clearAllMocks();

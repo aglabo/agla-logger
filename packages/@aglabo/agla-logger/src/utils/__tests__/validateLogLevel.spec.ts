@@ -12,17 +12,33 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ - VitestのBDDスタイルAPI
 import { describe, expect, it } from 'vitest';
-import { AG_LOGLEVEL } from '../../../shared/types';
+
+// 型定義・インターフェース - ログレベル型エイリアス
 import type { AgLogLevel } from '../../../shared/types';
+
+// 定数・設定 - ログレベル列挙体
+import { AG_LOGLEVEL } from '../../../shared/types';
+
+// エラーモデル - ロガー専用エラークラス
 import { AgLoggerError } from '../../../shared/types/AgLoggerError.types';
+
+// 内部実装 - 検証対象ユーティリティ
 import { validateLogLevel } from '../AgLogValidators';
 
 /**
- * validateLogLevel BDD Test Suite
- * atsushifx式BDD: 自然言語的な記述によるBehavior-Driven Development
+ * @suite Validate LogLevel Happy Path | Utility Validation
+ * @description 有効なログレベル値がvalidateLogLevelでそのまま受理されるかを確認する
+ * @testType unit
+ * Scenarios: 標準レベル受理, 特殊レベル受理, 列挙網羅性
  */
 describe('Given: valid LogLevel values are provided for validation', () => {
+  /**
+   * @context When
+   * @scenario 標準ログレベル値を検証する
+   * @description OFFからTRACEまでの標準ログレベルをvalidateLogLevelで検証した際の受理挙動を確認する
+   */
   describe('When: validating standard LogLevel values (0-6)', () => {
     const standardLevels = [
       { name: 'OFF', value: AG_LOGLEVEL.OFF },
@@ -43,6 +59,11 @@ describe('Given: valid LogLevel values are provided for validation', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 特殊ログレベル値を検証する
+   * @description VERBOSE/LOG/DEFAULTといった特殊レベルの受理可否を確認する
+   */
   describe('When: validating special LogLevel values', () => {
     const specialLevels = [
       { name: 'VERBOSE', value: AG_LOGLEVEL.VERBOSE },
@@ -60,7 +81,18 @@ describe('Given: valid LogLevel values are provided for validation', () => {
   });
 });
 
+/**
+ * @suite Invalid Type Handling | validateLogLevel
+ * @description 非数値型入力に対してAgLoggerErrorが発生するかを検証する
+ * @testType unit
+ * Scenarios: undefined/null, 文字列, 真偽値, オブジェクト
+ */
 describe('Feature: invalid type value handling', () => {
+  /**
+   * @context When
+   * @scenario undefinedやnullを検証する
+   * @description undefined/null入力時にエラーが発生するかを確認する
+   */
   describe('When: validating undefined or null values', () => {
     it('Then: [異常] - should throw AgLoggerError when validating undefined', () => {
       expect(() => validateLogLevel(undefined)).toThrow(AgLoggerError);
@@ -73,6 +105,11 @@ describe('Feature: invalid type value handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 文字列型の値を検証する
+   * @description 文字列入力に対して数値期待のエラーメッセージが返るかを確認する
+   */
   describe('When: validating string type values', () => {
     const stringValues = [
       { name: 'empty string', value: '' },
@@ -89,6 +126,11 @@ describe('Feature: invalid type value handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 真偽値を検証する
+   * @description 真偽値入力時にエラーが投げられるかを確認する
+   */
   describe('When: validating boolean type values', () => {
     [true, false].forEach((value) => {
       it(`Then: [異常] - should throw AgLoggerError when validating ${value}`, () => {
@@ -98,6 +140,11 @@ describe('Feature: invalid type value handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario オブジェクト型の値を検証する
+   * @description オブジェクトや配列など非プリミティブ入力に対するエラー挙動を確認する
+   */
   describe('When: validating object type values', () => {
     const objectValues = [
       { name: 'empty object', value: {} },
@@ -116,7 +163,18 @@ describe('Feature: invalid type value handling', () => {
   });
 });
 
+/**
+ * @suite Numeric Invalid Handling | validateLogLevel
+ * @description 数値型であっても不正な値に対して正しくエラーが発生するかを検証する
+ * @testType unit
+ * Scenarios: 小数, 特殊数値, 範囲外整数
+ */
 describe('Feature: numeric but invalid value handling', () => {
+  /**
+   * @context When
+   * @scenario 小数値を検証する
+   * @description 整数以外の数値入力をvalidateLogLevelが拒否するかを確認する
+   */
   describe('When: validating decimal values', () => {
     const decimalValues = [
       { name: 'positive decimal', value: 3.5 },
@@ -133,6 +191,11 @@ describe('Feature: numeric but invalid value handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 特殊数値を検証する
+   * @description NaNやInfinityなどの特殊数値に対するエラー挙動を確認する
+   */
   describe('When: validating special numeric values', () => {
     const specialNumbers = [
       { name: 'NaN', value: NaN },
@@ -148,6 +211,11 @@ describe('Feature: numeric but invalid value handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario 範囲外の整数を検証する
+   * @description 許容範囲外の整数値に対するエラー発生を検証する
+   */
   describe('When: validating out of range integer values', () => {
     const outOfRangeValues = [
       { name: 'large negative value', value: -1000 },
@@ -166,7 +234,18 @@ describe('Feature: numeric but invalid value handling', () => {
   });
 });
 
+/**
+ * @suite Detailed Error Message Generation | validateLogLevel
+ * @description エラーメッセージが入力タイプごとに期待通りの詳細を含むかを検証する
+ * @testType unit
+ * Scenarios: undefined/null, 型不一致, 範囲外値, 特殊数値
+ */
 describe('Feature: detailed error message generation', () => {
+  /**
+   * @context When
+   * @scenario 多様な不正入力に対して詳細情報を提供する
+   * @description 各種不正入力時のエラーメッセージ内容を確認する
+   */
   describe('When: providing specific error details for various invalid input types', () => {
     it('Then: [異常] - should throw message containing undefined when validating undefined', () => {
       expect(() => validateLogLevel(undefined)).toThrow(/undefined/);
@@ -194,7 +273,18 @@ describe('Feature: detailed error message generation', () => {
   });
 });
 
+/**
+ * @suite Boundary Value Validation | validateLogLevel
+ * @description 境界値やエッジケースを扱った際の受理と拒否が正しいかを確認する
+ * @testType unit
+ * Scenarios: 標準境界値受理, 範囲外境界拒否, 下限上限検証
+ */
 describe('Given: boundary and edge case values for validation', () => {
+  /**
+   * @context When
+   * @scenario 境界値を適切に処理する
+   * @description 境界上と境界外の値に対する挙動を検証する
+   */
   describe('When: handling boundary values properly', () => {
     it('Then: [正常] - should return correctly when validating minimum standard value (0)', () => {
       expect(validateLogLevel(0)).toBe(AG_LOGLEVEL.OFF);
@@ -220,7 +310,18 @@ describe('Given: boundary and edge case values for validation', () => {
 
 import { AgToLogLevel } from '../AgLogHelpers';
 
+/**
+ * @suite Whitespace Edge Case Handling | validateLogLevel
+ * @description 空白を含む文字列ケースが正しく拒否されるかを検証する
+ * @testType unit
+ * Scenarios: 空白のみ, パディング文字列, 混在ホワイトスペース
+ */
 describe('Feature: integrated whitespace and edge case handling', () => {
+  /**
+   * @context When
+   * @scenario ホワイトスペースを含む文字列を検証する
+   * @description 空白やタブなどを含む入力でのエラー発生を確認する
+   */
   describe('When: validating enhanced string cases with whitespace', () => {
     const whitespaceValues = [
       { name: 'spaces only', value: '   ' },
@@ -241,7 +342,18 @@ describe('Feature: integrated whitespace and edge case handling', () => {
   });
 });
 
+/**
+ * @suite AgToLogLevel Integration | validateLogLevel
+ * @description AgToLogLevelとの連携時に変換された値が正しく検証されるかを確認する
+ * @testType unit
+ * Scenarios: 文字列変換受理, 列挙一括検証, 正常系連携
+ */
 describe('Feature: integration with AgToLogLevel conversion function', () => {
+  /**
+   * @context When
+   * @scenario 文字列レベルを変換して検証する
+   * @description 文字列入力をAgToLogLevelで変換しvalidateLogLevelが受理するかを確認する
+   */
   describe('When: converting and validating string level inputs', () => {
     const validStringLevels = [
       { name: 'uppercase ERROR', input: 'ERROR', expected: AG_LOGLEVEL.ERROR },
@@ -260,6 +372,11 @@ describe('Feature: integration with AgToLogLevel conversion function', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario AG_LOGLEVEL列挙をすべて検証する
+   * @description 列挙される各ログレベル値がvalidateLogLevelで受理されるかを確認する
+   */
   describe('When: validating all AG_LOGLEVEL enumeration values', () => {
     it('Then: [正常] - should accept all when all AG_LOGLEVEL values are validated', () => {
       const allLevels = Object.values(AG_LOGLEVEL) as number[];

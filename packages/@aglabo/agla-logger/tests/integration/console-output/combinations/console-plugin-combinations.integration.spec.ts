@@ -22,10 +22,10 @@ import { JsonFormatter } from '@/plugins/formatter/JsonFormatter';
 import { ConsoleLogger, ConsoleLoggerMap } from '@/plugins/logger/ConsoleLogger';
 
 /**
- * Console Plugin Combinations Integration Tests
- *
+ * @suite Console Plugin Combinations Integration | Integration
  * @description Console出力でのフォーマッターとロガーの組み合わせ統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: ConsoleLoggerMapとフォーマッター組み合わせの実システム統合テスト
  */
 describe('Feature: Console Plugin Combinations Integration', () => {
   const setupTestContext = (): void => {
@@ -34,19 +34,17 @@ describe('Feature: Console Plugin Combinations Integration', () => {
   };
 
   /**
-   * Given: 実際のシステム統合環境でプラグイン組み合わせが使用される場合
-   * When: ConsoleLoggerMapとフォーマッターの実際の組み合わせを使用した時
-   * Then: 実環境での統合動作が適切に実行される
-   *
+   * @context Given
+   * @scenario 実際のシステム統合環境でプラグイン組み合わせが使用される場合
    * @description 実際のシステム統合環境におけるプラグイン組み合わせの動作テスト
-   * ConsoleLoggerMapとフォーマッターの組み合わせが実環境で適切に統合されることを検証
    */
-  describe('Given real system integration uses plugin combinations', () => {
+  describe('Given: real system integration uses plugin combinations', () => {
     /**
+     * @context When
+     * @scenario ConsoleLoggerMapとフォーマッターの実際の組み合わせを使用
      * @description ConsoleLoggerMapとフォーマッター組み合わせの実システム統合テスト
-     * 実際の使用シナリオでの組み合わせ動作を検証
      */
-    describe('When using actual ConsoleLoggerMap with formatter combinations', () => {
+    describe('When: using actual ConsoleLoggerMap with formatter combinations', () => {
       // ConsoleLoggerMap×各フォーマッターの実システム統合を検証
       it('Then: [正常] - should integrate correctly in real system scenarios', () => {
         setupTestContext();

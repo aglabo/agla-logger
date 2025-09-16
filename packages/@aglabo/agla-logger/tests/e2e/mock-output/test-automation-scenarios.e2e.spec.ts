@@ -33,39 +33,21 @@ import { AG_LOGLEVEL } from '../../../shared/types';
  */
 
 /**
- * @suite Given | QA Automation Environment
- * @description QA自動化の前提(環境/モック/データ)を確立。
+ * @suite Test Automation Scenarios | Order Pipeline/Data Volume/Cross-Module Errors
+ * @description QA自動化シナリオ（注文パイプライン・大容量処理・モジュール間エラー追跡）検証。
  * @testType e2e
- * @coverage テストダブル/設定/初期データ
- * Scenarios:
- * - 依存サービスのモック/初期データを準備
- * - パイプライン/大規模処理の土台を確立
- * Expects:
- * - セットアップが正常に機能
+ * Scenarios: Order Pipeline Processing, Large Data Integration, Multi-Module Error Tracking, Performance Testing
  */
 describe('Given QA automation environment', () => {
   /**
-   * @suite When | Order Pipeline
-   * @description 受注パイプラインの処理手順と統合ログを検証。
-   * @testType e2e
-   * @coverage ステージング/統合/整形ログ
-   * Scenarios:
-   * - ステージ毎の処理と統合ログを記録
-   * - JSON形式の妥当性を確認
-   * Expects:
-   * - 各ステージの成功/失敗が追跡可能
+   * @context When
+   * @scenario Order Pipeline Processing
+   * @description 受注パイプライン処理（ステージング・統合・整形ログ）実行。
    */
   describe('When processing order pipeline', () => {
     /**
-     * @suite Then | Large Data Integration
-     * @description 大規模データの統合ログ妥当性を検証。
-     * @testType e2e
-     * @coverage JSONフォーマット, ID整合
-     * Scenarios:
-     * - 注文受信ログの出力
-     * - JSONパースの検証
-     * Expects:
-     * - INFOが1件出力されJSONとして有効
+     * @scenario Large Data Integration Verification
+     * @description 大規模データ統合ログ妥当性（JSON形式・ID整合）検証。
      */
     describe('Then verify large data integration', () => {
       // QA自動化環境において、JSON形式の注文パイプライン環境をセットアップする

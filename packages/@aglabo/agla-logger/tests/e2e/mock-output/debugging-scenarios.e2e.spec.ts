@@ -38,19 +38,17 @@ import type { AgLogMessage } from '../../../shared/types';
 // Phase 8.1.2: User Registration Flow with Advanced Log Search
 
 /**
- * @suite Debugging | User Registration Flow
- * @description 登録開始〜入力検証〜完了までを詳細ログで追跡。
+ * @suite Debugging Scenarios | User Registration/Error Propagation/Performance/API Failures
+ * @description 本番デバッグワークフロー（登録〜エラー伝播〜性能調査〜API障害）の詳細追跡検証。
  * @testType e2e
- * @coverage 入力検証ログ、PlainFormatter 組み込み、既定ログレベル運用
- * Scenarios:
- * - AgLogger を PlainFormatter + MockLogger で初期化
- * - "User registration started" を識別子/メタデータ込みで出力
- * - 入力検証(email/password/age)の手順を DEBUG/INFO で記録
- * Expects:
- * - sessionId/userId 等の重要メタがログに一貫して含まれる
- * - ステップの時系列がログのみで再構築可能
+ * Scenarios: User Registration Flow, Error Propagation Tracing, Performance Investigation, API Integration Failures
  */
 describe('Given: E2E debugging environment for user registration workflow scenarios', () => {
+  /**
+   * @context When
+   * @scenario Complete User Registration Debugging
+   * @description ユーザー登録全フローのデバッグワークフロー（入力検証〜完了まで詳細追跡）実行。
+   */
   describe('When: executing complete user registration debugging workflows', () => {
     // E2eMockLoggerの初期化とテスト環境の活性化を検証する
     it('Then: [正常] - should activate E2eMockLogger initialization after startTest', (ctx) => {
@@ -451,6 +449,11 @@ describe('Given: E2E debugging environment for user registration workflow scenar
  * - 重要な補足情報(入力/状態)が失われない
  */
 describe('Given: E2E debugging environment for error propagation tracing scenarios', () => {
+  /**
+   * @context When
+   * @scenario Multi-Layer Error Propagation Debugging
+   * @description 多層エラー伝播デバッグワークフロー（表面〜深層〜根本原因分析）実行。
+   */
   describe('When: executing multi-layer error propagation debugging workflows', () => {
     // 包括的ロギング設定を持つ強化されたエラートレース環境をテストする
     it('Then: [正常] - should initialize enhanced error tracing environment with comprehensive logging configuration', (ctx) => {
@@ -858,6 +861,11 @@ describe('Given: E2E debugging environment for error propagation tracing scenari
  * - 全フェーズに計測ログが存在し、閾値内もしくは正しく超過扱い
  */
 describe('Given: E2E debugging environment for performance investigation scenarios', () => {
+  /**
+   * @context When
+   * @scenario Performance Bottleneck Analysis Debugging
+   * @description パフォーマンス分析デバッグワークフロー（高精度計測〜閾値評価〜ボトルネック特定）実行。
+   */
   describe('When: executing performance bottleneck analysis debugging workflows', () => {
     // 高精度タイミングと包括的メトリクス設定を持つ強化されたパフォーマンス監視をテストする
     it('Then: [正常] - should initialize enhanced performance monitoring with high-precision timing and comprehensive metrics configuration', (ctx) => {
@@ -1219,6 +1227,11 @@ describe('Given: E2E debugging environment for performance investigation scenari
  * - 試行回数/エラー詳細/フォールバック結果が追跡可能
  */
 describe('Given: E2E debugging environment for intermittent API integration failure scenarios', () => {
+  /**
+   * @context When
+   * @scenario API Failure Investigation Debugging
+   * @description API失敗調査デバッグワークフロー（間欠障害〜リトライ〜フォールバック）実行。
+   */
   describe('When: executing API failure investigation debugging workflows', () => {
     // 包括的成功パターンドキュメントを含む強化された通常のAPI操作ベースラインをテストする
     it('Then: [正常] - should establish enhanced normal API operation baseline with comprehensive success pattern documentation', (ctx) => {

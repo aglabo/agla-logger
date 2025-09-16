@@ -47,7 +47,18 @@ const setupTestContext = (_ctx?: TestContext): {
   };
 };
 
+/**
+ * @suite Plain Output Functional | Functional Tests
+ * @description Plain text output formatting and behavior testing with AgLogger and PlainFormatter in various logging scenarios
+ * @testType functional
+ * Scenarios: Basic log level formatting, Multiple argument handling with objects/arrays
+ */
 describe('Feature: AgLogger plain formatter basic output functionality', () => {
+  /**
+   * @context When
+   * @scenario Basic log level formatting
+   * @description Testing PlainFormatter output for different log levels (INFO/ERROR/WARN/DEBUG)
+   */
   describe('When AgLogger uses PlainFormatter for different log levels', () => {
     it('Then: [Normal] - should output basic INFO/ERROR/WARN/DEBUG messages', () => {
       const { mockLogger, mockFormatter } = setupTestContext();
@@ -88,6 +99,11 @@ describe('Feature: AgLogger plain formatter basic output functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Multiple argument handling with objects/arrays
+   * @description Testing PlainFormatter with complex data structures including objects and arrays
+   */
   describe('When AgLogger handles multiple arguments with objects and arrays', () => {
     it('Then: [Normal] - should format and append objects/arrays to message end with multiple arguments', () => {
       const { mockLogger, mockFormatter } = setupTestContext();
