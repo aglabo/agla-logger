@@ -1,11 +1,16 @@
-/**
- * @fileoverview LogLevel Validation BDD Test Suite
- * @description atsushifx式BDD厳格プロセスによるvalidateLogLevel関数のテスト
- *
- * Requirements from CLAUDE.md:
- * LogLevelが invalid (undefined, null, 文字列などの数字ではない型、範囲外の数値) なら、
- * 全てエラーを投げる
- */
+// src: /src/utils/__tests__/validateLogLevel.spec.ts
+// @(#) : LogLevel Validation BDD Test Suite
+//
+// atsushifx式BDD厳格プロセスによるvalidateLogLevel関数のテスト
+//
+// Requirements from CLAUDE.md:
+// LogLevelが invalid (undefined, null, 文字列などの数字ではない型、範囲外の数値) なら、
+// 全てエラーを投げる
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
 
 import { describe, expect, it } from 'vitest';
 import { AG_LOGLEVEL } from '../../../shared/types';

@@ -1,5 +1,12 @@
-// src/internal/__tests__/AgLoggerConfig.formatterStats.spec.ts
+// src: /src/internal/__tests__/AgLoggerConfig.formatterStats.spec.ts
 // @(#) : AgLoggerConfig FormatterStats機能のBDDテスト
+//
+// AgLoggerConfigのフォーマッター統計機能の正常系・異常系・エッジケースを網羅したテストスイート
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
 
 import { describe, expect, it } from 'vitest';
 

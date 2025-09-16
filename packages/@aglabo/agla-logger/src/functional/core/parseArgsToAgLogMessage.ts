@@ -1,4 +1,4 @@
-// src/functional/core/formatLogMessage.ts
+// src: /src/functional/core/parseArgsToAgLogMessage.ts
 // @(#) : Pure function for formatting log messages
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>

@@ -1,4 +1,14 @@
-// tests/e2e/aglogger/plain/basic.e2e.spec.ts
+// src: /src/__tests__/functional/features/plainOutput.functional.spec.ts
+// @(#) : Plain Output Functional Test Suite
+//
+// Functional tests for plain text output formatting and behavior
+// Tests AgLogger with PlainFormatter in various logging scenarios
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 import { describe, expect, it } from 'vitest';
 import type { TestContext } from 'vitest';
 

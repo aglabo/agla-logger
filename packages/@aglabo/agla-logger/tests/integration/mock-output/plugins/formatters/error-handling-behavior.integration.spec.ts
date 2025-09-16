@@ -1,5 +1,9 @@
+// src: /tests/integration/mock-output/plugins/formatters/error-handling-behavior.integration.spec.ts
+// @(#) : Formatter Error Handling Behavior Integration Tests
 //
-// Copyright (C) 2025 atsushifx
+// Integration tests for formatter plugins error handling scenarios and edge cases
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT

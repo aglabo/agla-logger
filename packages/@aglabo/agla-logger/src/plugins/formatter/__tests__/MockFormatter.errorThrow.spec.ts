@@ -1,5 +1,9 @@
+// src: /src/plugins/formatter/__tests__/MockFormatter.errorThrow.spec.ts
+// @(#) : MockFormatter Error Throwing Test Suite
 //
-// Copyright (C) 2025 atsushifx
+// BDD tests for MockFormatter error handling scenarios with ErrorThrowFormatter
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT

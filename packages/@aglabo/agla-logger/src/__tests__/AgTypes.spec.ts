@@ -1,5 +1,8 @@
-// src/__tests__/types-consolidated/AgTypes.spec.ts
-// @(#) : Consolidated type tests following atsushifx式BDD
+// src: /src/__tests__/AgTypes.spec.ts
+// @(#) : Consolidated Type Tests Following atsushifx式BDD
+//
+// Comprehensive tests for all type definitions and interfaces
+// Organized by type category with behavioral testing
 //
 // Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //

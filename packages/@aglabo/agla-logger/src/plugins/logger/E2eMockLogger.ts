@@ -19,7 +19,6 @@ import type {
   AgLoggerMap,
   AgLogLevel,
   AgLogMessage,
-  AgLogMessageCollection,
 } from '../../../shared/types';
 import type { AgMockBufferLogger } from './MockLogger';
 
@@ -159,7 +158,7 @@ export class E2eMockLogger implements AgLoggerInterface {
   }
 
   // Query methods
-  getMessages(logLevel: AgLogLevel): AgLogMessageCollection {
+  getMessages(logLevel: AgLogLevel): AgFormattedLogMessage[] {
     const mockLogger = this.getCurrentMockLogger();
     return mockLogger.getMessages(logLevel);
   }
@@ -177,7 +176,7 @@ export class E2eMockLogger implements AgLoggerInterface {
   /**
    * Get all messages for all log levels.
    */
-  getAllMessages(): { [K in keyof typeof AG_LOGLEVEL]: AgLogMessageCollection } {
+  getAllMessages(): { [K in keyof typeof AG_LOGLEVEL]: AgFormattedLogMessage[] } {
     const mockLogger = this.getCurrentMockLogger();
     return mockLogger.getAllMessages();
   }
