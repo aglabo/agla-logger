@@ -189,6 +189,75 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "import.*@shared" --rela
 mcp__lsmcp__parse_imports --filePath "src/index.ts" --root "$ROOT"
 ```
 
+#### import文整理・グルーピング規約（統一標準）
+
+**すべてのTypeScriptファイルでimport文を統一された6グループに分類し、日本語説明コメントを付与**
+
+##### グループ分類基準
+
+```typescript
+// グループ1: Node.js標準モジュール
+import { randomUUID } from 'node:crypto';
+import { basename } from 'node:path';
+
+// グループ2: 外部ライブラリ
+import { ErrorSeverity } from '@aglabo/agla-error';
+import { describe, expect, it } from 'vitest';
+
+// グループ3: 型定義・インターフェース
+import { AG_LOGLEVEL } from '../shared/types';
+import type { AgLogLevel } from '../shared/types';
+import type { AgFormatFunction, AgLoggerOptions } from '../shared/types/AgLogger.interface';
+import { AgLoggerError } from '../shared/types/AgLoggerError.types';
+
+// グループ4: 定数・設定・エラーメッセージ
+import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
+import { DISABLE, ENABLE } from '../shared/constants/common.constants';
+
+// グループ5: 内部実装・コアクラス
+import { AgLogger } from './AgLogger.class';
+import { AgLoggerManager } from './AgLoggerManager.class';
+import { AgLoggerConfig } from './internal/AgLoggerConfig.class';
+
+// グループ6: プラグインシステム
+import type { AgMockFormatter } from './plugins/formatter/AgMockFormatter';
+import { JsonFormatter } from './plugins/formatter/JsonFormatter';
+import { ConsoleLogger, ConsoleLoggerMap } from './plugins/logger/ConsoleLogger';
+import { MockLogger } from './plugins/logger/MockLogger';
+
+// グループ7: ユーティリティ・ヘルパー関数
+import { AgLoggerGetMessage } from './utils/AgLoggerGetMessage';
+import { AgToLabel, argsToString } from './utils/AgLogHelpers';
+import { isStandardLogLevel, validateFormatter, validateLogLevel } from './utils/AgLogValidators';
+```
+
+##### 重要ルール
+
+- **各グループ間に空行を挿入必須**
+- **日本語コメント必須**: 各グループの目的を明確化
+- **type import優先**: `import type` は必ず「型定義・インターフェース」グループ
+- **相対パス深度**: `../../../` 等の深い相対パスも適切にグループ化
+
+##### テストファイル特有パターン
+
+```typescript
+// テストフレームワーク: テスト実行・アサーション・モック
+import { describe, expect, it, vi } from 'vitest';
+import type { TestContext } from 'vitest';
+
+// 共有定数: ログレベル定義
+import { AG_LOGLEVEL } from '@shared/types';
+
+// テスト対象: AgLoggerとエントリーポイント
+import { AgLogger } from '@/AgLogger.class';
+
+// プラグイン（フォーマッター）: 出力フォーマット実装
+import { JsonFormatter } from '@/plugins/formatter/JsonFormatter';
+
+// プラグイン（ロガー）: 出力先実装
+import { MockLogger } from '@/plugins/logger/MockLogger';
+```
+
 ## セキュリティ・安全性規約
 
 ### セキュリティベストプラクティス（必須）

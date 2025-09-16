@@ -117,12 +117,6 @@ export class AgLoggerManager {
    * @param options - Partial logger configuration options to update
    * @throws AgLoggerError if logger not initialized
    */
-  /**
-   * Updates the logger configuration by delegating to AgLogger.setLoggerConfig.
-   *
-   * @param options - Partial logger configuration options to update
-   * @throws AgLoggerError if logger not initialized
-   */
   setLoggerConfig(options: AgLoggerOptions): void {
     if (this.logger === undefined) {
       throw new AgLoggerError(
@@ -177,12 +171,6 @@ export class AgLoggerManager {
    * Sets the default logger for a specific level (legacy method).
    *
    * @param level - The log level to set default logger for
-   * @throws AgLoggerError if logger not initialized
-   */
-  /**
-   * Removes the custom logger function for a specific level, reverting to default.
-   *
-   * @param level - The log level to remove custom logger function for
    * @throws AgLoggerError if logger not initialized
    */
   /**

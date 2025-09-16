@@ -36,6 +36,33 @@ import type {
  * - Thread-safe for single-threaded test scenarios
  * - Deep immutability for message objects
  */
+/**
+ * ユニバーサルモックロガークラス
+ *
+ * AgLoggerMethodsInterfaceを実装し、全ログレベルのメッセージを内部バッファに保存する
+ * テスト用モックロガーです。リアルタイムのログ検証、メッセージ履歴管理、
+ * および各種テストシナリオでのロガー動作確認に使用されます。
+ *
+ * 主要機能:
+ * - 全ログレベル(FATAL/ERROR/WARN/INFO/DEBUG/TRACE/LOG/VERBOSE)対応
+ * - ログレベル別メッセージ管理とバッファリング
+ * - メッセージ履歴の取得・検索・クリア機能
+ * - 動的ロガーマップの生成
+ *
+ * @implements AgLoggerMethodsInterface
+ *
+ * @example
+ * ```typescript
+ * import { AgMockBufferLogger } from './MockLogger';
+ *
+ * const mockLogger = new AgMockBufferLogger();
+ * mockLogger.info('Test message');
+ *
+ * console.log(mockLogger.getMessages('INFO')); // ['Test message']
+ * console.log(mockLogger.getTotalMessageCount()); // 1
+ * ```
+ */
+
 export class AgMockBufferLogger implements AgLoggerMethodsInterface {
   public defaultLoggerMap: AgLoggerMap;
   [key: string]: unknown;
@@ -66,33 +93,105 @@ export class AgMockBufferLogger implements AgLoggerMethodsInterface {
     this.messages.get(level)!.push(message);
   }
 
+  /**
+   * FATALレベルログメッセージの受信処理
+   *
+   * 最高重要度のFATALレベルログメッセージを内部バッファに保存します。
+   * システムの致命的なエラーやクラッシュ情報の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
+
   fatal(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.FATAL, message);
   }
+
+  /**
+   * ERRORレベルログメッセージの受信処理
+   *
+   * ERRORレベルログメッセージを内部バッファに保存します。
+   * アプリケーションエラーや例外情報の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
 
   error(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.ERROR, message);
   }
 
+  /**
+   * WARNレベルログメッセージの受信処理
+   *
+   * WARNレベルログメッセージを内部バッファに保存します。
+   * 警告情報や注意喚起メッセージの記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
+
   warn(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.WARN, message);
   }
+
+  /**
+   * INFOレベルログメッセージの受信処理
+   *
+   * INFOレベルログメッセージを内部バッファに保存します。
+   * 一般的な情報メッセージやステータス通知の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
 
   info(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.INFO, message);
   }
 
+  /**
+   * DEBUGレベルログメッセージの受信処理
+   *
+   * DEBUGレベルログメッセージを内部バッファに保存します。
+   * 開発時のデバッグ情報やトレース情報の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
+
   debug(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.DEBUG, message);
   }
+
+  /**
+   * TRACEレベルログメッセージの受信処理
+   *
+   * 最低重要度のTRACEレベルログメッセージを内部バッファに保存します。
+   * 詳細なトレース情報や実行フロー追跡の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
 
   trace(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.TRACE, message);
   }
 
+  /**
+   * VERBOSEレベルログメッセージの受信処理
+   *
+   * VERBOSEレベルログメッセージを内部バッファに保存します。
+   * 詳細な動作ログや冗長な情報の記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
+
   verbose(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.VERBOSE, message);
   }
+
+  /**
+   * LOGレベルログメッセージの受信処理
+   *
+   * 汎用LOGレベルログメッセージを内部バッファに保存します。
+   * 一般的なログ出力や標準的なメッセージ記録に使用されます。
+   *
+   * @param formattedLogMessage - フォーマット済みログメッセージ
+   */
 
   log(message: AgFormattedLogMessage): void {
     this.executeLog(AG_LOGLEVEL.LOG, message);

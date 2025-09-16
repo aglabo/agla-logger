@@ -96,8 +96,11 @@ export class AgLoggerConfig {
   }
 
   /**
-   * Clears the logger map and fills all log levels with NullLogger.
-   * This ensures all logging is disabled by default for security.
+   * ロガーマップの初期化処理
+   *
+   * 既存のロガーマップをクリアし、全ログレベルにNullLoggerを設定します。
+   * セキュリティ目的で、未定義ログレベルへの意図しない出力を防止します。
+   * システムの初期化時や設定リセット時に内部的に呼び出されます。
    */
   private clearLoggerMap(): void {
     this._loggerMap.clear();
@@ -111,8 +114,6 @@ export class AgLoggerConfig {
     this._loggerMap.set(AG_LOGLEVEL.DEBUG, NullLogger);
     this._loggerMap.set(AG_LOGLEVEL.TRACE, NullLogger);
   }
-
-  /**  }
 
   /**
    * Gets a copy of the current logger map.

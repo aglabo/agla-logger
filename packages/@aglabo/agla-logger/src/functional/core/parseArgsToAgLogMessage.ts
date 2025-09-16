@@ -20,11 +20,14 @@ export type LogMessage = {
 // Helper functions (pure functions)
 
 /**
- * Checks if an argument should be included in the log message text.
- * Primitive types are concatenated into the message, while complex types are stored separately.
+ * メッセージ引数判定の説明
  *
- * @param arg - The argument to check
- * @returns True if the argument is a primitive type that belongs in the message
+ * 未知の値がログメッセージの引数として適切かどうかを判定します。
+ * プリミティブ型（string、number、boolean、symbol）のフィルタリングを行い、
+ * 複雑なオブジェクトや関数を除外してログメッセージの品質を保持します。
+ *
+ * @param arg - 判定対象の値
+ * @returns プリミティブ型として有効な場合true、それ以外はfalse
  */
 const isMessageArgument = (arg: unknown): arg is string | number | boolean | symbol => {
   const argType = typeof arg;
@@ -32,11 +35,15 @@ const isMessageArgument = (arg: unknown): arg is string | number | boolean | sym
 };
 
 /**
- * Checks if an argument is a valid timestamp string.
- * Only accepts ISO format or 'yyyy-mm-dd HH:MM:SS' format.
+ * タイムスタンプ検証の説明
  *
- * @param arg - The argument to check
- * @returns True if the argument is a valid ISO timestamp or 'yyyy-mm-dd HH:MM:SS' format
+ * 未知の値が有効なタイムスタンプ文字列かどうかを検証します。
+ * ISO8601形式（YYYY-MM-DDTHH:MM:SS.sssZ）とカスタム形式
+ * （YYYY-MM-DD HH:MM:SS）の両方に対応し、実際のDate変換による
+ * 有効性チェックも実行します。
+ *
+ * @param arg - 検証対象の値
+ * @returns 有効なタイムスタンプ文字列の場合true、それ以外はfalse
  */
 const isTimestamp = (arg: unknown): arg is string => {
   if (typeof arg !== 'string') { return false; }
@@ -52,13 +59,6 @@ const isTimestamp = (arg: unknown): arg is string => {
   const timestamp = new Date(arg);
   return !isNaN(timestamp.getTime());
 };
-
-/**
- * Extracts the message string from arguments by filtering stringifiable values.
- *
- * @param args - Array of arguments to process
- * @returns Concatenated string message
- */
 
 /**
  * Extracts non-message arguments for structured data storage.

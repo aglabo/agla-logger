@@ -18,11 +18,26 @@ import { ErrorThrowFormatter } from './ErrorThrowFormatter';
 import { AgToLabel } from '../../utils/AgLogHelpers';
 
 /**
- * カリー化されたファクトリ関数
- * カスタムルーチンを受け取り、そのルーチンをbindしたMockFormatterクラスを返す
+ * カリー化されたモックフォーマッタファクトリ関数
  *
- * @param formatRoutine - カスタムフォーマットルーチン
- * @returns カスタムルーチンをbindしたMockFormatterクラス
+ * カスタムフォーマットルーチンを受け取り、そのルーチンを使用する
+ * AgMockFormatterの派生クラスを動的に生成します。
+ * テスト環境での柔軟なフォーマット動作をサポートします。
+ *
+ * 生成されるクラスは__isMockConstructorマーカーを持ち、
+ * 型ガード関数による識別が可能です。
+ *
+ * @param formatRoutine - カスタムフォーマット処理ルーチン
+ * @returns AgMockFormatterを継承する動的生成クラスのコンストラクタ
+ *
+ * @example
+ * ```typescript
+ * import { createMockFormatter } from './MockFormatter';
+ *
+ * const customRoutine = (msg) => `[CUSTOM] ${msg.message}`;
+ * const CustomMockFormatter = createMockFormatter(customRoutine);
+ * const formatter = new CustomMockFormatter();
+ * ```
  */
 export const createMockFormatter = (formatRoutine: AgFormatRoutine): AgMockConstructor => {
   return class extends AgMockFormatter {
