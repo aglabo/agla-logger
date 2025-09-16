@@ -6,18 +6,16 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// Testing framework - テストランナーと検証ライブラリ
+// 外部ライブラリ（Vitest）
 import { beforeEach, describe, expect, it } from 'vitest';
 
-// Constants and enums - ログレベル定数とEnum定義
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
-
-// Test target - テスト対象のMockLoggerクラス
-import { MockLogger } from '../../MockLogger';
-
-// Type definitions - TypeScript型定義（実行時影響なし）
 import type { AgFormattedLogMessage, AgLogLevel, AgLogMessage } from '../../../../../shared/types';
 import type { AgMockBufferLogger } from '../../MockLogger';
+
+// プラグインシステム
+import { MockLogger } from '../../MockLogger';
 
 /**
  * MockLoggerプラグインの包括的ユニットテストスイート

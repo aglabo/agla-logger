@@ -6,16 +6,16 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行、アサーション、モック機能を提供
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-// ログレベル定数 - テストで使用するログレベル定義
-import { AG_LOGLEVEL } from '../../../../../shared/types';
-
-// Node.js Console型定義 - console オブジェクトの型情報
+// Node.js標準モジュール
 import type { Console } from 'node:console';
 
-// テスト対象 - コンソール出力ロガープラグインの実装
+// 外部ライブラリ（Vitest）
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// 型定義・インターフェース
+import { AG_LOGLEVEL } from '../../../../../shared/types';
+
+// プラグインシステム
 import { ConsoleLogger, ConsoleLoggerMap } from '../../../../plugins/logger/ConsoleLogger';
 
 // テスト用Console型定義 - console オブジェクトのプロパティを安全に変更するため

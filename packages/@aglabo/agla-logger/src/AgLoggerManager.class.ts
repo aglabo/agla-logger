@@ -6,18 +6,22 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 外部ライブラリ
+import { ErrorSeverity } from '@aglabo/agla-error';
+
+// 型定義・インターフェース
 import type { AgLoggerFunction, AgLoggerMap, AgLoggerOptions } from '../shared/types/AgLogger.interface';
 import { AgLoggerError } from '../shared/types/AgLoggerError.types';
 import type { AgLogLevel } from '../shared/types/AgLogLevel.types';
-// constants
-import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
-// plugins
-import { NullLogger } from './plugins/logger/NullLogger';
 
-// AgLogger
-import { ErrorSeverity } from '@aglabo/agla-error';
+// 定数・設定・エラーメッセージ
+import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
+
+// 内部実装・コアクラス
 import { AgLogger } from './AgLogger.class';
+
+// プラグインシステム
+import { NullLogger } from './plugins/logger/NullLogger';
 
 /**
  * Singleton manager class providing AgLogger frontend interface.

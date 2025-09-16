@@ -6,12 +6,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// internal modules
-import { createTestId, getNormalizedBasename } from '../../utils/testIdUtils';
-import { MockLogger } from './MockLogger';
-
-// types
-import { AG_LOGLEVEL } from '../../../shared/types';
+// 型定義・インターフェース
 import type {
   AgFormattedLogMessage,
   AgLoggerFunction,
@@ -21,6 +16,15 @@ import type {
   AgLogMessage,
 } from '../../../shared/types';
 import type { AgMockBufferLogger } from './MockLogger';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL } from '../../../shared/types';
+
+// プラグインシステム
+import { MockLogger } from './MockLogger';
+
+// ユーティリティ・ヘルパー関数
+import { createTestId, getNormalizedBasename } from '../../utils/testIdUtils';
 
 /**
  * Mock logger for E2E testing that supports parallel test execution.

@@ -8,13 +8,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 型定義・インターフェース
 import type { AgFormatRoutine, AgMockConstructor } from '../../../shared/types/AgMockConstructor.class';
 
-// plugins
+// プラグインシステム
 import { AgMockFormatter } from './AgMockFormatter';
 import { ErrorThrowFormatter } from './ErrorThrowFormatter';
-// utilities
+
+// ユーティリティ・ヘルパー関数
 import { AgToLabel } from '../../utils/AgLogHelpers';
 
 /**

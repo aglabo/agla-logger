@@ -6,8 +6,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { AG_LOGLEVEL_KEYS } from '../../shared/types';
+// 型定義・インターフェース
 import type { AgFormattedLogMessage } from '../../shared/types';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL_KEYS } from '../../shared/types';
 
 /**
  * Logger method type definition

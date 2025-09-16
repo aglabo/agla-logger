@@ -9,12 +9,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// vitest
-import { describe, expect, it } from 'vitest';
-
-// external lib
+// 外部ライブラリ
 import { type AglaError, ErrorSeverity } from '@aglabo/agla-error';
 
+// 外部ライブラリ（Vitest）
+import { describe, expect, it } from 'vitest';
+
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../shared/types';
 import type { AgFormatFunction, AgLoggerOptions, AgLogLevel, AgLogMessage } from '../../shared/types';
 import { AgLoggerError } from '../../shared/types';

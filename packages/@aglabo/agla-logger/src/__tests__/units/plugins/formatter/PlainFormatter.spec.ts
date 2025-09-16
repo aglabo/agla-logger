@@ -6,15 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// vitest imports
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 
-// constants
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
-// types
 import type { AgLogMessage } from '../../../../../shared/types/AgLogger.types';
 
-// subject under test
+// プラグインシステム
 import { PlainFormatter } from '../../../../plugins/formatter/PlainFormatter';
 
 describe('Given: PlainFormatter with valid log message structures', () => {

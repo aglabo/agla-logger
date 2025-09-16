@@ -6,13 +6,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// vitest
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 
-// constants
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 
-// test target
+// プラグインシステム
 import { E2eMockLogger } from '../E2eMockLogger';
 
 describe('Feature: E2eMockLogger test ID management and basic functionality', () => {

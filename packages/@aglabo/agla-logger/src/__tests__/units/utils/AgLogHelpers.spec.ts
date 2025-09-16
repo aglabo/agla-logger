@@ -6,9 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { describe, expect, it, vi } from 'vitest';
+
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 import type { AgLogLevel } from '../../../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import {
   AgToLabel,
   AgToLogLevel,

@@ -6,16 +6,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// libs
-import type { AgLoggerMethodsInterface } from '../../utils/AgLoggerMethod';
-import { bindLoggerMethods } from '../../utils/AgLoggerMethod';
-import { isValidLogLevel } from '../../utils/AgLogValidators';
-
-import { NullLogger } from './NullLogger';
-
-// constants
-import { AG_LOGLEVEL, AG_LOGLEVEL_KEYS, AG_LOGLEVEL_VALUES } from '../../../shared/types';
-// types
+// 型定義・インターフェース
 import type {
   AgFormattedLogMessage,
   AgLoggerFunction,
@@ -24,6 +15,17 @@ import type {
   AgLogLevelLabel,
   AgLogMessage,
 } from '../../../shared/types';
+import type { AgLoggerMethodsInterface } from '../../utils/AgLoggerMethod';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL, AG_LOGLEVEL_KEYS, AG_LOGLEVEL_VALUES } from '../../../shared/types';
+
+// プラグインシステム
+import { NullLogger } from './NullLogger';
+
+// ユーティリティ・ヘルパー関数
+import { bindLoggerMethods } from '../../utils/AgLoggerMethod';
+import { isValidLogLevel } from '../../utils/AgLogValidators';
 
 /**
  * Universal mock logger for unit and integration testing.

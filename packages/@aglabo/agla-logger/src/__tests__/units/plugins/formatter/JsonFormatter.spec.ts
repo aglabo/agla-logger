@@ -6,15 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行とアサーション機能を提供
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 
-// ログレベル定数 - テストで使用するログレベル定義
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
-// 型定義 - ログメッセージの構造を定義する型
 import type { AgLogMessage } from '../../../../../shared/types/AgLogger.types';
 
-// テスト対象 - JSON形式フォーマッタープラグインの実装
+// プラグインシステム
 import { JsonFormatter } from '../../../../plugins/formatter/JsonFormatter';
 
 // test main

@@ -9,16 +9,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 import type { TestContext } from 'vitest';
 
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 import type { AgFormatFunction } from '../../../../shared/types';
-import { AgLogger } from '../../../AgLogger.class';
-
 import type { AgMockBufferLogger } from '../../../plugins/logger/MockLogger';
 
-// logger & formatter
+// 内部実装・コアクラス
+import { AgLogger } from '../../../AgLogger.class';
+
+// プラグインシステム
 import { PlainFormatter } from '../../../plugins/formatter/PlainFormatter';
 import { MockLogger } from '../../../plugins/logger/MockLogger';
 

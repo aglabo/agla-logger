@@ -6,15 +6,18 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行、アサーション、モック機能を提供
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// テスト対象 - createManager と getLogger ユーティリティ関数およびAgManagerグローバル変数
-import { AgManager, createManager, getLogger } from '../../index';
-// 型定義とクラス
+// 型定義・インターフェース
 import type { AgLoggerOptions } from '../../../shared/types/AgLogger.interface';
+
+// 内部実装・コアクラス
 import { AgLogger } from '../../AgLogger.class';
 import { AgLoggerManager } from '../../AgLoggerManager.class';
+
+// ユーティリティ・ヘルパー関数
+import { AgManager, createManager, getLogger } from '../../index';
 
 /**
  * AgManagerUtils 仕様準拠BDDテストスイート

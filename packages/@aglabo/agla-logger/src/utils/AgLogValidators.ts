@@ -9,12 +9,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ
 import { ErrorSeverity } from '@aglabo/agla-error';
+
+// 型定義・インターフェース
 import { AgLoggerError } from 'shared/types/AgLoggerError.types';
-import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../../shared/constants/agErrorMessages';
-import { AG_LOGLEVEL } from '../../shared/types';
 import type { AgLogLevel } from '../../shared/types';
 import type { AgMockConstructor } from '../../shared/types/AgMockConstructor.class';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../../shared/constants/agErrorMessages';
+import { AG_LOGLEVEL } from '../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import { valueToString } from './AgLogHelpers';
 
 /**

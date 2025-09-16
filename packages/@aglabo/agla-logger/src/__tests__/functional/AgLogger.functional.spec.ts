@@ -6,17 +6,20 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Constants and Types
-import { DISABLE, ENABLE } from '../../../shared/constants/common.constants';
-import { AG_LOGLEVEL } from '../../../shared/types';
+// 型定義・インターフェース
 import type { AgLogLevel } from '../../../shared/types';
+import { AG_LOGLEVEL } from '../../../shared/types';
 
-// Test target
+// 定数・設定・エラーメッセージ
+import { DISABLE, ENABLE } from '../../../shared/constants/common.constants';
+
+// 内部実装・コアクラス
 import { AgLogger } from '../../AgLogger.class';
 
-// Test utilities
+// プラグインシステム
 import { MockFormatter } from '../../plugins/formatter/MockFormatter';
 import { MockLogger } from '../../plugins/logger/MockLogger';
 

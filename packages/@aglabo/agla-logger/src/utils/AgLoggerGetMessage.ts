@@ -6,8 +6,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 型定義・インターフェース
 import type { AgLogLevel } from '../../shared/types';
 import type { AgLogMessage } from '../../shared/types/AgLogger.types';
+
+// 機能モジュール
 import { parseArgsToAgLogMessage } from '../functional/core/parseArgsToAgLogMessage';
 
 /**

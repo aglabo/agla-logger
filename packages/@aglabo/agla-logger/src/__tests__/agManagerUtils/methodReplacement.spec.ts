@@ -6,14 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク: テスト実行・アサーション・モック
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// テスト対象: AgLoggerManagerとAgManager（index経由で自動初期化を有効化）
-import { AgLoggerManager, AgManager, createManager } from '../../index';
-
-// 共有定数: ログレベル定義
+// 定数・設定・エラーメッセージ
 import { AG_LOGLEVEL } from '../../../shared/types';
+
+// ユーティリティ・ヘルパー関数
+import { AgLoggerManager, AgManager, createManager } from '../../index';
 
 /**
  * AgManagerUtils Method Replacement Tests

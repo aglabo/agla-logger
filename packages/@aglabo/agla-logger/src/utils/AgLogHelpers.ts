@@ -6,8 +6,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { AG_LABEL_TO_LOGLEVEL_MAP, AG_LOGLEVEL, AG_LOGLEVEL_TO_LABEL_MAP } from '../../shared/types';
+// 型定義・インターフェース
 import type { AgFormattedLogMessage, AgLoggerFunction, AgLogLevel, AgLogLevelLabel } from '../../shared/types';
+
+// 定数・設定・エラーメッセージ
+import { AG_LABEL_TO_LOGLEVEL_MAP, AG_LOGLEVEL, AG_LOGLEVEL_TO_LABEL_MAP } from '../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import { isValidLogLevel } from './AgLogValidators';
 
 /**

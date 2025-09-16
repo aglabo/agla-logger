@@ -18,27 +18,27 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// testing
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 
-// error
-
-// constants
-import { DISABLE, ENABLE } from '../../../../shared/constants/common.constants';
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
-
-// types
 import type { AgLogLevel, AgLogMessage } from '../../../../shared/types';
 import type { AgLoggerOptions } from '../../../../shared/types/AgLogger.interface';
 import { AgLoggerError } from '../../../../shared/types/AgLoggerError.types';
 
-// target
+// 定数・設定・エラーメッセージ
+import { ERROR_TYPES } from 'shared/constants';
+import { DISABLE, ENABLE } from '../../../../shared/constants/common.constants';
+
+// 内部実装・コアクラス
 import { AgLoggerConfig } from '../../../internal/AgLoggerConfig.class';
-// plugins
+
+// プラグインシステム
 import { NullFormatter } from '../../../plugins/formatter/NullFormatter';
 import { NullLogger } from '../../../plugins/logger/NullLogger';
-// utilities
-import { ERROR_TYPES } from 'shared/constants';
+
+// ユーティリティ・ヘルパー関数
 import { validateLogLevel } from '../../../utils/AgLogValidators';
 
 /**
