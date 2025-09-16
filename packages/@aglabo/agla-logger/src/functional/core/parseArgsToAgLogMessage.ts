@@ -6,18 +6,17 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import type { AgLogLevel } from '../../../shared/types';
-import { AgToLabel } from '../../utils/AgLogHelpers';
+// 型定義・インターフェース
+import type { AgLogLevel, AgLogMessage } from '../../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import { extractMessage } from '../../utils/AgLogHelpers';
+import { AgToLabel } from '../../utils/AgLogHelpers';
 
-export type LogMessage = {
+// 内部型
+type _TLogMessage = AgLogMessage & {
   readonly level: string;
-  readonly message: string;
-  readonly timestamp: Date;
-  readonly args: readonly unknown[];
 };
-
-// Helper functions (pure functions)
 
 /**
  * メッセージ引数判定の説明
@@ -95,10 +94,11 @@ const parseTimestamp = (args: readonly unknown[]): [Date, readonly unknown[]] =>
 export const parseArgsToAgLogMessage = (
   level: AgLogLevel,
   ...args: readonly unknown[]
-): LogMessage => {
+): _TLogMessage => {
   const [timestamp, remainingArgs] = parseTimestamp(args);
 
-  const result: LogMessage = {
+  const result: _TLogMessage = {
+    logLevel: level,
     level: AgToLabel(level),
     message: extractMessage(remainingArgs),
     timestamp,

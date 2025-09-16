@@ -6,7 +6,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// utilities
+// 型定義・インターフェース
+import type { AgLoggerMap, AgLogLevel, AgLogMessage } from '../../shared/types';
+import type { AgFormatFunction, AgLoggerFunction, AgLoggerOptions } from '../../shared/types/AgLogger.interface';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL } from '../../shared/types';
+
+// プラグインシステム
+import type { AgMockFormatter } from '../plugins/formatter/AgMockFormatter';
+import { NullFormatter } from '../plugins/formatter/NullFormatter';
+import { NullLogger } from '../plugins/logger/NullLogger';
+
+// ユーティリティ・ヘルパー関数
 import {
   isAgMockConstructor,
   isStandardLogLevel,
@@ -14,17 +26,6 @@ import {
   isValidLogger,
   isValidLogLevel,
 } from '../utils/AgLogValidators';
-
-// types
-import type { AgLoggerMap, AgLogLevel, AgLogMessage } from '../../shared/types';
-import type { AgFormatFunction, AgLoggerFunction, AgLoggerOptions } from '../../shared/types/AgLogger.interface';
-
-// constants
-import { AG_LOGLEVEL } from '../../shared/types';
-// plugins
-import type { AgMockFormatter } from '../plugins/formatter/AgMockFormatter';
-import { NullFormatter } from '../plugins/formatter/NullFormatter';
-import { NullLogger } from '../plugins/logger/NullLogger';
 
 /**
  * Internal configuration management class for AgLogger.
