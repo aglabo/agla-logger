@@ -66,13 +66,13 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.18.4)(tsx@4.20.5)
 
-  packages/@aglabo/agla-error: {}
+  packages/@aglabo/agla-error-core: {}
 
   packages/@aglabo/agla-logger:
     devDependencies:
-      '@aglabo/agla-error':
+      '@aglabo/agla-error-core':
         specifier: workspace:*
-        version: link:../agla-error
+        version: link:../agla-error-core
 
 packages:
 

@@ -10,7 +10,7 @@
 // https://opensource.org/licenses/MIT
 
 // 外部ライブラリ
-import { ErrorSeverity } from '@aglabo/agla-error';
+import { ErrorSeverity } from '@aglabo/agla-error-core';
 
 // 型定義・インターフェース
 import { AgLoggerError } from 'shared/types/AgLoggerError.types';

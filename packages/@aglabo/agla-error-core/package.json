@@ -1,5 +1,5 @@
 {
-  "name": "@aglabo/agla-error",
+  "name": "@aglabo/agla-error-core",
   "_comment": "@(#) AglaError: standardized error handling with AglaError class and ErrorSeverity enum",
   "private": true,
   "version": "0.1.0",

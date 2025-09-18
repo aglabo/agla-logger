@@ -40,6 +40,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@aglabo/agla-error": "workspace:*"
+    "@aglabo/agla-error-core": "workspace:*"
   }
 }
