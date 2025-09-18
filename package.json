@@ -9,7 +9,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "keywords": [],
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "engines": {
     "node": ">=20",
     "pnpm:": ">=10"
