@@ -1,21 +1,24 @@
 {
   "name": "@aglabo/agla-logger-core",
   "_comment": "@(#) AgLogger: reusable structured logger supporting log levels, formatting, and runtime context injection",
-  "private": true,
   "version": "0.1.0",
   "description": "Structured logger with log levels, formatting, and contextual metadata support",
   "author": "atsushifx <https://github.com/atsushifx>",
   "license": "MIT",
   "type": "module",
   "main": "./module/index.js",
-  "types": "./maps/src/index.d.ts",
+  "types": "./module/index.d.ts",
   "exports": {
     ".": {
-      "types": "./maps/src/index.d.ts",
       "import": "./module/index.js",
+      "types": "./module/index.d.ts",
       "require": "./lib/index.cjs"
     }
   },
+  "files": [
+    "lib",
+    "module"
+  ],
   "scripts": {
     "prepublishOnly": "pnpm run check:types && pnpm run lint:all && pnpm run lint:secrets && pnpm run check:dprint && pnpm run build",
     "build": "concurrently \"pnpm run build:cjs\" \"pnpm run build:esm\" \"pnpm run build:types\"",
