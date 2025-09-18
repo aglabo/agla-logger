@@ -1,5 +1,5 @@
-// src: src/index.ts
-// @(#) : agla-logger exports
+// src: src/error.ts
+// @(#) : agla-error.ts
 //
 // Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
@@ -7,4 +7,3 @@
 // https://opensource.org/licenses/MIT
 
 export * from '@aglabo/agla-error';
-export * from '@aglabo/agla-logger-core';

@@ -19,6 +19,8 @@ export default defineConfig({
   // entry points
   entry: {
     'index': './src/index.ts',
+    'logger': './src/logger.ts',
+    'error': './src/error.ts',
   },
 
   // sub-packages definition
@@ -30,7 +32,10 @@ export default defineConfig({
   dts: true,
 
   // 依存を外部化（= core を同梱しない）
-  external: ['@aglabo/agla-error-core'],
+  external: [
+    '@aglabo/agla-logger-core',
+    '@aglabo/agla-error',
+  ],
 
   // （任意）バンドル対象から node_modules を確実に外す
   skipNodeModulesBundle: true,

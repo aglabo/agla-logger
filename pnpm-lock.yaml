@@ -72,6 +72,15 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/@aglabo/agla-error-core
 
+  aggregators/@aglabo/agla-logger:
+    dependencies:
+      '@aglabo/agla-error':
+        specifier: workspace:*
+        version: link:../agla-error
+      '@aglabo/agla-logger-core':
+        specifier: workspace:*
+        version: link:../../../packages/@aglabo/agla-logger-core
+
   packages/@aglabo/agla-error-core: {}
 
   packages/@aglabo/agla-logger-core:
