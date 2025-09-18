@@ -24,12 +24,14 @@ export default [
   // --- 1. common ignores
   {
     ignores: [
+      '**/dist/**',
       '**/lib/**',
       '**/maps/**',
       '**/module/**',
-      '**/dist/**',
       '**/node_modules/**',
       '**/.cache/**',
+      '**/configs/**',
+      '**/*.d.ts',
     ],
   },
 

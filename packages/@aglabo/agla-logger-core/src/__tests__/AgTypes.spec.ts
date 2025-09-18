@@ -10,7 +10,7 @@
 // https://opensource.org/licenses/MIT
 
 // 外部ライブラリ
-import { type AglaError, ErrorSeverity } from '@aglabo/agla-error';
+import { type AglaError, ErrorSeverity } from '@aglabo/agla-error-core';
 
 // 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';

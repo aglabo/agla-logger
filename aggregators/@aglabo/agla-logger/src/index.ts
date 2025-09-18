@@ -1,0 +1,10 @@
+// src: src/index.ts
+// @(#) : agla-logger exports
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
+export * from '@aglabo/agla-error';
+export * from '@aglabo/agla-logger-core';

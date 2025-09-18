@@ -1,9 +1,9 @@
 {
-  "name": "@aglabo/agla-error",
-  "_comment": "@(#) AglaError: standardized error handling with AglaError class and ErrorSeverity enum",
+  "name": "@aglabo/agla-logger-core",
+  "_comment": "@(#) AgLogger: reusable structured logger supporting log levels, formatting, and runtime context injection",
   "private": true,
   "version": "0.1.0",
-  "description": "AglaError class and ErrorSeverity enum for standardized error handling",
+  "description": "Structured logger with log levels, formatting, and contextual metadata support",
   "author": "atsushifx <https://github.com/atsushifx>",
   "license": "MIT",
   "type": "module",
@@ -39,5 +39,7 @@
     "sync:configs": "bash ../../../scripts/sync-configs.sh . "
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@aglabo/agla-error-core": "workspace:*"
+  }
 }

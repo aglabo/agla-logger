@@ -28,7 +28,8 @@
       "command": "pnpx",
       "args": [
         "@pimzino/spec-workflow-mcp@latest",
-        "."
+        ".",
+        "--AutoStartDashboard"
       ]
     }
   }
