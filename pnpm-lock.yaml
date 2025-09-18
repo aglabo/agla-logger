@@ -68,7 +68,7 @@ importers:
 
   packages/@aglabo/agla-error-core: {}
 
-  packages/@aglabo/agla-logger:
+  packages/@aglabo/agla-logger-core:
     devDependencies:
       '@aglabo/agla-error-core':
         specifier: workspace:*

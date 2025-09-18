@@ -1,8 +1,8 @@
 {
-  "name": "@aglabo/agla-logger",
+  "name": "@aglabo/agla-logger-core",
   "_comment": "@(#) AgLogger: reusable structured logger supporting log levels, formatting, and runtime context injection",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Structured logger with log levels, formatting, and contextual metadata support",
   "author": "atsushifx <https://github.com/atsushifx>",
   "license": "MIT",
