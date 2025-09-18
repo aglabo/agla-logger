@@ -1,9 +1,8 @@
 # src; pnpm-workspace.yaml
 # @(#) : pnpmによるmonorepo設定
 packages:
-  - apps/**
   - packages/**
-  - shared/**
+  - aggregators/**
 ignoredBuiltDependencies:
   - esbuild
   - unrs-resolver

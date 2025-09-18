@@ -1,0 +1,45 @@
+{
+  "name": "@aglabo/agla-logger",
+  "_comment": "@(#) AgLogger: reusable structured logger supporting log levels, formatting, and runtime context injection",
+  "version": "0.1.0",
+  "description": "Aggregator for agla-logger-core and agla-error (re-export only)",
+  "author": "atsushifx <https://github.com/atsushifx>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "types": "./dist/logger.d.ts"
+    },
+    "./error": {
+      "import": "./dist/error.js",
+      "types": "./dist/error.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup --config ./configs/tsup.config.esm.ts",
+    "prepublishOnly": "pnpm run build && pnpm run check:dprint && pnpm run lint:secrets",
+    "clean": "rimraf dist .cache",
+    "format:dprint": "dprint fmt",
+    "check:dprint": "dprint check",
+    "lint:secrets": "secretlint --secretlintrc ./configs/secretlint.config.yaml --secretlintignore .gitignore \"**/*\"",
+    "commitlint": "commitlint --config ./configs/commitlint.config.ts --edit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aglabo/agla-logger-core": "workspace:*",
+    "@aglabo/agla-error": "workspace:*"
+  }
+}

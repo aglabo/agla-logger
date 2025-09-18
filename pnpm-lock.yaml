@@ -66,6 +66,12 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.18.4)(tsx@4.20.5)
 
+  aggregators/@aglabo/agla-error:
+    dependencies:
+      '@aglabo/agla-error-core':
+        specifier: workspace:*
+        version: link:../../../packages/@aglabo/agla-error-core
+
   packages/@aglabo/agla-error-core: {}
 
   packages/@aglabo/agla-logger-core:

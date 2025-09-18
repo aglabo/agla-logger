@@ -31,16 +31,7 @@ export default [
   {
     files: [
       'packages/**/*.ts',
-      'shared/packages/**/*.ts',
-    ],
-    ignores: [
-      '**/lib/**',
-      '**/maps/**',
-      '**/module/**',
-      '**/dist/**',
-      '**/node_modules/**',
-      '**/.cache/**',
-      '**/configs/**',
+      'aggregators/**/*.ts',
     ],
     languageOptions: {
       parser: tsparser,
