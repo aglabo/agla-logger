@@ -6,21 +6,18 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行、アサーション、モック機能を提供
+// 外部ライブラリ（Vitest）
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// ログレベル定数 - テストで使用するログレベル定義
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
 
-// Node.js Console型定義 - console オブジェクトの型情報
-import type { Console } from 'node:console';
-
-// テスト対象 - コンソール出力ロガープラグインの実装
+// プラグインシステム
 import { ConsoleLogger, ConsoleLoggerMap } from '../../../../plugins/logger/ConsoleLogger';
 
 // テスト用Console型定義 - console オブジェクトのプロパティを安全に変更するため
 type _TTestableConsole = {
-  [K in keyof Console]: Console[K] | undefined | unknown;
+  [K in keyof typeof console]: (typeof console)[K] | undefined | unknown;
 };
 
 // mock console methods
@@ -32,17 +29,10 @@ const mockConsole = {
 };
 
 /**
- * ConsoleLoggerプラグインの包括的ユニットテストスイート（Given/When/Then形式）
- *
- * @description ConsoleLoggerの全機能をBDD形式で体系的に検証
- * デフォルトロガー、レベル別マッピング、エラー処理を包括的にテスト
- *
- * @testType Unit Test
- * @testTarget ConsoleLogger Plugin
- * @coverage
- * - 正常系: 基本動作、レベルマッピング
- * - 異常系: エラー処理、例外ハンドリング
- * - エッジケース: 境界値、特殊入力、状態不整合
+ * @suite ConsoleLogger Plugin | Unit
+ * @description Comprehensive unit tests for ConsoleLogger plugin functionality
+ * @testType unit
+ * Scenarios: Default logging, Level mapping, Exception handling, Edge cases
  */
 describe('Given: ConsoleLogger plugin is available', () => {
   beforeEach(() => {
@@ -51,14 +41,9 @@ describe('Given: ConsoleLogger plugin is available', () => {
   });
 
   /**
-   * 正常系テスト: 基本機能
-   *
-   * @description ConsoleLoggerの基本機能が正常に動作することを検証
-   */
-  /**
-   * デフォルトConsoleLogger関数のテスト
-   *
-   * @description console.logへの引数委譲を検証
+   * @context When
+   * @scenario Default logger usage
+   * @description Test default ConsoleLogger function delegation to console.log
    */
   describe('When: using default ConsoleLogger function', () => {
     beforeEach(() => {
@@ -83,9 +68,9 @@ describe('Given: ConsoleLogger plugin is available', () => {
   });
 
   /**
-   * ConsoleLoggerMapのテスト
-   *
-   * @description ログレベルとconsoleメソッドのマッピングを検証
+   * @context When
+   * @scenario Level mapping usage
+   * @description Test ConsoleLoggerMap log level to console method mapping
    */
   describe('When: using ConsoleLoggerMap for level mapping', () => {
     it('Then: [正常] - should map log levels to correct console methods', () => {
@@ -122,9 +107,9 @@ describe('Given: ConsoleLogger plugin is available', () => {
   });
 
   /**
-   * 異常系テスト: エラー処理・例外ハンドリング
-   *
-   * @description エラー状況での動作を検証
+   * @context When
+   * @scenario Exception handling
+   * @description Test console method exception handling and error scenarios
    */
   describe('When: console methods encounter exceptions', () => {
     it('Then: [異常] - should handle console method throwing errors', () => {
@@ -179,9 +164,9 @@ describe('Given: ConsoleLogger plugin is available', () => {
   });
 
   /**
-   * エッジケース: 境界値と特殊条件
-   *
-   * @description 境界値や特殊な入力での動作を検証
+   * @context When
+   * @scenario Edge case handling
+   * @description Test boundary conditions and special input handling
    */
   describe('When: handling edge cases and boundary conditions', () => {
     it('Then: [エッジケース] - should handle undefined and null messages', () => {

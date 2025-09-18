@@ -6,7 +6,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// utilities
+// 型定義・インターフェース
+import type { AgLoggerMap, AgLogLevel, AgLogMessage } from '../../shared/types';
+import type { AgFormatFunction, AgLoggerFunction, AgLoggerOptions } from '../../shared/types/AgLogger.interface';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL } from '../../shared/types';
+
+// プラグインシステム
+import type { AgMockFormatter } from '../plugins/formatter/AgMockFormatter';
+import { NullFormatter } from '../plugins/formatter/NullFormatter';
+import { NullLogger } from '../plugins/logger/NullLogger';
+
+// ユーティリティ・ヘルパー関数
 import {
   isAgMockConstructor,
   isStandardLogLevel,
@@ -14,17 +26,6 @@ import {
   isValidLogger,
   isValidLogLevel,
 } from '../utils/AgLogValidators';
-
-// types
-import type { AgLoggerMap, AgLogLevel, AgLogMessage } from '../../shared/types';
-import type { AgFormatFunction, AgLoggerFunction, AgLoggerOptions } from '../../shared/types/AgLogger.interface';
-
-// constants
-import { AG_LOGLEVEL } from '../../shared/types';
-// plugins
-import type { AgMockFormatter } from '../plugins/formatter/AgMockFormatter';
-import { NullFormatter } from '../plugins/formatter/NullFormatter';
-import { NullLogger } from '../plugins/logger/NullLogger';
 
 /**
  * Internal configuration management class for AgLogger.
@@ -96,8 +97,11 @@ export class AgLoggerConfig {
   }
 
   /**
-   * Clears the logger map and fills all log levels with NullLogger.
-   * This ensures all logging is disabled by default for security.
+   * ロガーマップの初期化処理
+   *
+   * 既存のロガーマップをクリアし、全ログレベルにNullLoggerを設定します。
+   * セキュリティ目的で、未定義ログレベルへの意図しない出力を防止します。
+   * システムの初期化時や設定リセット時に内部的に呼び出されます。
    */
   private clearLoggerMap(): void {
     this._loggerMap.clear();
@@ -111,8 +115,6 @@ export class AgLoggerConfig {
     this._loggerMap.set(AG_LOGLEVEL.DEBUG, NullLogger);
     this._loggerMap.set(AG_LOGLEVEL.TRACE, NullLogger);
   }
-
-  /**  }
 
   /**
    * Gets a copy of the current logger map.

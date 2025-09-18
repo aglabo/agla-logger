@@ -32,10 +32,23 @@ const createTestMessage = (message = 'Test message'): AgLogMessage => ({
 const dummyRoutine: AgFormatRoutine = (msg) => msg;
 
 /**
- * MockFormatter.errorThrow 統合テストスイート（BDD: Feature/When/Then）
+ * @suite Mock Formatter Error Handling Behavior Integration | Integration
+ * @description MockFormatter.errorThrowの統合テストスイート
+ * @testType integration
+ * Scenarios: AgLoggerConfig連携, 実際ロガー統合, エラーハンドリング統合
  */
 
+/**
+ * @context Feature
+ * @scenario AgLoggerConfig連携
+ * @description AgLoggerConfigとの連携動作テスト
+ */
 describe('Feature: AgLoggerConfig 連携', () => {
+  /**
+   * @context When
+   * @scenario errorThrowフォーマッターAgLoggerConfig設定
+   * @description errorThrowフォーマッターをAgLoggerConfigに設定する時のテスト
+   */
   describe('When: errorThrow フォーマッタを AgLoggerConfig に設定', () => {
     it('Then [正常]: AgLoggerConfigでErrorThrowFormatterを自動インスタンス化できる', () => {
       // Arrange
@@ -140,7 +153,17 @@ describe('Feature: AgLoggerConfig 連携', () => {
   });
 });
 
+/**
+ * @context Feature
+ * @scenario 実際ロガー統合
+ * @description 実際のロガーとの統合動作テスト
+ */
 describe('Feature: 実際のロガー統合', () => {
+  /**
+   * @context When
+   * @scenario errorThrowフォーマッター実行
+   * @description errorThrowフォーマッターを実行する時のテスト
+   */
   describe('When: errorThrow フォーマッタを実行', () => {
     it('Then [正常]: AgLoggerでerrorThrowを使用してログ処理をテストできる', () => {
       // Arrange
@@ -233,7 +256,17 @@ describe('Feature: 実際のロガー統合', () => {
   });
 });
 
+/**
+ * @context Feature
+ * @scenario エラーハンドリング統合
+ * @description エラーハンドリングの統合動作テスト
+ */
 describe('Feature: エラーハンドリング統合', () => {
+  /**
+   * @context When
+   * @scenario 外部例外キャッチ
+   * @description 例外を外部でキャッチする時のテスト
+   */
   describe('When: 例外を外部でキャッチする', () => {
     it('Then [正常]: errorThrowのエラーを外部でキャッチして処理できる', () => {
       // Arrange

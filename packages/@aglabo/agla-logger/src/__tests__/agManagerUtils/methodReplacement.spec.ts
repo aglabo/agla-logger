@@ -6,20 +6,20 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク: テスト実行・アサーション・モック
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// テスト対象: AgLoggerManagerとAgManager（index経由で自動初期化を有効化）
-import { AgLoggerManager, AgManager, createManager } from '../../index';
-
-// 共有定数: ログレベル定義
+// 定数・設定・エラーメッセージ
 import { AG_LOGLEVEL } from '../../../shared/types';
 
+// ユーティリティ・ヘルパー関数
+import { AgLoggerManager, AgManager, createManager } from '../../index';
+
 /**
- * AgManagerUtils Method Replacement Tests
- *
- * @description setupManagerによるメソッド置き換えでAgManagerが自動管理されることをテスト
- * atsushifx式BDD構造でメソッド置き換え機能の正確性を検証
+ * @suite AgLoggerManager Method Replacement | Unit Tests
+ * @description Testing method replacement functionality with automatic AgManager integration and setupManager behavior
+ * @testType unit
+ * Scenarios: createManager calls, resetSingleton calls, Behavior comparison, Utility function calls, Error cases
  */
 describe('Feature: AgLoggerManager method replacement with automatic AgManager integration', () => {
   beforeEach(() => {
@@ -32,6 +32,11 @@ describe('Feature: AgLoggerManager method replacement with automatic AgManager i
     AgLoggerManager.resetSingleton();
   });
 
+  /**
+   * @context When
+   * @scenario createManager calls
+   * @description Testing AgLoggerManager.createManager method behavior and AgManager integration
+   */
   describe('When AgLoggerManager.createManager is called', () => {
     it('Then: [Normal] - should automatically configure AgManager in addition to original functionality', () => {
       // Arrange: 初期状態の確認
@@ -74,6 +79,11 @@ describe('Feature: AgLoggerManager method replacement with automatic AgManager i
     });
   });
 
+  /**
+   * @context When
+   * @scenario resetSingleton calls
+   * @description Testing AgLoggerManager.resetSingleton method behavior and state management
+   */
   describe('When AgLoggerManager.resetSingleton is called', () => {
     it('Then: [Normal] - should automatically clear AgManager in addition to original functionality', () => {
       // Arrange: managerを作成してAgManagerを設定
@@ -116,6 +126,11 @@ describe('Feature: AgLoggerManager method replacement with automatic AgManager i
     });
   });
 
+  /**
+   * @context When
+   * @scenario Behavior comparison
+   * @description Testing behavior comparison before and after method replacement
+   */
   describe('When comparing behavior before and after method replacement', () => {
     it('Then: [Normal] - should preserve basic functionality of createManager', () => {
       // Act: createManagerを呼び出し
@@ -154,6 +169,11 @@ describe('Feature: AgLoggerManager method replacement with automatic AgManager i
     });
   });
 
+  /**
+   * @context When
+   * @scenario Utility function calls
+   * @description Testing utility function createManager() behavior and integration
+   */
   describe('When utility function createManager() is called', () => {
     it('Then: [Normal] - should automatically configure AgManager', () => {
       // Arrange: 初期状態の確認
@@ -178,6 +198,11 @@ describe('Feature: AgLoggerManager method replacement with automatic AgManager i
     });
   });
 
+  /**
+   * @context When
+   * @scenario Error cases
+   * @description Testing error handling and edge cases in method replacement
+   */
   describe('When testing error cases', () => {
     it('Then: [Error] - should throw error but maintain AgManager state', () => {
       // Arrange: 最初のmanagerを作成

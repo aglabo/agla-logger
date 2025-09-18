@@ -6,26 +6,33 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
+
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 import type { AgLogMessage } from '../../../../shared/types';
 import { AgLoggerError } from '../../../../shared/types/AgLoggerError.types';
 import type { AgFormatRoutine } from '../../../../shared/types/AgMockConstructor.class';
+
+// プラグインシステム
 import { AgMockFormatter } from '../../../plugins/formatter/AgMockFormatter';
+
+// ユーティリティ・ヘルパー関数
 import { isAgMockConstructor, isValidLogLevel, validateLogLevel } from '../../../utils/AgLogValidators';
 
 /**
- * AgLogValidators Consolidated Test Suite
- *
- * @description Comprehensive validation tests for log level and input validation
- * Organized by validation type with max 3-level hierarchy
+ * @suite AgLogValidators Utilities | Unit
+ * @description Comprehensive unit tests for AgLogValidators utility functions
+ * @testType unit
+ * Scenarios: Runtime validation, Boolean validation, Standard level restrictions, Error messaging, Mock constructor detection
  */
-
-/**
- * Log Level Validation Tests
- * Tests for validateLogLevel function - throws on invalid, returns on valid
- */
-describe('Feature: validateLogLevel runtime log level validation', () => {
+describe('Given: validateLogLevel runtime validation utility', () => {
+  /**
+   * @context When
+   * @scenario Valid log level validation
+   * @description Test validation acceptance of all valid log level values
+   */
   describe('When: validating valid log levels', () => {
     const validStandardLevels = [
       { name: 'OFF', value: AG_LOGLEVEL.OFF },
@@ -56,6 +63,11 @@ describe('Feature: validateLogLevel runtime log level validation', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Invalid type validation
+   * @description Test validation rejection of non-numeric types
+   */
   describe('When: validating invalid types', () => {
     const invalidTypeTests = [
       { name: 'undefined', value: undefined },
@@ -75,6 +87,11 @@ describe('Feature: validateLogLevel runtime log level validation', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Invalid numeric range validation
+   * @description Test validation rejection of out-of-range numeric values
+   */
   describe('When: validating invalid numeric ranges', () => {
     const invalidRangeTests = [
       { name: 'negative out of range', value: -1000 },
@@ -94,11 +111,12 @@ describe('Feature: validateLogLevel runtime log level validation', () => {
   });
 });
 
-/**
- * Log Level Check Tests
- * Tests for isValidLogLevel function - boolean return
- */
-describe('Feature: isValidLogLevel boolean log level validation', () => {
+describe('Given: isValidLogLevel boolean validation utility', () => {
+  /**
+   * @context When
+   * @scenario Boolean validity checking
+   * @description Test boolean validation of log level values
+   */
   describe('When: checking validity', () => {
     it('Then: [正常] - should return true for all valid standard log levels', () => {
       const validLevels = [
@@ -146,11 +164,12 @@ describe('Feature: isValidLogLevel boolean log level validation', () => {
   });
 });
 
-/**
- * Standard Log Level Restriction Tests
- * Tests for scenarios where only standard levels are accepted
- */
-describe('Feature: Standard Level Restrictions', () => {
+describe('Given: standard level restriction scenarios', () => {
+  /**
+   * @context When
+   * @scenario Standard level restriction validation
+   * @description Test handling of special levels in restricted contexts
+   */
   describe('When: validating standard level restrictions', () => {
     it('Then: [正常] - should identify VERBOSE as non-standard level', () => {
       expect(isValidLogLevel(AG_LOGLEVEL.VERBOSE)).toBe(true);
@@ -165,11 +184,12 @@ describe('Feature: Standard Level Restrictions', () => {
   });
 });
 
-/**
- * Error Message Validation Tests
- * Tests for proper error messaging
- */
-describe('Feature: Error message validation', () => {
+describe('Given: error message validation scenarios', () => {
+  /**
+   * @context When
+   * @scenario Error message validation
+   * @description Test proper error messaging for validation failures
+   */
   describe('When: validating error messages', () => {
     it('Then: [正常] - should provide descriptive error for undefined input', () => {
       expect(() => validateLogLevel(undefined)).toThrow(/Invalid log level.*undefined/);
@@ -190,12 +210,12 @@ describe('Feature: Error message validation', () => {
   });
 });
 
-/**
- * AgMockConstructor 判定
- * isAgMockConstructor(value: unknown): boolean の動作検証
- * atsushifx式BDD: RED-GREEN-REFACTOR を it/expect 粒度で進める
- */
-describe('Feature: isAgMockConstructor detection', () => {
+describe('Given: isAgMockConstructor detection utility', () => {
+  /**
+   * @context When
+   * @scenario Mock constructor detection (truthy cases)
+   * @description Test detection of valid mock constructor types
+   */
   describe('When: checking truthy cases', () => {
     it('Then: [正常] - should return true when passed AgMockFormatter class', () => {
       expect(isAgMockConstructor(AgMockFormatter)).toBe(true);
@@ -225,6 +245,11 @@ describe('Feature: isAgMockConstructor detection', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Mock constructor detection (falsy cases)
+   * @description Test rejection of invalid mock constructor types
+   */
   describe('When: checking falsy cases', () => {
     it('Then: [正常] - should return false for regular function without marker', () => {
       const fn: () => void = () => {};

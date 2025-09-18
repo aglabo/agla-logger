@@ -9,14 +9,35 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ
 import { ErrorSeverity } from '@aglabo/agla-error';
-import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
+
+// 型定義・インターフェース
 import type { AgLoggerOptions } from '../shared/types/AgLogger.interface';
 import { AgLoggerError } from '../shared/types/AgLoggerError.types';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../shared/constants/agErrorMessages';
+
+// 内部実装・コアクラス
 import type { AgLogger } from './AgLogger.class';
 import { AgLoggerManager } from './AgLoggerManager.class';
 
 // AgManager をここで一元管理（直接代入で管理）
+/**
+ * シングルトンAgLoggerManagerインスタンスの一元管理変数
+ *
+ * アプリケーション全体で共有されるAgLoggerManagerのインスタンスを保持します。
+ * setupManager()で初期化され、getLogger()でアクセス可能になります。
+ *
+ * @example
+ * ```typescript
+ * import { setupManager, getLogger } from './AgManagerUtils';
+ *
+ * setupManager(); // AgManagerを初期化
+ * const logger = getLogger(); // 初期化済みのロガーを取得
+ * ```
+ */
 export let AgManager: AgLoggerManager | undefined;
 
 export const createManager = (options?: AgLoggerOptions): AgLoggerManager => {

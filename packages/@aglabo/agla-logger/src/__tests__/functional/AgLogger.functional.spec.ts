@@ -1,22 +1,25 @@
-// src/__tests__/aglogger-consolidated/AgLogger.spec.ts
-// @(#) : Consolidated unit tests for AgLogger class following atsushifx式BDD
+// src: /src/__tests__/functional/AgLogger.functional.spec.ts
+// @(#) : AgLogger機能テスト AgLoggerクラスの振る舞い検証
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Constants and Types
-import { DISABLE, ENABLE } from '../../../shared/constants/common.constants';
-import { AG_LOGLEVEL } from '../../../shared/types';
+// 型定義・インターフェース
 import type { AgLogLevel } from '../../../shared/types';
+import { AG_LOGLEVEL } from '../../../shared/types';
 
-// Test target
+// 定数・設定・エラーメッセージ
+import { DISABLE, ENABLE } from '../../../shared/constants';
+
+// 内部実装・コアクラス
 import { AgLogger } from '../../AgLogger.class';
 
-// Test utilities
+// プラグインシステム
 import { MockFormatter } from '../../plugins/formatter/MockFormatter';
 import { MockLogger } from '../../plugins/logger/MockLogger';
 
@@ -45,20 +48,25 @@ const setupTestEnvironment = (): void => {
 };
 
 /**
- * AgLogger Consolidated Unit Test Suite
- *
- * @description Comprehensive BDD-structured tests for AgLogger class
- * Organized by behavioral domains with maximum 3-level describe hierarchy
- */
-
-/**
- * Instance Management Tests
- * Tests for singleton pattern and instance lifecycle
+ * @suite AgLogger Instance Management | Functional
+ * @description AgLoggerのシングルトン管理とインスタンスライフサイクル挙動を検証するテスト群
+ * @testType functional
+ * Scenarios: createLogger初期化, getLogger取得, 特殊レベル初期化
  */
 describe('Feature: Instance management', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario 未初期化のAgLogger状態
+   * @description シングルトン未初期化時にcreateLogger/getLoggerを扱うケース
+   */
   describe('Given: uninitialized AgLogger state', () => {
+    /**
+     * @context When
+     * @scenario createLoggerを呼び出す
+     * @description 未初期化状態からcreateLoggerを実行した際の挙動を検証
+     */
     describe('When: calling createLogger', () => {
       it('Then: [正常] - should create new AgLogger instance', () => {
         const logger = AgLogger.createLogger();
@@ -75,6 +83,11 @@ describe('Feature: Instance management', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario getLoggerを呼び出す
+     * @description createLogger後にgetLoggerで同一インスタンスを取得できるかを確認
+     */
     describe('When: calling getLogger', () => {
       it('Then: [正常] - should retrieve existing instance', () => {
         const created = AgLogger.createLogger();
@@ -93,7 +106,17 @@ describe('Feature: Instance management', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 特殊ログレベルで初期化する
+   * @description VERBOSE/LOGといった特殊レベルで初期化した際のエラーハンドリングを確認
+   */
   describe('Given: AgLogger initialization with special log levels', () => {
+    /**
+     * @context When
+     * @scenario VERBOSEレベルで初期化する
+     * @description VERBOSEレベル指定時に例外が発生することを検証
+     */
     describe('When: initializing with VERBOSE level', () => {
       it('Then: [異常] - should throw AgLoggerError', () => {
         expect(() => {
@@ -104,6 +127,11 @@ describe('Feature: Instance management', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario LOGレベルで初期化する
+     * @description LOGレベル指定時に例外が発生することを検証
+     */
     describe('When: initializing with LOG level', () => {
       it('Then: [異常] - should throw AgLoggerError', () => {
         expect(() => {
@@ -117,13 +145,25 @@ describe('Feature: Instance management', () => {
 });
 
 /**
- * Log Level Management Tests
- * Tests for log level validation and control
+ * @suite AgLogger Log Level Management | Functional
+ * @description ログレベル設定とフィルタリングに関するバリデーションを検証
+ * @testType functional
+ * Scenarios: 標準レベル設定, 特殊レベル処理, 未定義レベル検出
  */
 describe('Feature: Log level management', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario 初期化済みAgLoggerインスタンス
+   * @description 標準/特殊ログレベルの挙動を確認
+   */
   describe('Given: initialized AgLogger instance', () => {
+    /**
+     * @context When
+     * @scenario 標準ログレベルを設定する
+     * @description logLevelプロパティ設定時の動作を検証
+     */
     describe('When: setting standard log levels', () => {
       it('Then: [正常] - should retrieve current level via logLevel property', () => {
         const logger = AgLogger.createLogger();
@@ -147,6 +187,11 @@ describe('Feature: Log level management', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 特殊ログレベルを処理する
+     * @description LOG/VERBOSEなど特殊レベルの扱いを確認
+     */
     describe('When: processing special log levels', () => {
       it('Then: [正常] - should always output LOG level messages', () => {
         const mockLogger = new MockLogger.buffer();
@@ -173,6 +218,11 @@ describe('Feature: Log level management', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 未定義ログレベルを使用する
+     * @description 未定義レベル指定時にエラーが発生するか確認
+     */
     describe('When: undefined log level is used', () => {
       it('Then: [異常] - should throw error for undefined log level', () => {
         const mockLogger = new MockLogger.buffer();
@@ -191,13 +241,25 @@ describe('Feature: Log level management', () => {
 });
 
 /**
- * Verbose Functionality Tests
- * Tests for verbose mode behavior
+ * @suite AgLogger Verbose Mode | Functional
+ * @description Verboseモード有効時の出力制御と各種エッジケースを検証
+ * @testType functional
+ * Scenarios: 初期状態確認, setVerbose制御, 引数多様性
  */
 describe('Feature: Verbose functionality', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario 初期化済みAgLoggerインスタンス
+   * @description 標準的なverbose制御を行うケース
+   */
   describe('Given: initialized AgLogger instance', () => {
+    /**
+     * @context When
+     * @scenario デフォルト状態のverbose確認
+     * @description createLogger直後のverbose設定を検証
+     */
     describe('When: checking verbose state in default condition', () => {
       it('Then: [正常] - should have verbose disabled by default', () => {
         const logger = AgLogger.createLogger();
@@ -205,6 +267,11 @@ describe('Feature: Verbose functionality', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario setVerboseで状態を切り替える
+     * @description setVerboseのsetterでON/OFFできるか検証
+     */
     describe('When: controlling verbose state with setVerbose', () => {
       it('Then: [正常] - should control verbose state properly', () => {
         const logger = AgLogger.createLogger();
@@ -221,6 +288,11 @@ describe('Feature: Verbose functionality', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario verboseメソッドを呼び出す
+     * @description setVerboseの状態に応じて出力制御されるかを検証
+     */
     describe('When: calling verbose method', () => {
       it('Then: [正常] - should respect verbose setting for output control', () => {
         const mockLogger = new MockLogger.buffer();
@@ -241,7 +313,17 @@ describe('Feature: Verbose functionality', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario Verbose機能のエッジケース環境
+   * @description 多様な引数や連続切替といった境界動作を検証
+   */
   describe('Given: verbose functionality edge case environment', () => {
+    /**
+     * @context When
+     * @scenario 多様な引数でverboseを実行
+     * @description 文字列・数値・オブジェクトなど各種引数の処理を確認
+     */
     describe('When: processing verbose method with various argument types', () => {
       it('Then: [エッジケース] - should handle different argument types correctly', () => {
         const mockLogger = new MockLogger.buffer();
@@ -267,6 +349,11 @@ describe('Feature: Verbose functionality', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 連続したverbose状態変更を実行
+     * @description 高頻度でON/OFF切り替えた場合の安定性を検証
+     */
     describe('When: executing rapid verbose state changes', () => {
       it('Then: [エッジケース] - should handle rapid verbose state changes', () => {
         const mockLogger = new MockLogger.buffer();
@@ -288,13 +375,25 @@ describe('Feature: Verbose functionality', () => {
 });
 
 /**
- * Standard Log Methods Tests
- * Tests for standard logging methods (info, warn, error, etc.)
+ * @suite AgLogger Standard Log Methods | Functional
+ * @description 標準ログメソッドの出力制御とフィルタリング挙動を網羅的に検証
+ * @testType functional
+ * Scenarios: 各ログメソッド呼び出し, 下位優先度フィルタ, 上位優先度出力
  */
 describe('Feature: Standard log methods', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario ログメソッドが設定された環境
+   * @description loggerMapとformatterが設定された状態で各メソッドを検証
+   */
   describe('Given: configured log methods environment', () => {
+    /**
+     * @context When
+     * @scenario 各ログレベルメソッドを実行
+     * @description fatal〜traceの各メソッドが適切に出力されるかを確認
+     */
     describe('When: executing each log level method', () => {
       const mockLogger = new MockLogger.buffer();
       const logger = AgLogger.createLogger({
@@ -332,7 +431,17 @@ describe('Feature: Standard log methods', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario ログレベルフィルタリング環境
+   * @description logLevel設定に応じた出力対象の制御を検証
+   */
   describe('Given: log level filtering environment', () => {
+    /**
+     * @context When
+     * @scenario 設定レベルより低い優先度でログ出力
+     * @description 下位優先度ログが抑制されることを確認
+     */
     describe('When: executing logs with lower priority than configured level', () => {
       it('Then: [正常] - should not output lower priority logs', () => {
         const mockLogger = new MockLogger.buffer();
@@ -359,6 +468,11 @@ describe('Feature: Standard log methods', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 設定レベル以上の優先度でログ出力
+     * @description 上位/同等レベルログが出力されることを確認
+     */
     describe('When: executing logs with priority equal or higher than configured level', () => {
       it('Then: [正常] - should output higher priority logs', () => {
         const mockLogger = new MockLogger.buffer();
@@ -388,13 +502,25 @@ describe('Feature: Standard log methods', () => {
 });
 
 /**
- * Validation Tests
- * Tests for input validation and error handling
+ * @suite AgLogger Validation | Functional
+ * @description 入力検証・ロガー関数設定・エラーハンドリングの動作を確認
+ * @testType functional
+ * Scenarios: setVerbose検証, ロガー関数設定, 不正レベル検出
  */
 describe('Feature: Validation functionality', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario AgLogger構成設定の検証環境
+   * @description setVerboseなど設定APIのバリデーションを確認
+   */
   describe('Given: AgLogger instance configuration validation environment', () => {
+    /**
+     * @context When
+     * @scenario setVerboseセッターを使用
+     * @description verbose状態の設定が正しく反映されるかを検証
+     */
     describe('When: using setVerbose setter', () => {
       it('Then: [正常] - should properly set and validate verbose state', () => {
         const logger = AgLogger.createLogger();
@@ -404,7 +530,17 @@ describe('Feature: Validation functionality', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario ロガー関数設定環境
+   * @description setLoggerFunctionの正常系・異常系を網羅
+   */
   describe('Given: logger function configuration environment', () => {
+    /**
+     * @context When
+     * @scenario 有効なログレベルでロガー関数を設定
+     * @description 正常にロガー関数を登録・呼び出せるかを確認
+     */
     describe('When: setting logger function with valid log level', () => {
       it('Then: [正常] - should successfully set logger function', () => {
         const logger = AgLogger.createLogger();
@@ -434,6 +570,11 @@ describe('Feature: Validation functionality', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 無効なログレベルでロガー関数を設定
+     * @description 不正なレベル指定時に例外が発生するかを確認
+     */
     describe('When: setting logger function with invalid log level', () => {
       it('Then: [異常] - should throw error for invalid log level', () => {
         const logger = AgLogger.createLogger();
@@ -448,13 +589,25 @@ describe('Feature: Validation functionality', () => {
 });
 
 /**
- * Core State Management Edge Cases
- * Tests for singleton reset scenarios and initialization edge cases
+ * @suite AgLogger Core State Edge Cases | Functional
+ * @description シングルトンリセットや設定変更時の境界挙動と一貫性を検証
+ * @testType functional
+ * Scenarios: reset後アクセス, 異常設定シーケンス, 設定変更検知
  */
 describe('Feature: Core state management edge cases', () => {
   setupTestEnvironment();
 
+  /**
+   * @context Given
+   * @scenario resetSingleton後の状態
+   * @description リセット直後のAgLoggerアクセスと構成変更の挙動を確認
+   */
   describe('Given: state after singleton reset', () => {
+    /**
+     * @context When
+     * @scenario reset後に初期化前アクセスを行う
+     * @description resetSingleton後のcreateLogger/getLogger挙動を検証
+     */
     describe('When: accessing before initialization after resetSingleton', () => {
       it('Then: [エッジケース] - should handle uninitialized access gracefully', () => {
         // Create and reset singleton
@@ -496,6 +649,11 @@ describe('Feature: Core state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 異常な設定変更シーケンスを実行
+     * @description ログレベル連続変更や不正設定投入時のロールバックを確認
+     */
     describe('When: executing abnormal configuration change order patterns', () => {
       it('Then: [エッジケース] - should handle rapid configuration changes correctly', () => {
         const logger = AgLogger.createLogger();
@@ -540,6 +698,11 @@ describe('Feature: Core state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 初期化前アクセス処理を実行
+     * @description reset後にgetLogger等へアクセスした際の検証
+     */
     describe('When: executing pre-initialization access processing', () => {
       it('Then: [異常] - should require explicit creation after reset', () => {
         AgLogger.resetSingleton();
@@ -570,7 +733,17 @@ describe('Feature: Core state management edge cases', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 設定オブジェクト変更検出環境
+   * @description 設定の直接変更や部分更新時の挙動を確認
+   */
   describe('Given: configuration object change detection environment', () => {
+    /**
+     * @context When
+     * @scenario 設定オブジェクトを直接変更しようとする
+     * @description 設定保護と不正値検出の挙動を検証
+     */
     describe('When: attempting direct modification of configuration object', () => {
       it('Then: [正常] - should maintain configuration integrity', () => {
         const logger = AgLogger.createLogger({
@@ -607,6 +780,11 @@ describe('Feature: Core state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 部分的な構成更新を実行
+     * @description 一部プロパティ更新時に他設定が保持されるか確認
+     */
     describe('When: executing partial configuration updates', () => {
       it('Then: [正常] - should apply partial configuration updates correctly', () => {
         const mockLogger = new MockLogger.buffer();

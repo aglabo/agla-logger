@@ -15,33 +15,29 @@
  * various logger and formatter plugins, and utility functions.
  */
 
-// constants
+// 型定義・インターフェース
 export { AG_LOGLEVEL } from '../shared/types';
-
-// types
 export type { AgLogLevel, AgLogLevelLabel } from '../shared/types';
 
-// logger main
+// 内部実装・コアクラス
 export * from './AgLogger.class';
 export * from './AgLoggerManager.class';
+import { setupManager } from './AgManagerUtils';
+export * from './AgManagerUtils';
 
-// plugins: logger
+// プラグインシステム
+export { JsonFormatter } from './plugins/formatter/JsonFormatter';
+export { createMockFormatter, MockFormatter } from './plugins/formatter/MockFormatter';
+export { NullFormatter } from './plugins/formatter/NullFormatter';
+export { PlainFormatter } from './plugins/formatter/PlainFormatter';
 export { ConsoleLogger } from './plugins/logger/ConsoleLogger';
 export { E2eMockLogger } from './plugins/logger/E2eMockLogger';
 export { MockLogger } from './plugins/logger/MockLogger';
 export { NullLogger } from './plugins/logger/NullLogger';
 
-// plugins: formatter
-export { JsonFormatter } from './plugins/formatter/JsonFormatter';
-export { createMockFormatter, MockFormatter } from './plugins/formatter/MockFormatter';
-export { NullFormatter } from './plugins/formatter/NullFormatter';
-export { PlainFormatter } from './plugins/formatter/PlainFormatter';
-
-// utilities
-export * from './AgManagerUtils';
+// ユーティリティ・ヘルパー関数
 export { AgLoggerGetMessage } from './utils/AgLoggerGetMessage';
 export { createTestId } from './utils/testIdUtils';
 
 // setup: モジュール読み込み時に自動初期化
-import { setupManager } from './AgManagerUtils';
 setupManager();

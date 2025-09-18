@@ -22,7 +22,7 @@ import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { E2eMockLogger } from '@/plugins/logger/E2eMockLogger';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types/';
 
 // Test utilities
 /**
@@ -46,19 +46,24 @@ const setupTest = (ctx: TestContext): { mockLogger: AgMockBufferLogger; mockForm
 };
 
 /**
- * AgLogger Performance High Load Integration Tests
- *
+ * @suite AgLogger Performance High Load Integration | Integration
  * @description 高負荷・パフォーマンス・同時実行のインテグレーションテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: 高頻度ログ出力, ログレベルフィルタリング, 同時実行, 複雑設定組み合わせ, E2E高負荷ストレステスト
  */
 describe('AgLogger Performance High Load Integration', () => {
   /**
-   * Given: 高頻度ログ出力シナリオが存在する場合
-   * When: 大量のログメッセージを連続出力した時
-   * Then: 合理的な時間内で処理が完了する
+   * @context Given
+   * @scenario 高頻度ログ出力シナリオ
+   * @description 高頻度ログ出力シナリオが存在する環境での大量ログメッセージ連続出力時の合理的時間内処理完了を検証
    */
-  describe('Given high-frequency logging scenarios exist', () => {
-    describe('When outputting large volumes of log messages continuously', () => {
+  describe('Given: high-frequency logging scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario 大量ログメッセージ連続出力
+     * @description 大量ログメッセージを連続出力した時の高頻度ログ出力時の処理性能維持を検証
+     */
+    describe('When: outputting large volumes of log messages continuously', () => {
       // 目的: 高頻度ログ出力時の処理性能維持
       it('Then: [正常] - should maintain performance with high-frequency logging', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTest(_ctx);
@@ -87,7 +92,12 @@ describe('AgLogger Performance High Load Integration', () => {
       });
     });
 
-    describe('When processing large data payloads at high frequency', () => {
+    /**
+     * @context When
+     * @scenario 高頻度大量データペイロード処理
+     * @description 高頻度で大量データペイロードを処理した時の大量データを含む高頻度ログの性能を検証
+     */
+    describe('When: processing large data payloads at high frequency', () => {
       // 目的: 大量データを含む高頻度ログの性能
       it('Then: [エッジケース] - should handle large payloads efficiently at high frequency', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
@@ -123,12 +133,17 @@ describe('AgLogger Performance High Load Integration', () => {
   });
 
   /**
-   * Given: ログレベルフィルタリング環境が存在する場合
-   * When: フィルタリングで多数のメッセージが抑制された時
-   * Then: オーバーヘッドが最小限に抑えられる
+   * @context Given
+   * @scenario ログレベルフィルタリング環境
+   * @description ログレベルフィルタリング環境が存在する環境でのフィルタリングで多数メッセージ抑制時の最小限オーバーヘッドを検証
    */
-  describe('Given log level filtering environments exist', () => {
-    describe('When many messages are suppressed by filtering', () => {
+  describe('Given: log level filtering environments exist', () => {
+    /**
+     * @context When
+     * @scenario フィルタリングによる多数メッセージ抑制
+     * @description フィルタリングにより多数メッセージが抑制された時のフィルタリングによる出力抑制時の低オーバーヘッドを検証
+     */
+    describe('When: many messages are suppressed by filtering', () => {
       // 目的: フィルタリングによる出力抑制時の低オーバーヘッド
       it('Then: [正常] - should minimize overhead when messages are filtered out', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
@@ -160,12 +175,17 @@ describe('AgLogger Performance High Load Integration', () => {
   });
 
   /**
-   * Given: 同時実行環境が存在する場合
-   * When: 複数の非同期処理から同時にログ出力した時
-   * Then: データ競合なく安全に処理される
+   * @context Given
+   * @scenario 同時実行環境
+   * @description 同時実行環境が存在する環境での複数非同期処理からの同時ログ出力時のデータ競合なし安全処理を検証
    */
-  describe('Given concurrent execution environments exist', () => {
-    describe('When multiple async processes log simultaneously', () => {
+  describe('Given: concurrent execution environments exist', () => {
+    /**
+     * @context When
+     * @scenario 複数非同期プロセスの同時ログ出力
+     * @description 複数非同期プロセスが同時にログ出力した時の同時実行時の安全性とパフォーマンスを検証
+     */
+    describe('When: multiple async processes log simultaneously', () => {
       // 目的: 同時実行時の安全性とパフォーマンス
       it('Then: [エッジケース] - should handle concurrent logging safely and efficiently', async (_ctx) => {
         const { mockLogger, mockFormatter } = setupTest(_ctx);
@@ -201,12 +221,17 @@ describe('AgLogger Performance High Load Integration', () => {
   });
 
   /**
-   * Given: 複雑な設定組み合わせ環境が存在する場合
-   * When: 全機能を有効にして高負荷処理を実行した時
-   * Then: 機能間の相互作用でも安定したパフォーマンスを維持する
+   * @context Given
+   * @scenario 複雑設定組み合わせ環境
+   * @description 複雑設定組み合わせ環境が存在する環境での全機能有効高負荷処理時の機能間相互作用でも安定パフォーマンス維持を検証
    */
-  describe('Given complex configuration combinations exist', () => {
-    describe('When executing high-load processing with all features enabled', () => {
+  describe('Given: complex configuration combinations exist', () => {
+    /**
+     * @context When
+     * @scenario 全機能有効高負荷処理実行
+     * @description 全機能有効で高負荷処理を実行した時のフル機能有効時の統合パフォーマンスを検証
+     */
+    describe('When: executing high-load processing with all features enabled', () => {
       // 目的: フル機能有効時の統合パフォーマンス
       it('Then: [エッジケース] - should maintain stable performance with full feature interaction', (_ctx) => {
         const { mockLogger } = setupTest(_ctx);
@@ -259,14 +284,11 @@ describe('AgLogger Performance High Load Integration', () => {
   });
 
   /**
-   * Given: E2E高負荷ストレステスト環境が存在する場合
-   * When: E2E環境で高負荷処理が実行された時
-   * Then: E2E環境でもパフォーマンスが維持される
-   *
-   * @description E2E環境での高負荷ストレステスト
-   * E2E環境特有の性能特性と大量データ処理を検証
+   * @context Given
+   * @scenario E2E高負荷ストレステスト環境
+   * @description E2E高負荷ストレステスト環境が存在する環境でのE2E環境での高負荷処理時のE2E環境特有の性能特性と大量データ処理でのパフォーマンス維持を検証
    */
-  describe('Given E2E high-load stress test environments exist', () => {
+  describe('Given: E2E high-load stress test environments exist', () => {
     /**
      * E2E環境用テストセットアップ
      */
@@ -285,10 +307,11 @@ describe('AgLogger Performance High Load Integration', () => {
     };
 
     /**
-     * @description E2E環境での高負荷メッセージ整合性テスト
-     * E2E環境特有の高負荷条件下でのメッセージ整合性を検証
+     * @context When
+     * @scenario E2E環境高負荷メッセージ整合性処理実行
+     * @description E2E環境でメッセージ整合性を伴う高負荷処理が実行された時のE2E環境特有の高負荷条件下でのメッセージ整合性を検証
      */
-    describe('When high-load processing with message integrity is executed in E2E environment', () => {
+    describe('When: high-load processing with message integrity is executed in E2E environment', () => {
       // E2E環境での高負荷時のメッセージ整合性維持
       it('Then: [正常] - should maintain E2E message integrity under high load conditions', (ctx) => {
         const { mockLogger } = setupE2ETest(ctx);
@@ -315,10 +338,11 @@ describe('AgLogger Performance High Load Integration', () => {
     });
 
     /**
-     * @description E2E環境での大量データセット処理テスト
-     * E2E環境での大量データ処理における性能制限と処理能力を検証
+     * @context When
+     * @scenario E2E環境大量データセット処理実行
+     * @description E2E環境で大量データセット処理が実行された時のE2E環境での大量データ処理性能制限と処理能力を検証
      */
-    describe('When large dataset processing is executed in E2E environment', () => {
+    describe('When: large dataset processing is executed in E2E environment', () => {
       // E2E環境での大量データセット処理性能
       it('Then: [エッジケース] - should process large datasets within acceptable E2E performance limits', (ctx) => {
         const { mockLogger } = setupE2ETest(ctx);

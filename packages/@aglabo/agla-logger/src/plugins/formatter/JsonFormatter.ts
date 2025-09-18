@@ -6,10 +6,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 型定義・インターフェース
 import type { AgLogMessage } from '../../../shared/types';
 
-// utilities
+// ユーティリティ・ヘルパー関数
 import { AgToLabel } from '../../utils/AgLogHelpers';
 
 /**

@@ -5,16 +5,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { beforeEach, describe, expect, it } from 'vitest';
 
-// Import types and modules
+// 型定義・インターフェース
 import type { AgLogLevel, AgLogMessage } from '../../../../shared/types';
 import type { AgFormatRoutine } from '../../../../shared/types/AgMockConstructor.class';
+
+// プラグインシステム
 import { AgMockFormatter } from '../AgMockFormatter';
 
 /**
- * BDD Tests for AgMockFormatter class implementation
- * Following atsushifx式BDD with Red-Green-Refactor cycles
+ * @suite AgMockFormatter Statistics | Unit
+ * @description Tests for AgMockFormatter class implementation with comprehensive statistics tracking
+ * @testType unit
+ * Scenarios: Call tracking, Message storage, Format execution, Statistics reset, Interface compliance, Error handling
  */
 describe('Feature: AgMockFormatter statistics functionality', () => {
   let mockMessage: AgLogMessage;
@@ -28,6 +33,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     };
   });
 
+  /**
+   * @context When
+   * @scenario Call count tracking
+   * @description Test formatter call count increment and initialization
+   */
   describe('When: tracking formatter call count', () => {
     it('Then: [正常] - should increment callCount when execute is called', () => {
       // Arrange
@@ -54,6 +64,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Last message tracking
+   * @description Test last message storage and update behavior
+   */
   describe('When: tracking last message', () => {
     it('Then: [正常] - should store lastMessage when execute is called', () => {
       // Arrange
@@ -95,6 +110,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Format routine execution
+   * @description Test various format routine execution patterns and results
+   */
   describe('When: executing format routines', () => {
     it('Then: [正常] - should call the provided format routine and return its result', () => {
       // Arrange
@@ -158,6 +178,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Statistics reset
+   * @description Test statistics reset functionality
+   */
   describe('When: resetting statistics', () => {
     it('Then: [正常] - should reset callCount to 0', () => {
       // Arrange
@@ -189,6 +214,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Interface compliance validation
+   * @description Test AgMockConstructor interface implementation compliance
+   */
   describe('When: validating AgMockConstructor interface compliance', () => {
     it('Then: [正常] - should have __isMockConstructor property set to true', () => {
       // Assert
@@ -242,6 +272,11 @@ describe('Feature: AgMockFormatter statistics functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Error handling routines
+   * @description Test error throwing routines and error state management
+   */
   describe('When: handling error throw routines', () => {
     it('Then: [異常] - should throw error when error routine is provided', () => {
       // Arrange

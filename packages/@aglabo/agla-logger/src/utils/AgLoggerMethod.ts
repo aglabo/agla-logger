@@ -6,11 +6,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { AG_LOGLEVEL_KEYS } from '../../shared/types';
+// 型定義・インターフェース
 import type { AgFormattedLogMessage } from '../../shared/types';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL_KEYS } from '../../shared/types';
 
 /**
  * Logger method type definition
+ */
+/**
+ * ロガーメソッドの型定義
+ *
+ * フォーマット済みログメッセージを受け取り、具体的な出力処理を行う
+ * ロガーメソッドの関数シグネチャを定義します。
+ * AgLoggerMethodsInterfaceの各ログレベルメソッドで使用されます。
  */
 type LoggerMethod = (message: AgFormattedLogMessage) => void;
 
@@ -30,8 +40,6 @@ export type AgLoggerMethodsInterface = {
   default(message: AgFormattedLogMessage): void;
   [key: string]: LoggerMethod | unknown;
 };
-
-// (unused) LoggerInstance 型は未使用のため削除
 
 /**
  * Binds logger methods to a class instance based on AG_LOGLEVEL_KEYS.

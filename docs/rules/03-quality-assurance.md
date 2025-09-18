@@ -383,25 +383,44 @@ mcp__serena-mcp__find_file --file_mask "textlintrc*" --relative_path "configs"
 #### markdownlint・textlint設定
 
 ```yaml
-# configs/.markdownlint.yaml
+# markdown lint rule configs
 default: true
-MD013:
+
+# lint rules
+whitespace: true
+
+line-length:
   line_length: 120
-  code_blocks: false
-MD033: false # HTML タグ許可
-MD041: false # 最初の見出しレベル自由
-MD024: # 同一見出し許可（特定条件下）
-  siblings_only: true
+  code_block_line_length: 120
+
+ol-prefix: true
+
+# styles
+emphasis-style:
+  style: asterisk
+strong-style:
+  style: asterisk
+
+# Tabs
+no-hard-tabs: true
 ```
 
 ```yaml
 # configs/textlintrc.yaml
 rules:
-  preset-ja-technical-writing: true
-  preset-jtf-style: true
-  spellcheck-tech-word: true
-  terminology: true
-  alex: true
+  preset-ja-technical-writing:
+    sentence-length:
+      max: 100
+    max-kanji-continuous-len:
+      max: 8
+      allow: []
+    no-mix-dearu-desumasu: true
+    ja-no-mixed-period:
+      allowPeriodMarks:
+        - ":"
+        - "✨"
+    no-doubled-joshi:
+      strict: false
 ```
 
 ## ファイル名・構造規約
@@ -600,7 +619,7 @@ commit-msg:
 ```
 .cache/
 ├── eslint-cache/           # ESLint キャッシュ
-├── textlint-cache/         # textlint キャッシュ  
+├── textlint-cache/         # textlint キャッシュ
 ├── cspell-cache/          # cSpell キャッシュ
 ├── dprint-cache/          # dprint キャッシュ
 ├── typescript-cache/      # TypeScript キャッシュ
@@ -746,7 +765,7 @@ mcp__serena-mcp__find_file --file_mask "*.spec.ts" --relative_path "src/__tests_
 # 完全品質検証プロセス
 echo "=== Complete Quality Gate ==="
 pnpm run check:types && echo "✅ TypeScript" || echo "❌ TypeScript"
-pnpm run lint:all && echo "✅ ESLint" || echo "❌ ESLint"  
+pnpm run lint:all && echo "✅ ESLint" || echo "❌ ESLint"
 pnpm run check:dprint && echo "✅ Format" || echo "❌ Format"
 pnpm run check:spells && echo "✅ Spell" || echo "❌ Spell"
 pnpm run lint:secrets && echo "✅ Security" || echo "❌ Security"

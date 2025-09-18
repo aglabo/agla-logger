@@ -6,9 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { describe, expect, it, vi } from 'vitest';
+
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 import type { AgLogLevel } from '../../../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import {
   AgToLabel,
   AgToLogLevel,
@@ -19,16 +24,17 @@ import {
 import { isValidLogLevel } from '../../../utils/AgLogValidators';
 
 /**
- * AgLogHelpers Consolidated Unit Test Suite
- *
- * @description Comprehensive tests for all AgLogHelpers utility functions
- * Organized by function with behavioral grouping
+ * @suite AgLogHelpers Utilities | Unit
+ * @description Comprehensive unit tests for AgLogHelpers utility functions
+ * @testType unit
+ * Scenarios: Value conversion, Logger function creation, Level validation, Arguments processing, Level conversion
  */
-/**
- * Value Conversion Tests
- * Tests for valueToString utility function
- */
-describe('Feature: valueToString value conversion utility', () => {
+describe('Given: valueToString utility function', () => {
+  /**
+   * @context When
+   * @scenario Basic data type conversion
+   * @description Test valueToString with primitive data types
+   */
   describe('When: converting basic data types', () => {
     it('Then: [正常] - should return string representation of null', () => {
       const result = valueToString(null);
@@ -57,6 +63,11 @@ describe('Feature: valueToString value conversion utility', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Array data conversion
+   * @description Test valueToString with array structures
+   */
   describe('When: converting arrays', () => {
     it('Then: [エッジケース] - should return "array" for empty arrays', () => {
       const result = valueToString([]);
@@ -84,6 +95,11 @@ describe('Feature: valueToString value conversion utility', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Function conversion
+   * @description Test valueToString with function objects
+   */
   describe('When: converting functions', () => {
     it('Then: [正常] - should return "function" for anonymous functions', () => {
       const result = valueToString(() => {});
@@ -103,6 +119,11 @@ describe('Feature: valueToString value conversion utility', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Object conversion
+   * @description Test valueToString with object structures
+   */
   describe('When: converting objects', () => {
     it('Then: [正常] - should return "object" for plain objects', () => {
       const result = valueToString({ key: 'value' });
@@ -117,11 +138,12 @@ describe('Feature: valueToString value conversion utility', () => {
   });
 });
 
-/**
- * Logger Function Creation Tests
- * Tests for createLoggerFunction utility
- */
-describe('Feature: createLoggerFunction logger function factory', () => {
+describe('Given: createLoggerFunction factory utility', () => {
+  /**
+   * @context When
+   * @scenario Logger function creation
+   * @description Test createLoggerFunction factory behavior
+   */
   describe('When: creating logger functions', () => {
     it('Then: [正常] - should create a logger function that calls the provided module function', () => {
       const mockModuleFunc = vi.fn();
@@ -143,11 +165,12 @@ describe('Feature: createLoggerFunction logger function factory', () => {
   });
 });
 
-/**
- * Log Level Validation Tests
- * Tests for isValidLogLevel utility
- */
-describe('Feature: isValidLogLevel log level validation utility', () => {
+describe('Given: isValidLogLevel validation utility', () => {
+  /**
+   * @context When
+   * @scenario Valid log level validation
+   * @description Test validation of all valid log level values
+   */
   describe('When: validating valid log levels', () => {
     const validLogLevels = [
       { name: 'OFF', value: AG_LOGLEVEL.OFF },
@@ -169,6 +192,11 @@ describe('Feature: isValidLogLevel log level validation utility', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Invalid log level validation
+   * @description Test validation rejection of invalid log level values
+   */
   describe('When: validating invalid log levels', () => {
     const invalidValues = [
       { name: 'undefined', value: undefined },
@@ -190,11 +218,12 @@ describe('Feature: isValidLogLevel log level validation utility', () => {
   });
 });
 
-/**
- * Arguments Processing Tests
- * Tests for argsToString utility
- */
-describe('Feature: argsToString arguments string conversion', () => {
+describe('Given: argsToString conversion utility', () => {
+  /**
+   * @context When
+   * @scenario Arguments string conversion
+   * @description Test argsToString processing of argument arrays
+   */
   describe('When: converting arguments to string', () => {
     it('Then: [正常] - should format single argument', () => {
       const result = argsToString(['single arg']);
@@ -223,11 +252,12 @@ describe('Feature: argsToString arguments string conversion', () => {
   });
 });
 
-/**
- * Log Level Conversion Tests
- * Tests for AgToLabel and AgToLogLevel utilities
- */
-describe('Feature: Log level conversion utilities', () => {
+describe('Given: log level conversion utilities', () => {
+  /**
+   * @context When
+   * @scenario Log level to label conversion
+   * @description Test AgToLabel conversion from log levels to string labels
+   */
   describe('When: converting log levels to labels with AgToLabel', () => {
     it('Then: [正常] - should convert valid log levels to labels', () => {
       expect(AgToLabel(AG_LOGLEVEL.ERROR)).toBe('ERROR');
@@ -244,6 +274,11 @@ describe('Feature: Log level conversion utilities', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Label to log level conversion
+   * @description Test AgToLogLevel conversion from string labels to log levels
+   */
   describe('When: converting labels to log levels with AgToLogLevel', () => {
     it('Then: [正常] - should convert valid labels to log levels', () => {
       expect(AgToLogLevel('ERROR')).toBe(AG_LOGLEVEL.ERROR);

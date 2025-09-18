@@ -6,7 +6,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// Node.js built-in modules
+// Node.js標準モジュール
 import { randomUUID } from 'node:crypto';
 import { basename } from 'node:path';
 

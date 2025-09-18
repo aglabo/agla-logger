@@ -6,11 +6,24 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ (Vitest)
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { AG_LOGLEVEL } from '../../../shared/types';
+
+// 型定義・インターフェース - ログレベル型エイリアス
 import type { AgLogLevel } from '../../../shared/types';
+
+// 定数・設定・エラーメッセージ - ログレベル定数群
+import { AG_LOGLEVEL } from '../../../shared/types';
+
+// 内部実装・コアクラス - テスト対象AgLoggerConfig
 import { AgLoggerConfig } from '../AgLoggerConfig.class';
 
+/**
+ * @suite AgLoggerConfig Log Level Handling | AgLoggerConfig
+ * @description 特殊レベルと標準レベルの設定挙動が仕様通りに制御されるかを検証する
+ * @testType unit
+ * Scenarios: 特殊レベル拒否, 標準レベル受理, 範囲外値保護
+ */
 describe('AgLoggerConfig special log level handling', () => {
   let config: AgLoggerConfig;
 
@@ -19,10 +32,20 @@ describe('AgLoggerConfig special log level handling', () => {
   });
 
   afterEach(() => {
-    // Clean up any side effects
+    // 各テストで書き換えた設定値が後続ケースへ影響しないよう初期化を担保する
   });
 
+  /**
+   * @context Given
+   * @scenario 初期レベル構成を持つAgLoggerConfig
+   * @description 初期化直後のAgLoggerConfigで特殊レベル設定を試行する前提を定義する
+   */
   describe('Given: AgLoggerConfig with initial level configuration', () => {
+    /**
+     * @context When
+     * @scenario 特殊レベルを設定する
+     * @description 特殊ログレベルを設定した際に無視される挙動を検証する
+     */
     describe('When: attempting to set special levels', () => {
       it('Then: should ignore VERBOSE（-11）setting and preserve original level - 異常系', () => {
         // Given: 初期状態でOFF（0）に設定
@@ -65,7 +88,17 @@ describe('AgLoggerConfig special log level handling', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 初期状態のAgLoggerConfig
+   * @description まだログレベルを書き換えていない初期状態を前提とする
+   */
   describe('Given: AgLoggerConfig in initial state', () => {
+    /**
+     * @context When
+     * @scenario 標準ログレベルを設定する
+     * @description OFFからTRACEまでの標準ログレベルを設定した際の受理挙動を確認する
+     */
     describe('When: setting standard log levels', () => {
       it('Then: should accept OFF（0）level setting - 正常系', () => {
         // Given: 初期状態
@@ -132,7 +165,17 @@ describe('AgLoggerConfig special log level handling', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario WARNレベルが設定されたAgLoggerConfig
+   * @description WARNレベルを前提に連続する特殊レベル設定の挙動を検証する
+   */
   describe('Given: AgLoggerConfig with WARN level set', () => {
+    /**
+     * @context When
+     * @scenario 特殊レベルを連続設定する
+     * @description 複数の特殊レベルを連続で設定した際の無視挙動を確認する
+     */
     describe('When: attempting multiple special level settings sequentially', () => {
       it('Then: should ignore all special level attempts and preserve original level - エッジケース', () => {
         // Given: 初期状態でWARN（3）に設定
@@ -155,7 +198,17 @@ describe('AgLoggerConfig special log level handling', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario ERRORレベルが設定されたAgLoggerConfig
+   * @description ERRORレベルを起点に特殊レベルと標準レベルの切替挙動を検証する
+   */
   describe('Given: AgLoggerConfig with ERROR level set', () => {
+    /**
+     * @context When
+     * @scenario 特殊レベル設定後に標準レベルを設定する
+     * @description 特殊レベル設定を試した直後に標準レベルへ切り替えた際の受理可否を確認する
+     */
     describe('When: attempting special level setting followed by standard level', () => {
       it('Then: should ignore special level but accept subsequent standard level - エッジケース', () => {
         // Given: 初期状態でERROR（2）に設定
@@ -175,7 +228,17 @@ describe('AgLoggerConfig special log level handling', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 標準レベルが設定されたAgLoggerConfig
+   * @description 標準レベルを保持した状態で範囲外値を与える前提を定義する
+   */
   describe('Given: AgLoggerConfig with standard levels', () => {
+    /**
+     * @context When
+     * @scenario 範囲外の値を設定する
+     * @description ログレベル範囲外の数値や非数値を設定した際の保護挙動を確認する
+     */
     describe('When: attempting to set out-of-range values', () => {
       it('Then: should ignore negative out-of-range value (-1) - エッジケース', () => {
         // Given: 初期状態でINFO（4）に設定
@@ -254,7 +317,17 @@ describe('AgLoggerConfig special log level handling', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario ログレベルマッピング整合性の要件を持つAgLoggerConfig
+   * @description 内部のshouldOutput整合性を検証する前提として、レベルマッピングが重要な状況を定義する
+   */
   describe('Given: AgLoggerConfig with log level mapping consistency requirements', () => {
+    /**
+     * @context When
+     * @scenario 内部レベルマッピングの整合性を確認する
+     * @description shouldOutputの結果が各レベル設定で階層を保持するかを検証する
+     */
     describe('When: checking internal level mapping consistency', () => {
       it('Then: should maintain consistent level hierarchy ordering - エッジケース', () => {
         // Given: 各レベルを順番に設定（OFFを除外：特殊な動作のため）

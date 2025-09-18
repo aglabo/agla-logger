@@ -6,7 +6,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 型定義・インターフェース
 import type { AgLoggerFunction } from '../../../shared/types/AgLogger.interface';
 
 /**

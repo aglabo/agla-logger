@@ -1,10 +1,6 @@
-# CLAUDE.md
+# @aglabo/agla-logger パッケージガイド
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## @aglabo/ag-logger パッケージガイド
-
-このファイルは、Claude Code (claude.ai/code) が@aglabo/ag-loggerパッケージでの作業時に参照するガイドです。
+このファイルは、Claude Code (claude.ai/code) が@aglabo/agla-loggerパッケージでの作業時に参照するガイドです。
 
 ## 📋 完全ドキュメント参照
 
@@ -12,40 +8,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### プロジェクトルートのドキュメント体系
 
-プロジェクト全体の詳細情報は `../../../docs/claude/` に体系化されています：
+プロジェクト全体の詳細情報は `../../../docs/` に体系化されています：
 
 #### 🔴 必須: 開発開始前確認
 
-- **[12-mcp-tools-mandatory.md](../../../docs/claude/12-mcp-tools-mandatory.md)** - **MCPツール必須使用要件**
-- **[03-development-workflow.md](../../../docs/claude/03-development-workflow.md)** - BDD開発フロー・実装手順・テスト階層統一ルール
+- **[docs/rules/04-mcp-tools-mandatory.md](../../../docs/rules/04-mcp-tools-mandatory.md)** - **MCPツール必須使用要件**
+- **[docs/rules/01-development-workflow.md](../../../docs/rules/01-development-workflow.md)** - BDD開発フロー・実装手順
 
 #### 🚀 基本情報・概要
 
-- **[01-project-overview.md](../../../docs/claude/01-project-overview.md)** - プロジェクト全体概要・パッケージ構造
-- **[02-architecture-complete.md](../../../docs/claude/02-architecture-complete.md)** - 技術アーキテクチャ・設計パターン
+- **[docs/projects/00-project-overview.md](../../../docs/projects/00-project-overview.md)** - プロジェクト全体概要・パッケージ構造
+- **[docs/projects/01-architecture.md](../../../docs/projects/01-architecture.md)** - 技術アーキテクチャ・設計パターン
 
 #### 🛠️ 開発プロセス・手順
 
-- **[04-coding-conventions.md](../../../docs/claude/04-coding-conventions.md)** - コーディング規約・ベストプラクティス
-- **[05-command-reference.md](../../../docs/claude/05-command-reference.md)** - 開発コマンド完全リファレンス
+- **[docs/rules/02-coding-conventions.md](../../../docs/rules/02-coding-conventions.md)** - コーディング規約・ベストプラクティス
+- **[docs/projects/07-command-reference.md](../../../docs/projects/07-command-reference.md)** - 開発コマンド完全リファレンス
 
 #### 🔍 品質保証・テスト
 
-- **[06-quality-assurance.md](../../../docs/claude/06-quality-assurance.md)** - 多層品質保証システム
-- **[07-project-roadmap.md](../../../docs/claude/07-project-roadmap.md)** - プロジェクトロードマップ・未了タスク
+- **[docs/rules/03-quality-assurance.md](../../../docs/rules/03-quality-assurance.md)** - 多層品質保証システム
+- **[docs/rules/07-bdd-test-hierarchy.md](../../../docs/rules/07-bdd-test-hierarchy.md)** - BDD階層構造統一ルール
+- **[docs/projects/02-roadmap.md](../../../docs/projects/02-roadmap.md)** - プロジェクトロードマップ・未了タスク
 
 #### 🔧 専門技術・高度な機能
 
-- **[08-plugin-system-guide.md](../../../docs/claude/08-plugin-system-guide.md)** - プラグインシステム詳細ガイド
-- **[09-type-system-reference.md](../../../docs/claude/09-type-system-reference.md)** - TypeScript型システムリファレンス
-- **[10-symbol-map-navigation.md](../../../docs/claude/10-symbol-map-navigation.md)** - シンボルマップ・コードナビゲーション
+- **[docs/projects/03-plugin-system.md](../../../docs/projects/03-plugin-system.md)** - プラグインシステム詳細ガイド
+- **[docs/projects/04-type-system.md](../../../docs/projects/04-type-system.md)** - TypeScript型システムリファレンス
+- **[docs/projects/05-symbol-navigation.md](../../../docs/projects/05-symbol-navigation.md)** - シンボルマップ・コードナビゲーション
 
-#### 📚 ユーティリティ・ツール
+#### 📚 ユーティリティ・ツール・ルール
 
-- **[11-utility-functions.md](../../../docs/claude/11-utility-functions.md)** - ユーティリティ関数カタログ
-- **[13-code-navigation-commands.md](../../../docs/claude/13-code-navigation-commands.md)** - コードナビゲーション・MCPコマンド
+- **[docs/projects/06-utility-functions.md](../../../docs/projects/06-utility-functions.md)** - ユーティリティ関数カタログ
+- **[docs/rules/05-code-navigation-commands.md](../../../docs/rules/05-code-navigation-commands.md)** - コードナビゲーション・MCPコマンド
+- **[docs/rules/06-source-code-template.md](../../../docs/rules/06-source-code-template.md)** - ソースコードテンプレート統一ルール
+- **[docs/rules/08-jsdoc-describe-blocks.md](../../../docs/rules/08-jsdoc-describe-blocks.md)** - JSDoc describeブロック統一ルール
+- **[docs/rules/09-todo-task-management.md](../../../docs/rules/09-todo-task-management.md)** - タスク管理統一ルール
 
-## ⚡ @aglabo/ag-logger クイックリファレンス
+## ⚡ @aglabo/agla-logger クイックリファレンス
 
 ### 基本情報
 
@@ -57,7 +57,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 必須開発コマンド
 
 ```bash
-# MCPツール必須使用（詳細は 12-mcp-tools-mandatory.md 参照）
+# MCPツール必須使用（詳細は docs/rules/04-mcp-tools-mandatory.md 参照）
 # - すべての開発段階でlsmcp・serena-mcp使用必須
 
 # 基本開発フロー
@@ -183,7 +183,7 @@ try {
 
 #### ファイル編集制限
 
-- ❌ **編集禁止**: `lib/`, `module/`, `maps/`, `.cache/`
+- ❌ **編集禁止**: `lib/`, `module/`, `maps/`, `.cache/`, `node_modules/`
 - ✅ **編集対象**: `src/`, `configs/`, `__tests__/`, `tests/`
 
 #### 必須プラクティス

@@ -8,16 +8,39 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 型定義・インターフェース
 import type { AgFormatRoutine } from '../../../shared/types/AgMockConstructor.class';
 
-// plugins
+// プラグインシステム
 import { AgMockFormatter } from './AgMockFormatter';
 
 /**
  * ErrorThrowFormatter - 実行時にエラーメッセージを変更可能なフォーマッタ
  * AgMockFormatterを拡張し、setErrorMessageによる動的エラーメッセージ変更をサポート
  */
+/**
+ * 動的エラーメッセージ対応テスト用フォーマッタクラス
+ *
+ * AgMockFormatterを継承し、フォーマット処理実行時に指定されたエラーメッセージで
+ * Error例外を投げるフォーマッタです。エラーハンドリングのテストやモック処理に使用されます。
+ *
+ * 実行時にsetErrorMessage()でエラーメッセージを動的に変更可能で、
+ * 様々なエラーシナリオのテストに対応できます。
+ *
+ * @extends AgMockFormatter
+ *
+ * @example
+ * ```typescript
+ * import { ErrorThrowFormatter } from './ErrorThrowFormatter';
+ *
+ * const formatter = new ErrorThrowFormatter(undefined, 'Initial error');
+ * formatter.setErrorMessage('Custom error message');
+ *
+ * // フォーマット実行時にError('Custom error message')を投げる
+ * formatter.format(logMessage); // throws Error
+ * ```
+ */
+
 export class ErrorThrowFormatter extends AgMockFormatter {
   // static readonly __isMockConstructor = true as const;
   private currentErrorMessage: string;

@@ -9,16 +9,19 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ（Vitest）
 import { describe, expect, it } from 'vitest';
 import type { TestContext } from 'vitest';
 
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../shared/types';
 import type { AgFormatFunction } from '../../../../shared/types';
-import { AgLogger } from '../../../AgLogger.class';
-
 import type { AgMockBufferLogger } from '../../../plugins/logger/MockLogger';
 
-// logger & formatter
+// 内部実装・コアクラス
+import { AgLogger } from '../../../AgLogger.class';
+
+// プラグインシステム
 import { PlainFormatter } from '../../../plugins/formatter/PlainFormatter';
 import { MockLogger } from '../../../plugins/logger/MockLogger';
 
@@ -44,7 +47,18 @@ const setupTestContext = (_ctx?: TestContext): {
   };
 };
 
+/**
+ * @suite Plain Output Functional | Functional Tests
+ * @description Plain text output formatting and behavior testing with AgLogger and PlainFormatter in various logging scenarios
+ * @testType functional
+ * Scenarios: Basic log level formatting, Multiple argument handling with objects/arrays
+ */
 describe('Feature: AgLogger plain formatter basic output functionality', () => {
+  /**
+   * @context When
+   * @scenario Basic log level formatting
+   * @description Testing PlainFormatter output for different log levels (INFO/ERROR/WARN/DEBUG)
+   */
   describe('When AgLogger uses PlainFormatter for different log levels', () => {
     it('Then: [Normal] - should output basic INFO/ERROR/WARN/DEBUG messages', () => {
       const { mockLogger, mockFormatter } = setupTestContext();
@@ -85,6 +99,11 @@ describe('Feature: AgLogger plain formatter basic output functionality', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Multiple argument handling with objects/arrays
+   * @description Testing PlainFormatter with complex data structures including objects and arrays
+   */
   describe('When AgLogger handles multiple arguments with objects and arrays', () => {
     it('Then: [Normal] - should format and append objects/arrays to message end with multiple arguments', () => {
       const { mockLogger, mockFormatter } = setupTestContext();

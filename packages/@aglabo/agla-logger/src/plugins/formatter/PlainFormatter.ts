@@ -6,10 +6,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// types
+// 型定義・インターフェース
 import type { AgFormatFunction, AgLogMessage } from '../../../shared/types';
 
-// utils
+// ユーティリティ・ヘルパー関数
 import { argsToString } from '../../utils/AgLogHelpers';
 import { AgToLabel } from '../../utils/AgLogHelpers';
 

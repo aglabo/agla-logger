@@ -6,8 +6,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { AG_LABEL_TO_LOGLEVEL_MAP, AG_LOGLEVEL, AG_LOGLEVEL_TO_LABEL_MAP } from '../../shared/types';
+// 型定義・インターフェース
 import type { AgFormattedLogMessage, AgLoggerFunction, AgLogLevel, AgLogLevelLabel } from '../../shared/types';
+
+// 定数・設定・エラーメッセージ
+import { AG_LABEL_TO_LOGLEVEL_MAP, AG_LOGLEVEL, AG_LOGLEVEL_TO_LABEL_MAP } from '../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import { isValidLogLevel } from './AgLogValidators';
 
 /**
@@ -42,11 +47,14 @@ export const AgToLogLevel = (label: string): AgLogLevel | undefined => {
 };
 
 /**
- * Checks if an argument should be included in the log message text.
- * Primitive types are concatenated into the message, while complex types are stored separately.
+ * メッセージ引数の含有判定
  *
- * @param arg - The argument to check
- * @returns True if the argument is a primitive type that belongs in the message
+ * 未知の値がログメッセージに含める適切な型（プリミティブ型）かどうかを判定します。
+ * string、number、boolean、symbolの4つのプリミティブ型をメッセージ引数として認識し、
+ * 複雑なオブジェクトや関数などを除外します。
+ *
+ * @param arg - 判定対象の値
+ * @returns メッセージに含めるべきプリミティブ型の場合true、それ以外はfalse
  */
 const isMessageArgument = (arg: unknown): arg is string | number | boolean | symbol => {
   const argType = typeof arg;

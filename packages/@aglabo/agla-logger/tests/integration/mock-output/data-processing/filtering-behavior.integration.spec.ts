@@ -23,7 +23,7 @@ import { AgLoggerManager } from '@/AgLoggerManager.class';
 import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types';
 
 /**
  * テスト初期設定
@@ -52,19 +52,24 @@ const setupTestContext = (_ctx?: TestContext): {
 };
 
 /**
- * AgLogger Features Filtering Integration Tests
- *
+ * @suite Mock Output Filtering Behavior Integration | Integration
  * @description ログレベルフィルタリングとverbose機能の統合動作テスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: ログレベルフィルタリング設定, 動的レベル変更, 複合フィルタリングシナリオ
  */
 describe('Mock Output Filtering Behavior Integration', () => {
   /**
-   * Given: 異なるログレベル設定が存在する場合
-   * When: 各レベルでログメッセージを出力した時
-   * Then: レベル設定に基づいて適切にフィルタリングされる
+   * @context Given
+   * @scenario ログレベルフィルタリング設定
+   * @description ログレベルフィルタリングが設定された環境での異なるログレベル設定に基づいた適切なフィルタリングを検証
    */
-  describe('Given log level filtering is configured', () => {
-    describe('When filtering by specific levels', () => {
+  describe('Given: log level filtering is configured', () => {
+    /**
+     * @context When
+     * @scenario 特定レベルでのフィルタリング
+     * @description 特定レベルでフィルタリングした時の設定レベル以上のメッセージのみ出力されることを検証
+     */
+    describe('When: filtering by specific levels', () => {
       // 目的: すべての構成要素で一貫したフィルタリングが行われる
       it('Then: [正常] - should only output messages at or above configured level', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -91,7 +96,12 @@ describe('Mock Output Filtering Behavior Integration', () => {
       });
     });
 
-    describe('When log level is set to OFF', () => {
+    /**
+     * @context When
+     * @scenario ログレベルOFF設定
+     * @description ログレベルをOFFに設定した時の全レベルでの出力抑止を検証
+     */
+    describe('When: log level is set to OFF', () => {
       // 目的: OFFレベル時に全レベルで出力が抑止される
       it('Then: [正常] - should suppress all log output completely', (_ctx) => {
         const { mockLogger } = setupTestContext();
@@ -119,7 +129,12 @@ describe('Mock Output Filtering Behavior Integration', () => {
       });
     });
 
-    describe('When log level changes dynamically', () => {
+    /**
+     * @context When
+     * @scenario 動的ログレベル変更
+     * @description ログレベルを動的に変更した時の新しいフィルタリングルールの即座適用を検証
+     */
+    describe('When: log level changes dynamically', () => {
       // 目的: 動的なログレベル変更が即座に反映される
       it('Then: [正常] - should immediately apply new filtering rules', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -152,12 +167,17 @@ describe('Mock Output Filtering Behavior Integration', () => {
   });
 
   /**
-   * Given: Verbose モードの設定が存在する場合
-   * When: Verbose モードを有効/無効にした時
-   * Then: 詳細な出力制御が適切に動作する
+   * @context Given
+   * @scenario 動的レベル変更
+   * @description 動的レベル変更が発生する環境でのVerboseモードの有効/無効による詳細な出力制御を検証
    */
-  describe('Given dynamic level changes occur', () => {
-    describe('When using verbose mode', () => {
+  describe('Given: dynamic level changes occur', () => {
+    /**
+     * @context When
+     * @scenario Verboseモード使用
+     * @description Verboseモードを使用した時のデバッグトレースを含む全メッセージ出力を検証
+     */
+    describe('When: using verbose mode', () => {
       // 目的: Verboseモード有効時に詳細な出力が行われる
       it('Then: [正常] - should output all messages including debug traces', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
@@ -184,7 +204,12 @@ describe('Mock Output Filtering Behavior Integration', () => {
       });
     });
 
-    describe('When disabling verbose mode', () => {
+    /**
+     * @context When
+     * @scenario Verboseモード無効化
+     * @description Verboseモードを無効化した時の簡潔な出力フォーマットを検証
+     */
+    describe('When: disabling verbose mode', () => {
       // 目的: Verboseモード無効時に簡潔な出力が行われる
       it('Then: [正常] - should provide concise output formatting', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -209,12 +234,17 @@ describe('Mock Output Filtering Behavior Integration', () => {
   });
 
   /**
-   * Given: 複合的なフィルタリングシナリオが存在する場合
-   * When: ログレベル、Verbose、ログマップが組み合わさった時
-   * Then: 全ての設定が協調して適切に動作する
+   * @context Given
+   * @scenario 複合フィルタリングシナリオ
+   * @description 複合的なフィルタリングシナリオが存在する環境でのログレベル、Verbose、ログマップの協調動作を検証
    */
-  describe('Given complex filtering scenarios exist', () => {
-    describe('When log level, verbose mode, and logger map are combined', () => {
+  describe('Given: complex filtering scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario ログレベル、Verboseモード、ロガーマップ組み合わせ
+     * @description ログレベル、Verboseモード、ロガーマップを組み合わせた時の全設定の協調動作を検証
+     */
+    describe('When: log level, verbose mode, and logger map are combined', () => {
       // 目的: 複合設定での統合フィルタリング動作
       it('Then: [正常] - should coordinate all filtering settings appropriately', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -248,7 +278,12 @@ describe('Mock Output Filtering Behavior Integration', () => {
       });
     });
 
-    describe('When filtering with standard log level validation', () => {
+    /**
+     * @context When
+     * @scenario 標準ログレベル検証でのフィルタリング
+     * @description 標準ログレベル検証でフィルタリングした時のログレベルバリデータとの統合動作を検証
+     */
+    describe('When: filtering with standard log level validation', () => {
       // 目的: 標準ログレベル検証との統合
       it('Then: [正常] - should work correctly with log level validators', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();

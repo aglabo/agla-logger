@@ -9,14 +9,40 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// 外部ライブラリ
 import { ErrorSeverity } from '@aglabo/agla-error';
+
+// 型定義・インターフェース
 import { AgLoggerError } from 'shared/types/AgLoggerError.types';
-import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../../shared/constants/agErrorMessages';
-import { AG_LOGLEVEL } from '../../shared/types';
 import type { AgLogLevel } from '../../shared/types';
 import type { AgMockConstructor } from '../../shared/types/AgMockConstructor.class';
+
+// 定数・設定・エラーメッセージ
+import { AG_LOGGER_ERROR_MESSAGES, ERROR_TYPES } from '../../shared/constants/agErrorMessages';
+import { AG_LOGLEVEL } from '../../shared/types';
+
+// ユーティリティ・ヘルパー関数
 import { valueToString } from './AgLogHelpers';
 
+/**
+ * ログレベル値の妥当性を検証する型ガード関数
+ *
+ * 未知の値がAgLogLevel型として有効かどうかを判定します。
+ * 数値の型チェック、有限性、整数性、および定義済みログレベル値との照合を行います。
+ *
+ * @param logLevel - 検証対象の値
+ * @returns ログレベルとして有効な場合true、そうでなければfalse
+ *
+ * @example
+ * ```typescript
+ * import { isValidLogLevel } from './AgLogValidators';
+ *
+ * if (isValidLogLevel(userInput)) {
+ *   // userInputはAgLogLevel型として安全に使用可能
+ *   logger.setLogLevel(userInput);
+ * }
+ * ```
+ */
 export const isValidLogLevel = (logLevel: unknown): logLevel is AgLogLevel => {
   return (
     logLevel !== undefined
@@ -163,6 +189,25 @@ export const isStandardLogLevel = (logLevel: AgLogLevel | undefined): boolean =>
   return logLevel >= AG_LOGLEVEL.OFF // 0
     && logLevel <= AG_LOGLEVEL.TRACE; // 6
 };
+/**
+ * AgMockConstructor型の型ガード関数
+ *
+ * 未知の値がAgMockConstructor（モックコンストラクタ）として有効かどうかを判定します。
+ * 関数であることと、内部の__isMockConstructorマーカーの存在を確認します。
+ *
+ * @param value - 検証対象の値
+ * @returns モックコンストラクタとして有効な場合true、そうでなければfalse
+ *
+ * @example
+ * ```typescript
+ * import { isAgMockConstructor } from './AgLogValidators';
+ *
+ * if (isAgMockConstructor(formatter)) {
+ *   // formatterはAgMockConstructor型として安全に使用可能
+ *   const mockFormatter = new formatter();
+ * }
+ * ```
+ */
 export const isAgMockConstructor = (value: unknown): value is AgMockConstructor => {
   if (typeof value !== 'function') {
     return false;

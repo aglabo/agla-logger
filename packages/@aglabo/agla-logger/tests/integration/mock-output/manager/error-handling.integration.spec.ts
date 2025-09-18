@@ -26,8 +26,9 @@ import { AgLoggerManager } from '@/AgLoggerManager.class';
 import { MockFormatter } from '@/plugins/formatter/MockFormatter';
 import { MockLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
-import type { AgMockConstructor } from '@shared/types/AgMockConstructor.class';
+import type { AgMockConstructor } from '@shared/types';
 
+// 内部巻数
 const setupTestContext = (_ctx?: TestContext): {
   mockLogger: AgMockBufferLogger;
   mockFormatter: AgMockConstructor;
@@ -51,19 +52,24 @@ const setupTestContext = (_ctx?: TestContext): {
 };
 
 /**
- * AgLoggerManager Error Handling Integration Tests
- *
+ * @suite AgLoggerManager Error Handling Integration | Integration
  * @description エラーハンドリングとエッジケースの統合動作を保証するテスト
- * atsushifx式BDD：Given-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: 無効ログレベルアクセス, 空または不正ロガーマップ, プラグインエラー, 同時アクセス競合, メモリリークリスク
  */
 describe('AgLoggerManager Error Handling Integration', () => {
   /**
-   * Given: 無効なログレベルアクセスが発生する環境が存在する場合
-   * When: 存在しないまたは無効なログレベルにアクセスした時
-   * Then: 適切なエラーが投げられる
+   * @context Given
+   * @scenario 無効ログレベルアクセスシナリオ
+   * @description 無効なログレベルアクセスシナリオが存在する環境での存在しないまたは無効なログレベルにアクセスした時の適切なエラー処理を検証
    */
-  describe('Given invalid log level access scenarios exist', () => {
-    describe('When accessing non-existent or invalid log levels', () => {
+  describe('Given: invalid log level access scenarios exist', () => {
+    /**
+     * @context When
+     * @scenario 非存在または無効ログレベルアクセス
+     * @description 非存在または無効なログレベルにアクセスした時の適切なエラーの投出を検証
+     */
+    describe('When: accessing non-existent or invalid log levels', () => {
       // 目的: 無効ログレベル時に例外が投げられることを確認
       it('Then: [異常] - should throw appropriate error for invalid log level', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -84,12 +90,17 @@ describe('AgLoggerManager Error Handling Integration', () => {
   });
 
   /**
-   * Given: 空または不正なロガーマップが存在する場合
-   * When: 不正なマップ構成でアクセスした時
-   * Then: 安全なフォールバック動作が発生する
+   * @context Given
+   * @scenario 空または不正ロガーマップ
+   * @description 空または不正なロガーマップが存在する環境での不正なマップ構成でアクセスした時の安全なフォールバック動作を検証
    */
-  describe('Given empty or invalid logger maps exist', () => {
-    describe('When accessing with invalid map configurations', () => {
+  describe('Given: empty or invalid logger maps exist', () => {
+    /**
+     * @context When
+     * @scenario 無効マップ構成アクセス
+     * @description 無効なマップ構成でアクセスした時の空のロガーマップ指定時の適切な処理を検証
+     */
+    describe('When: accessing with invalid map configurations', () => {
       // 目的: 空のロガーマップ指定時の挙動確認
       it('Then: [正常] - should handle empty logger map gracefully', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
@@ -118,7 +129,12 @@ describe('AgLoggerManager Error Handling Integration', () => {
       });
     });
 
-    describe('When handling null or undefined logger map values', () => {
+    /**
+     * @context When
+     * @scenario nullまたはundefinedロガーマップ値処理
+     * @description nullまたはundefinedロガーマップ値を処理した時のマップの安定性を検証
+     */
+    describe('When: handling null or undefined logger map values', () => {
       // 目的: null/undefined値を含むマップの安定性
       it('Then: [エッジケース] - should maintain stability with null/undefined map values', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext(_ctx);
@@ -149,12 +165,17 @@ describe('AgLoggerManager Error Handling Integration', () => {
   });
 
   /**
-   * Given: プラグインエラーが発生する環境が存在する場合
-   * When: フォーマッターやロガーでエラーが発生した時
-   * Then: マネージャーは安定性を維持する
+   * @context Given
+   * @scenario プラグインエラー環境
+   * @description プラグインエラーが発生する環境でのフォーマッターやロガーでエラーが発生した時のマネージャー安定性維持を検証
    */
-  describe('Given plugin errors occur in the environment', () => {
-    describe('When formatter or logger errors are encountered', () => {
+  describe('Given: plugin errors occur in the environment', () => {
+    /**
+     * @context When
+     * @scenario フォーマッターまたはロガーエラー発生
+     * @description フォーマッターまたはロガーエラーが発生した時のマネージャー安定性維持を検証
+     */
+    describe('When: formatter or logger errors are encountered', () => {
       // 目的: プラグインエラー発生時のマネージャー安定性
       it('Then: [正常] - should maintain manager stability during plugin errors', (_ctx) => {
         const { mockLogger } = setupTestContext(_ctx);
@@ -178,7 +199,12 @@ describe('AgLoggerManager Error Handling Integration', () => {
       });
     });
 
-    describe('When recovering from plugin errors', () => {
+    /**
+     * @context When
+     * @scenario プラグインエラーからの回復
+     * @description プラグインエラーから回復した時の適切な回復能力を検証
+     */
+    describe('When: recovering from plugin errors', () => {
       // 目的: プラグインエラー後の回復能力
       it('Then: [正常] - should recover gracefully after plugin error resolution', (_ctx) => {
         const { mockLogger, mockFormatter } = setupTestContext();
@@ -206,12 +232,17 @@ describe('AgLoggerManager Error Handling Integration', () => {
   });
 
   /**
-   * Given: 同時アクセス競合が発生する環境が存在する場合
-   * When: 設定変更と参照取得が同時に発生した時
-   * Then: デッドロックや不整合なく処理される
+   * @context Given
+   * @scenario 同時アクセス競合
+   * @description 同時アクセス競合が発生する環境での設定変更と参照取得が同時に発生した時のデッドロックや不整合なしの処理を検証
    */
-  describe('Given concurrent access conflicts occur', () => {
-    describe('When configuration changes and access occur simultaneously', () => {
+  describe('Given: concurrent access conflicts occur', () => {
+    /**
+     * @context When
+     * @scenario 設定変更とアクセスの同時発生
+     * @description 設定変更とアクセスが同時に発生した時のマネージャー安定性を検証
+     */
+    describe('When: configuration changes and access occur simultaneously', () => {
       // 目的: 同時アクセス時のマネージャー安定性
       it('Then: [エッジケース] - should handle concurrent operations without deadlock or inconsistency', (_ctx) => {
         const { mockFormatter } = setupTestContext();
@@ -243,12 +274,17 @@ describe('AgLoggerManager Error Handling Integration', () => {
   });
 
   /**
-   * Given: メモリリークリスクがある環境が存在する場合
-   * When: 頻繁な設定変更が発生した時
-   * Then: メモリリークなく動作する
+   * @context Given
+   * @scenario メモリリークリスク環境
+   * @description メモリリークリスクがある環境での頻繁な設定変更が発生した時のメモリリークなしの動作を検証
    */
-  describe('Given memory leak risks exist in the environment', () => {
-    describe('When frequent configuration changes occur', () => {
+  describe('Given: memory leak risks exist in the environment', () => {
+    /**
+     * @context When
+     * @scenario 頻繁な設定変更発生
+     * @description 頻繁な設定変更が発生した時のメモリリーク防止を検証
+     */
+    describe('When: frequent configuration changes occur', () => {
       // 目的: 頻繁な設定変更時のメモリリーク防止
       it('Then: [エッジケース] - should operate without memory leaks during frequent changes', (_ctx) => {
         const { mockFormatter } = setupTestContext(_ctx);

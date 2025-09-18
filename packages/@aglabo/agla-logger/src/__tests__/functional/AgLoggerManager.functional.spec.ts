@@ -1,21 +1,21 @@
-// src/__tests__/AgLoggerManager.spec.ts
-// @(#) : Unit tests for AgLoggerManager class (atsushifx-style BDD)
+// src: /src/__tests__/functional/AgLoggerManager.functional.spec.ts
+// @(#) : AgLoggerManager機能テスト AgLoggerManagerクラスの振る舞い検証
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行、アサーション、モック機能を提供
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// テスト対象 - AgLoggerManagerクラスのシングルトン実装
-import { AgLoggerManager } from '../../AgLoggerManager.class';
-// AgLoggerクラス - 参照比較のため
-import { AgLogger } from '../../AgLogger.class';
-// 型定義 - 委譲テスト用
+// 型定義・インターフェース
 import type { AgLoggerFunction, AgLoggerMap, AgLoggerOptions } from '../../../shared/types/AgLogger.interface';
 import { AG_LOGLEVEL } from '../../../shared/types/AgLogLevel.types';
+
+// 内部実装・コアクラス
+import { AgLogger } from '../../AgLogger.class';
+import { AgLoggerManager } from '../../AgLoggerManager.class';
 
 /**
  * AgLoggerManager仕様準拠BDDテストスイート
@@ -41,12 +41,23 @@ afterEach(() => {
 });
 
 /**
- * カテゴリ1: 初期化ガード
- *
- * @description 未初期化状態でのエラー処理と二重初期化防止
+ * @suite AgLoggerManager Initialization Guard | Functional
+ * @description AgLoggerManagerの初期化前後におけるアクセス制御とエラーハンドリングを検証
+ * @testType functional
+ * Scenarios: 未初期化アクセス, 二重初期化防止, 初期化後取得
  */
 describe('Feature: AgLoggerManager initialization guard', () => {
+  /**
+   * @context Given
+   * @scenario 未初期化のAgLoggerManager
+   * @description シングルトン生成前のAPI呼び出し時挙動を確認
+   */
   describe('Given: uninitialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario getManagerを呼び出す
+     * @description 未初期化状態でgetManagerを呼んだ際の例外を検証
+     */
     describe('When: calling getManager', () => {
       it('Then: [異常] - should throw error for uninitialized access', () => {
         expect(() => AgLoggerManager.getManager()).toThrow(/not created/i);
@@ -54,7 +65,17 @@ describe('Feature: AgLoggerManager initialization guard', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 初期化済みのAgLoggerManager
+   * @description createManager実行後のAPI呼び出し挙動を確認
+   */
   describe('Given: initialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario createManagerを再度呼び出す
+     * @description 二重初期化の禁止を検証
+     */
     describe('When: calling createManager again', () => {
       it('Then: [異常] - should throw error for duplicate initialization', () => {
         AgLoggerManager.createManager();
@@ -62,6 +83,11 @@ describe('Feature: AgLoggerManager initialization guard', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 初期化後にgetManagerを呼び出す
+     * @description createManagerとgetManagerの戻り値が一致するか確認
+     */
     describe('When: calling getManager after initialization', () => {
       it('Then: [正常] - should return same reference as created manager', () => {
         const manager1 = AgLoggerManager.createManager();
@@ -73,12 +99,23 @@ describe('Feature: AgLoggerManager initialization guard', () => {
 });
 
 /**
- * カテゴリ2: Logger の生成・取得
- *
- * @description AgLoggerインスタンスの生成と取得機能
+ * @suite AgLoggerManager Logger Provisioning | Functional
+ * @description AgLoggerManagerがAgLoggerインスタンスを生成・提供する挙動を検証
+ * @testType functional
+ * Scenarios: getLogger正常系, 未初期化アクセス, AgLogger一致性
  */
 describe('Feature: AgLogger generation and retrieval', () => {
+  /**
+   * @context Given
+   * @scenario 初期化済みAgLoggerManager
+   * @description 正常状態でgetLoggerを利用した場合を検証
+   */
   describe('Given: initialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario getLoggerを呼び出す
+     * @description AgLoggerインスタンス取得の可用性を確認
+     */
     describe('When: calling getLogger', () => {
       it('Then: [正常] - should return defined logger instance', () => {
         const manager = AgLoggerManager.createManager();
@@ -96,7 +133,17 @@ describe('Feature: AgLogger generation and retrieval', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 未初期化のAgLoggerManager
+   * @description シングルトン生成前にアクセスした場合の挙動を検証
+   */
   describe('Given: uninitialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario getLoggerへアクセスを試みる
+     * @description 未初期化状態で例外が発生することを確認
+     */
     describe('When: attempting to access getLogger', () => {
       it('Then: [異常] - should throw error for uninitialized access', () => {
         AgLoggerManager.resetSingleton(); // Ensure no instance exists
@@ -107,12 +154,23 @@ describe('Feature: AgLogger generation and retrieval', () => {
 });
 
 /**
- * カテゴリ3: ロガーインスタンス注入
- *
- * @description setLoggerメソッドによる外部インスタンス注入機能
+ * @suite AgLoggerManager Logger Injection | Functional
+ * @description setLoggerやcreateManagerによるロガーインスタンス管理を検証
+ * @testType functional
+ * Scenarios: createManager正常系, 外部注入拒否, ロガー取得
  */
 describe('Feature: Logger instance injection', () => {
+  /**
+   * @context Given
+   * @scenario クリーン状態のAgLoggerManager
+   * @description setLoggerやcreateManagerの初期挙動を確認
+   */
   describe('Given: AgLoggerManager in clean state', () => {
+    /**
+     * @context When
+     * @scenario createManagerを呼び出す
+     * @description シングルトン生成時の例外有無とロガー有無を検証
+     */
     describe('When: creating manager with createManager', () => {
       it('Then: [正常] - should successfully create manager with logger', () => {
         AgLoggerManager.resetSingleton(); // Ensure clean state
@@ -133,7 +191,17 @@ describe('Feature: Logger instance injection', () => {
     });
   });
 
+  /**
+   * @context Given
+   * @scenario 初期化済みAgLoggerManager
+   * @description すでにロガーを保持している状態での挙動を検証
+   */
   describe('Given: initialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario setLoggerで外部ロガーを注入しようとする
+     * @description 二重注入が拒否されるかを確認
+     */
     describe('When: attempting to inject external logger with setLogger', () => {
       it('Then: [異常] - should throw error for already initialized manager', () => {
         const externalLogger = AgLogger.createLogger();
@@ -148,12 +216,23 @@ describe('Feature: Logger instance injection', () => {
 });
 
 /**
- * カテゴリ4: 廃棄（テスト専用API）
- *
- * @description resetSingleton等のテスト専用API動作
+ * @suite AgLoggerManager Disposal APIs | Functional
+ * @description resetSingletonなどテスト向けAPIの廃棄挙動を検証
+ * @testType functional
+ * Scenarios: 廃棄後アクセス, 再初期化, エラー検出
  */
 describe('Feature: Disposal test-only APIs', () => {
+  /**
+   * @context Given
+   * @scenario 初期化済みAgLoggerManager
+   * @description resetSingleton実行後のAPI挙動を確認
+   */
   describe('Given: initialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario resetSingleton後にgetManagerを呼び出す
+     * @description 廃棄後アクセスがエラーとなるか検証
+     */
     describe('When: calling getManager after resetSingleton', () => {
       it('Then: [正常] - should throw error for disposed manager access', () => {
         AgLoggerManager.createManager();
@@ -163,6 +242,11 @@ describe('Feature: Disposal test-only APIs', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario resetSingleton後にcreateManagerを呼び出す
+     * @description 廃棄後に再初期化できるか確認
+     */
     describe('When: calling createManager after resetSingleton', () => {
       it('Then: [正常] - should allow new manager creation after disposal', () => {
         AgLoggerManager.createManager();
@@ -178,12 +262,23 @@ describe('Feature: Disposal test-only APIs', () => {
 });
 
 /**
- * カテゴリ5: 委譲の成立（インタラクション）
- *
- * @description bindLoggerFunction等の委譲メソッドの動作
+ * @suite AgLoggerManager Delegation APIs | Functional
+ * @description bindLoggerFunctionやupdateLoggerMap等の委譲メソッド挙動を検証
+ * @testType functional
+ * Scenarios: ロガー関数委譲, loggerMap更新, 設定委譲
  */
 describe('Feature: Delegation establishment and interactions', () => {
+  /**
+   * @context Given
+   * @scenario 委譲対象メソッドを持つ初期化済みAgLoggerManager
+   * @description ロガーとの連携機能を確認
+   */
   describe('Given: initialized AgLoggerManager with delegation target methods', () => {
+    /**
+     * @context When
+     * @scenario bindLoggerFunctionを呼び出す
+     * @description setLoggerFunctionへの委譲が行われるかを検証
+     */
     describe('When: calling bindLoggerFunction', () => {
       it('Then: [正常] - should call AgLogger.setLoggerFunction once', () => {
         const manager = AgLoggerManager.createManager();
@@ -200,6 +295,11 @@ describe('Feature: Delegation establishment and interactions', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario updateLoggerMapを呼び出す
+     * @description setLoggerConfigにloggerMapが委譲されるかを検証
+     */
     describe('When: calling updateLoggerMap', () => {
       it('Then: [正常] - should call AgLogger.setLoggerConfig with loggerMap', () => {
         const manager = AgLoggerManager.createManager();
@@ -219,6 +319,11 @@ describe('Feature: Delegation establishment and interactions', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario setLoggerConfigを呼び出す
+     * @description AgLogger.setLoggerConfigへの委譲を検証
+     */
     describe('When: calling setLoggerConfig', () => {
       it('Then: [正常] - should delegate to AgLogger.setLoggerConfig', () => {
         const manager = AgLoggerManager.createManager();
@@ -235,6 +340,11 @@ describe('Feature: Delegation establishment and interactions', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario removeLoggerFunctionを呼び出す
+     * @description NullLoggerによる置換が行われるかを検証
+     */
     describe('When: calling removeLoggerFunction', () => {
       it('Then: [正常] - should call AgLogger.setLoggerFunction with NullLogger', () => {
         const manager = AgLoggerManager.createManager();
@@ -254,12 +364,23 @@ describe('Feature: Delegation establishment and interactions', () => {
 });
 
 /**
- * カテゴリ6: スレッショルド
- *
- * @description 例外メッセージの正規表現テスト（仕様書120行目準拠）
+ * @suite AgLoggerManager Error Threshold | Functional
+ * @description 例外メッセージに対する閾値バリデーションを正規表現で検証
+ * @testType functional
+ * Scenarios: 未初期化アクセス, 例外メッセージ検証
  */
-describe('Given: AgLoggerManager error threshold validation', () => {
+describe('Feature: AgLoggerManager error threshold validation', () => {
+  /**
+   * @context Given
+   * @scenario 未初期化のAgLoggerManager
+   * @description getManager呼び出し時のエラー文言を検証
+   */
   describe('Given: uninitialized AgLoggerManager', () => {
+    /**
+     * @context When
+     * @scenario getManagerを呼び出す
+     * @description 例外メッセージが正規表現に合致するかを確認
+     */
     describe('When: calling getManager', () => {
       it('Then: [異常] - should throw error message matching /not created/i', () => {
         expect(() => AgLoggerManager.getManager()).toThrow(/not created/i);
@@ -269,11 +390,23 @@ describe('Given: AgLoggerManager error threshold validation', () => {
 });
 
 /**
- * Core State Management Edge Cases
- * Tests for Manager-Logger state synchronization and edge cases
+ * @suite AgLoggerManager State Edge Cases | Functional
+ * @description ManagerとLoggerの状態同期や並列操作時の境界動作を検証
+ * @testType functional
+ * Scenarios: 複合操作の整合性, 廃棄後参照, 設定変更検知
  */
-describe('Given: Manager state management edge cases', () => {
+describe('Feature: Manager state management edge cases', () => {
+  /**
+   * @context Given
+   * @scenario Manager-Logger状態の不整合シナリオ
+   * @description 並列操作や廃棄後アクセス時の整合性を検証
+   */
   describe('Given: Manager-Logger state inconsistency scenarios', () => {
+    /**
+     * @context When
+     * @scenario 複数マネージャ操作を並列実行
+     * @description 連続操作時に例外なく整合性が保たれるか確認
+     */
     describe('When: executing multiple manager operations in parallel', () => {
       it('Then: [エッジケース] - should maintain state consistency under concurrent operations', () => {
         const manager = AgLoggerManager.createManager();
@@ -296,6 +429,11 @@ describe('Given: Manager state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario マネージャ廃棄後の状態を確認
+     * @description resetSingleton後の参照とアクセス挙動を確認
+     */
     describe('When: checking state after manager disposal', () => {
       it('Then: [エッジケース] - should handle post-disposal access correctly', () => {
         // Create manager and logger reference
@@ -315,6 +453,11 @@ describe('Given: Manager state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario 設定オブジェクト変更を検知する
+     * @description 設定変更や参照置換時の影響を検証
+     */
     describe('When: detecting configuration object changes', () => {
       it('Then: [エッジケース] - should detect and handle configuration object mutations', () => {
         const manager = AgLoggerManager.createManager();
@@ -367,6 +510,11 @@ describe('Given: Manager state management edge cases', () => {
       });
     });
 
+    /**
+     * @context When
+     * @scenario Manager-Logger参照の不整合を検証
+     * @description 複数回の設定変更や同時アクセス時の参照一致性を確認
+     */
     describe('When: Manager-Logger reference inconsistency', () => {
       it('Then: [エッジケース] - should maintain consistent references after multiple operations', () => {
         const manager = AgLoggerManager.createManager();

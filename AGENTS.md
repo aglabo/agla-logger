@@ -1,6 +1,6 @@
-# ag-logger モノレポ開発ガイド
+# ag-logger AI開発者（Codex）専用ガイド
 
-このファイルは、Claude Code (claude.ai/code) がag-loggerモノレポでの作業時に参照する総合ガイドです。
+このファイルは、AI開発者（Codex含む）がag-loggerモノレポでの作業時に参照する総合ガイドです。
 
 ## 📋 目次・ドキュメント構成
 
@@ -119,7 +119,7 @@ packages/
 - AglaError基本実装完了
 - ドキュメント体系化完了（13ファイル作成）
 - 品質保証システム確立
-- パッケージ構造の最適化（@aglabo統一）
+- パッケージ構造の最適化（@aglabo統一)
 
 ## 🔍 詳細情報へのアクセス
 
@@ -149,6 +149,101 @@ packages/
 - **BDD テストルールを確認したい** → [BDD階層構造ルール](docs/rules/07-bdd-test-hierarchy.md)
 - **JSDoc ルールを確認したい** → [JSDoc describeブロックルール](docs/rules/08-jsdoc-describe-blocks.md)
 - **タスク管理ルールを確認したい** → [タスク管理統一ルール](docs/rules/09-todo-task-management.md)
+
+## 🚨 AI開発者（Codex）専用開発制約
+
+### MCPツール必須活用
+
+```bash
+# 必須: すべての開発段階でMCPツール使用
+mcp__serena-mcp__get_symbols_overview
+mcp__serena-mcp__search_for_pattern
+mcp__lsmcp__search_symbols
+```
+
+### BDD階層構造厳守
+
+```typescript
+// ✅ 正しい3階層構造
+describe('Given: [前提条件]', () => {
+  describe('When: [操作内容]', () => {
+    it('Then: [正常]/[異常]/[エッジケース] - should [期待動作]', () => {
+      // テスト実装
+    });
+  });
+});
+
+// ❌ 禁止: 4階層以上のネスト
+describe('Suite', () => {
+  describe('Context1', () => {
+    describe('Context2', () => {
+      describe('Context3', () => { // ← 4階層禁止
+      });
+    });
+  });
+});
+```
+
+### ケース種別タグ必須
+
+**全it文でケース種別タグを必ず付与:**
+
+| タグ               | 用途        | 例                                                                    |
+| ------------------ | ----------- | --------------------------------------------------------------------- |
+| **[正常]**         | Happy Path  | `it('Then: [正常] - should return valid data', () => {})`             |
+| **[異常]**         | Error Cases | `it('Then: [異常] - should throw error for invalid input', () => {})` |
+| **[エッジケース]** | Edge Cases  | `it('Then: [エッジケース] - should handle empty array', () => {})`    |
+
+### JSDoc必須テンプレート
+
+#### TOPレベル（Suite）
+
+```typescript
+/**
+ * @suite [Suite Name] | [Category]
+ * @description [詳細説明]
+ * @testType [unit|functional|integration|e2e]
+ * Scenarios: [シナリオ1], [シナリオ2], [シナリオ3]
+ */
+describe('[Suite Name]', () => {
+```
+
+#### セカンドレベル（Context）
+
+```typescript
+/**
+ * @context [Given|When|Then]
+ * @scenario [シナリオ名]
+ * @description [コンテキスト詳細説明]
+ */
+describe('[Given|When]: [説明]', () => {
+```
+
+### ソースコードテンプレート
+
+#### ファイルヘッダー必須
+
+```typescript
+// src: /src/[ファイルパス]
+// @(#) : [機能名] [機能概要]
+//
+// Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+```
+
+#### import文7グループ分類必須
+
+```typescript
+// グループ1: Node.js標準モジュール
+// グループ2: 外部ライブラリ
+// グループ3: 型定義・インターフェース
+// グループ4: 定数・設定・エラーメッセージ
+// グループ5: 内部実装・コアクラス
+// グループ6: プラグインシステム
+// グループ7: ユーティリティ・ヘルパー関数
+```
 
 ---
 

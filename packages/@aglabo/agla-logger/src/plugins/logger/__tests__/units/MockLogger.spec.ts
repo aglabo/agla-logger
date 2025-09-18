@@ -6,57 +6,22 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// Testing framework - テストランナーと検証ライブラリ
+// 外部ライブラリ（Vitest）
 import { beforeEach, describe, expect, it } from 'vitest';
 
-// Constants and enums - ログレベル定数とEnum定義
+// 型定義・インターフェース
 import { AG_LOGLEVEL } from '../../../../../shared/types';
-
-// Test target - テスト対象のMockLoggerクラス
-import { MockLogger } from '../../MockLogger';
-
-// Type definitions - TypeScript型定義（実行時影響なし）
 import type { AgFormattedLogMessage, AgLogLevel, AgLogMessage } from '../../../../../shared/types';
 import type { AgMockBufferLogger } from '../../MockLogger';
 
-/**
- * MockLoggerプラグインの包括的ユニットテストスイート
- *
- * @description MockLoggerの全機能をBDD形式で体系的に検証
- * 振る舞い・種別・目的ごとに分類されたテストケースで包括的な品質保証を実現
- *
- * @testType Unit Test
- * @testTarget MockLogger Plugin
- * @testCategories
- * - Behavior: メッセージキャプチャ、クエリ、管理の振る舞い検証
- * - Type: 標準レベル、特殊レベル、無効値の種別検証
- * - Purpose: 基本機能、エラー処理、境界条件の目的別検証
- */
+// プラグインシステム
+import { MockLogger } from '../../MockLogger';
 
 /**
- * MockLogger環境設定関数
- *
- * @description テスト用MockLoggerインスタンスを作成・設定
- * @returns セットアップ済みのMockLoggerインスタンス
- */
-
-/**
- * Core Functionality Tests - 核心機能テストスイート
- *
- * @description MockLoggerの基本的な機能群を体系的に検証
- * メッセージのログ記録、取得、管理、ロガー関数生成などの主要機能をテスト
- *
- * @testCoverage
- * - Message Logging: 各レベルでのメッセージキャプチャ機能
- * - Message Retrieval: クエリ・検索・取得機能
- * - Message Management: クリア・管理機能
- * - Logger Function Generation: 動的ロガー関数生成機能
- */
-/**
- * Message Capture Behavior Tests - メッセージキャプチャ振る舞いテスト
- *
- * @description 全ログレベルでのメッセージキャプチャ機能の振る舞いを検証
- * 標準レベル・特殊レベル・構造化データ・複数メッセージのキャプチャ動作を包括的にテスト
+ * @suite MockLogger Message Capture | Unit
+ * @description Tests for MockLogger message capture behavior across all log levels
+ * @testType unit
+ * Scenarios: Standard levels, Special levels, Multiple messages, Data types
  */
 describe('Feature: MockLogger message capture behavior', () => {
   let mockLogger: AgMockBufferLogger;
@@ -66,10 +31,9 @@ describe('Feature: MockLogger message capture behavior', () => {
   });
 
   /**
-   * Standard Log Levels - 標準ログレベルキャプチャ
-   *
-   * @description 標準的なログレベル（OFF/FATAL/ERROR/WARN/INFO/DEBUG/TRACE）での
-   * メッセージキャプチャ動作を検証
+   * @context When
+   * @scenario Standard level capture
+   * @description Test message capture for standard log levels (FATAL/ERROR/WARN/INFO/DEBUG/TRACE)
    */
   describe('When: capturing messages for standard log levels', () => {
     // 全ての標準ログレベルでメッセージキャプチャ機能が正常に動作することを検証
@@ -94,10 +58,9 @@ describe('Feature: MockLogger message capture behavior', () => {
   });
 
   /**
-   * Special Log Levels - 特殊ログレベルキャプチャ
-   *
-   * @description 特殊ログレベル（VERBOSE/-99, LOG/-12, LOG/-98）での
-   * メッセージキャプチャ動作を検証
+   * @context When
+   * @scenario Special level capture
+   * @description Test message capture for special log levels (VERBOSE/LOG)
    */
   describe('When: capturing messages for special log levels', () => {
     // VERBOSE レベル(-99)でのメッセージキャプチャ機能を検証
@@ -151,9 +114,9 @@ describe('Feature: MockLogger message capture behavior', () => {
   });
 
   /**
-   * Multiple Messages and Data Types - 複数メッセージ・データ型対応
-   *
-   * @description 同一レベルでの複数メッセージ蓄積、文字列・構造化オブジェクト両対応
+   * @context When
+   * @scenario Multiple message handling
+   * @description Test multiple message accumulation and various data type support
    */
   describe('When: handling multiple messages and data types', () => {
     // 同一レベルでの複数メッセージ蓄積機能を検証
@@ -225,9 +188,10 @@ describe('Feature: MockLogger message capture behavior', () => {
 });
 
 /**
- * Message Query Behavior Tests - メッセージクエリ振る舞いテスト
- *
- * @description メッセージの検索・取得・集計機能の振る舞いを検証
+ * @suite MockLogger Message Query | Unit
+ * @description Tests for MockLogger message query and retrieval behavior
+ * @testType unit
+ * Scenarios: Individual queries, Message overview, Count verification
  */
 describe('Feature: MockLogger message query behavior', () => {
   let mockLogger: AgMockBufferLogger;
@@ -242,9 +206,9 @@ describe('Feature: MockLogger message query behavior', () => {
   });
 
   /**
-   * Individual Message Queries - 個別メッセージクエリ機能
-   *
-   * @description 特定レベル・最終メッセージ・件数確認・存在確認の個別クエリ機能
+   * @context When
+   * @scenario Individual message queries
+   * @description Test specific level, last message, count, and existence queries
    */
   describe('When: querying individual messages', () => {
     // MockLoggerの包括的なクエリ機能を検証
@@ -269,9 +233,9 @@ describe('Feature: MockLogger message query behavior', () => {
   });
 
   /**
-   * Complete Message Overview - 全体メッセージ概要取得
-   *
-   * @description 全レベルメッセージの包括的概要取得機能
+   * @context When
+   * @scenario Complete message overview
+   * @description Test comprehensive message overview retrieval across all levels
    */
   describe('When: retrieving complete message overview', () => {
     // 全レベルメッセージの包括的な概要取得機能を検証
@@ -308,9 +272,10 @@ describe('Feature: MockLogger message query behavior', () => {
 });
 
 /**
- * Message Management Behavior Tests - メッセージ管理振る舞いテスト
- *
- * @description メッセージのクリア・削除・管理機能の振る舞いを検証
+ * @suite MockLogger Message Management | Unit
+ * @description Tests for MockLogger message management and clearing behavior
+ * @testType unit
+ * Scenarios: Selective clearing, Complete clearing, Management workflows
  */
 describe('Feature: MockLogger message management behavior', () => {
   let mockLogger: AgMockBufferLogger;
@@ -324,9 +289,9 @@ describe('Feature: MockLogger message management behavior', () => {
   });
 
   /**
-   * Selective Message Clearing - 選択的メッセージクリア機能
-   *
-   * @description 特定レベルのメッセージクリア機能の動作確認
+   * @context When
+   * @scenario Selective message clearing
+   * @description Test selective message clearing for specific levels
    */
   describe('When: clearing messages selectively', () => {
     // 特定レベルのメッセージを選択的にクリアする機能を検証
@@ -360,9 +325,9 @@ describe('Feature: MockLogger message management behavior', () => {
   });
 
   /**
-   * Complete Message Clearing - 全体メッセージクリア機能
-   *
-   * @description 全レベルメッセージの一括クリア機能の動作確認
+   * @context When
+   * @scenario Complete message clearing
+   * @description Test complete message clearing across all levels
    */
   describe('When: clearing all messages', () => {
     // 全レベルのメッセージを一括クリアする機能を検証
@@ -399,9 +364,10 @@ describe('Feature: MockLogger message management behavior', () => {
 });
 
 /**
- * Logger Function Generation Tests - ロガー関数生成テスト
- *
- * @description 動的ロガー関数生成機能の振る舞いを検証
+ * @suite MockLogger Function Generation | Unit
+ * @description Tests for MockLogger dynamic logger function generation
+ * @testType unit
+ * Scenarios: Default logger maps, Dynamic map creation, Function validation
  */
 describe('Feature: MockLogger logger function generation', () => {
   let mockLogger: AgMockBufferLogger;
@@ -411,9 +377,9 @@ describe('Feature: MockLogger logger function generation', () => {
   });
 
   /**
-   * Default Logger Map Creation - デフォルトロガーマップ作成
-   *
-   * @description デフォルトロガーマップの作成と基本動作確認
+   * @context When
+   * @scenario Default logger map creation
+   * @description Test default logger map creation and basic operation
    */
   describe('When: creating default logger maps', () => {
     // デフォルトロガーマップの作成と基本動作を検証
@@ -434,9 +400,9 @@ describe('Feature: MockLogger logger function generation', () => {
   });
 
   /**
-   * Dynamic Logger Map Creation - 動的ロガーマップ作成
-   *
-   * @description createLoggerMapメソッドによる動的ロガー関数マップ作成
+   * @context When
+   * @scenario Dynamic logger map creation
+   * @description Test createLoggerMap method for dynamic logger function mapping
    */
   describe('When: creating dynamic logger maps', () => {
     // createLoggerMapで全標準レベルが含まれることを検証
@@ -479,9 +445,10 @@ describe('Feature: MockLogger logger function generation', () => {
 });
 
 /**
- * Input Validation Tests - 入力値検証テスト
- *
- * @description 無効な入力値に対するエラー処理の振る舞いを検証
+ * @suite MockLogger Input Validation | Unit
+ * @description Tests for MockLogger input validation and error handling
+ * @testType unit
+ * Scenarios: Type validation, Range validation, Consistency validation
  */
 describe('Feature: MockLogger input validation', () => {
   let mockLogger: AgMockBufferLogger;
@@ -491,9 +458,9 @@ describe('Feature: MockLogger input validation', () => {
   });
 
   /**
-   * Type Validation - 型バリデーション機能
-   *
-   * @description 無効な型のログレベルに対するエラー処理を検証
+   * @context When
+   * @scenario Type validation
+   * @description Test error handling for invalid log level types
    */
   describe('When: validating input types', () => {
     // 文字列型ログレベルに対する厳密なエラー処理を検証
@@ -544,9 +511,9 @@ describe('Feature: MockLogger input validation', () => {
   });
 
   /**
-   * Range Validation - 範囲バリデーション機能
-   *
-   * @description 数値型だが範囲外のログレベルに対するエラー処理を検証
+   * @context When
+   * @scenario Range validation
+   * @description Test error handling for out-of-range numeric log levels
    */
   describe('When: validating input ranges', () => {
     // 範囲外の正数に対する厳密なエラー処理を検証
@@ -641,9 +608,10 @@ describe('Feature: MockLogger input validation', () => {
 });
 
 /**
- * Edge Case and Boundary Tests - エッジケース・境界値テスト
- *
- * @description 特殊な条件や境界値でのMockLogger動作を検証
+ * @suite MockLogger Edge Cases | Unit
+ * @description Tests for MockLogger edge cases and boundary conditions
+ * @testType unit
+ * Scenarios: Data integrity, Special inputs, Boundary conditions
  */
 describe('Feature: MockLogger edge cases and boundary conditions', () => {
   let mockLogger: AgMockBufferLogger;
@@ -662,9 +630,9 @@ describe('Feature: MockLogger edge cases and boundary conditions', () => {
   };
 
   /**
-   * Data Integrity - データ整合性・不変性保証
-   *
-   * @description メッセージデータの不変性と参照整合性を検証
+   * @context When
+   * @scenario Data integrity maintenance
+   * @description Test message data immutability and reference consistency
    */
   describe('When: maintaining data integrity', () => {
     // データの不変性保証機能を検証
@@ -714,9 +682,9 @@ describe('Feature: MockLogger edge cases and boundary conditions', () => {
   });
 
   /**
-   * Special Input Handling - 特殊入力処理機能
-   *
-   * @description 特殊な入力値に対する堅牢な処理を検証
+   * @context When
+   * @scenario Special input handling
+   * @description Test robust handling of special input values
    */
   describe('When: handling special inputs', () => {
     // 特殊なメッセージ型に対する堅牢な処理を検証
@@ -745,9 +713,9 @@ describe('Feature: MockLogger edge cases and boundary conditions', () => {
   });
 
   /**
-   * Boundary Conditions - 境界値・並行処理安全性
-   *
-   * @description 境界条件や並行操作での安全性を検証
+   * @context When
+   * @scenario Boundary condition testing
+   * @description Test safety under boundary conditions and concurrent operations
    */
   describe('When: testing boundary conditions', () => {
     // 並行操作の安全性を検証

@@ -6,14 +6,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// --- modules
-// constants
-import { AG_LOGLEVEL } from '../../../shared/types';
-// types
+// 型定義・インターフェース
 import type { AgFormattedLogMessage } from '../../../shared/types';
 import type { AgLoggerFunction, AgLoggerMap } from '../../../shared/types/AgLogger.interface';
 
-// logger if log level is OFF
+// 定数・設定・エラーメッセージ
+import { AG_LOGLEVEL } from '../../../shared/types';
+
+// プラグインシステム
 import { NullLogger } from './NullLogger';
 
 /**

@@ -6,27 +6,24 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// テストフレームワーク - テストの実行、アサーション、モック機能を提供
+// 外部ライブラリ（Vitest）
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// テスト対象 - createManager と getLogger ユーティリティ関数およびAgManagerグローバル変数
-import { AgManager, createManager, getLogger } from '../../index';
-// 型定義とクラス
+// 型定義・インターフェース
 import type { AgLoggerOptions } from '../../../shared/types/AgLogger.interface';
+
+// 内部実装・コアクラス
 import { AgLogger } from '../../AgLogger.class';
 import { AgLoggerManager } from '../../AgLoggerManager.class';
 
+// ユーティリティ・ヘルパー関数
+import { AgManager, createManager, getLogger } from '../../index';
+
 /**
- * AgManagerUtils 仕様準拠BDDテストスイート
- *
- * @description atsushifx式BDD厳格プロセスに従った実装
- * createManagerとgetLoggerユーティリティ関数の統合テスト
- *
- * @testType Unit Test (BDD)
- * @testTarget createManager and getLogger utility functions with AgManager global variable
- */
-/**
- * Given: AgManagerUtils ユーティリティ関数群が存在する場合
+ * @suite AgManagerUtils Utility Functions | Unit Tests
+ * @description Testing createManager and getLogger utility functions with AgManager global variable integration
+ * @testType unit
+ * Scenarios: createManager utility function, getLogger utility function, createManager and getLogger together
  */
 describe('Feature: AgManagerUtils utility functions', () => {
   /**
@@ -44,36 +41,30 @@ describe('Feature: AgManagerUtils utility functions', () => {
   });
 
   /**
-   * When: createManagerユーティリティ関数を使用した時
+   * @context When
+   * @scenario createManager utility function usage
+   * @description Testing createManager utility function behavior and integration
    */
   describe('When using createManager utility function', () => {
-    /**
-     * Then: 初回呼び出し時の正常動作
-     */
-    describe('Then: [正常] - first call should work correctly', () => {
-      // 最初のテストのみ作成（atsushifx式BDD厳格プロセス）
-      it('Then: [正常] - should return AgLoggerManager instance when called for the first time', () => {
-        const manager = createManager();
-        expect(manager).toBeInstanceOf(AgLoggerManager);
-      });
+    it('Then: [正常] - should return AgLoggerManager instance when called for the first time', () => {
+      const manager = createManager();
+      expect(manager).toBeInstanceOf(AgLoggerManager);
+    });
 
-      // 2番目のテスト追加
-      it('Then: [正常] - should set AgManager global variable when called for the first time', () => {
-        expect(AgManager).toBeUndefined();
-        createManager();
-        expect(AgManager).toBeInstanceOf(AgLoggerManager);
-      });
+    it('Then: [正常] - should set AgManager global variable when called for the first time', () => {
+      expect(AgManager).toBeUndefined();
+      createManager();
+      expect(AgManager).toBeInstanceOf(AgLoggerManager);
+    });
 
-      // 3番目のテスト追加（BDDカテゴリ1完了）
-      it('Then: [正常] - should accept optional AgLoggerOptions parameter', () => {
-        const options: AgLoggerOptions = { logLevel: 4 };
-        expect(() => createManager(options)).not.toThrow();
-      });
+    it('Then: [正常] - should accept optional AgLoggerOptions parameter', () => {
+      const options: AgLoggerOptions = { logLevel: 4 };
+      expect(() => createManager(options)).not.toThrow();
     });
 
     /**
-     * カテゴリ2: 二回目以降の呼び出し制御
-     *
+     * @context When
+     * @scenario 回目以降の呼び出し制御
      * @description 二回目以降の呼び出しでエラーを投げる動作をテスト
      */
     describe('Then: [異常] - subsequent calls should be controlled with errors', () => {
@@ -102,8 +93,6 @@ describe('Feature: AgManagerUtils utility functions', () => {
     });
 
     /**
-     * カテゴリ3: AgManagerグローバル変数の一貫性
-     *
      * @description AgManagerグローバル変数が正しく管理されることをテスト
      */
     describe('Then: [正常] - AgManager global variable consistency is maintained', () => {
@@ -131,14 +120,10 @@ describe('Feature: AgManagerUtils utility functions', () => {
   });
 
   /**
-   * getLogger ユーティリティ関数カテゴリ
-   *
    * @description getLoggerユーティリティ関数の動作をテスト
    */
   describe('When using getLogger utility function', () => {
     /**
-     * カテゴリ1: AgManager初期化済み時の動作
-     *
      * @description AgManagerが初期化済みの場合のAgLoggerインスタンス取得をテスト
      */
     describe('Then: [正常] - works correctly when AgManager is initialized', () => {
@@ -166,8 +151,6 @@ describe('Feature: AgManagerUtils utility functions', () => {
     });
 
     /**
-     * カテゴリ2: AgManager未初期化時のエラー制御
-     *
      * @description AgManagerが未初期化の場合にエラーを投げる動作をテスト
      */
     describe('Then: [異常] - is controlled with errors when AgManager is uninitialized', () => {
@@ -190,8 +173,6 @@ describe('Feature: AgManagerUtils utility functions', () => {
     });
 
     /**
-     * カテゴリ3: 既存APIとの一貫性
-     *
      * @description 既存のAgLoggerManager APIとの一貫性をテスト
      */
     describe('Then: [正常] - consistency with existing APIs is maintained', () => {
@@ -237,14 +218,10 @@ describe('Feature: AgManagerUtils utility functions', () => {
   });
 
   /**
-   * 統合動作カテゴリ
-   *
    * @description createManagerとgetLoggerの連携動作をテスト
    */
   describe('When using createManager and getLogger together', () => {
     /**
-     * カテゴリ1: createManager -> getLogger フロー
-     *
      * @description 典型的な使用パターンでの動作をテスト
      */
     describe('Then: [正常] - createManager to getLogger flow works correctly', () => {
@@ -274,8 +251,6 @@ describe('Feature: AgManagerUtils utility functions', () => {
     });
 
     /**
-     * カテゴリ2: エラー状態での一貫性
-     *
      * @description エラー条件下での両関数の一貫した動作をテスト
      */
     describe('Then: [異常] - consistency in error states is maintained', () => {

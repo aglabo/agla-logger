@@ -28,12 +28,18 @@ import type { AgMockBufferLogger } from '@/plugins/logger/MockLogger';
 import type { AgMockConstructor } from '@shared/types';
 
 /**
- * Plugin Formatters Integration Tests
- *
+ * @suite Plugin Formatters Integration Tests | Integration
  * @description 各種フォーマッタープラグインの統合動作を保証するテスト
- * atsushifx式BDD：Feature-When-Then形式で自然言語記述による仕様定義
+ * @testType integration
+ * Scenarios: JSONフォーマッター, Plainフォーマッター, Nullフォーマッター, フォーマッター切り替え
  */
 describe('Feature: Plugin Formatters Integration Tests', () => {
+  /**
+   * テスト開始用setup routine
+   *
+   * @param _ctx
+   * @returns  {mockLogger: AgMockBufferLogger; mockFormatter: AgMockConstructor}
+   */
   const setupTestContext = (_ctx?: TestContext): {
     mockLogger: AgMockBufferLogger;
     mockFormatter: AgMockConstructor;
@@ -56,6 +62,11 @@ describe('Feature: Plugin Formatters Integration Tests', () => {
     };
   };
 
+  /**
+   * @context When
+   * @scenario JSONフォーマッター構造化出力
+   * @description JSONフォーマッターを使用した構造化出力時のテスト
+   */
   describe('When: using JSON formatter for structured output', () => {
     // 目的: JsonFormatterの基本統合動作とJSON構造検証
     it('Then: [正常] - should produce valid JSON formatted log entries', () => {
@@ -118,6 +129,11 @@ describe('Feature: Plugin Formatters Integration Tests', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Plainフォーマッター可読出力
+   * @description Plainフォーマッターを使用した可読出力時のテスト
+   */
   describe('When: using plain formatter for readable output', () => {
     // 目的: PlainFormatterの基本統合動作とフォーマットパターン検証
     it('Then: [正常] - should produce human-readable plain text entries', () => {
@@ -165,6 +181,11 @@ describe('Feature: Plugin Formatters Integration Tests', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Nullフォーマッター最小出力
+   * @description Nullフォーマッターを使用した最小出力時のテスト
+   */
   describe('When: using null formatter for minimal output', () => {
     // 目的: NullFormatterによる完全な出力抑制
     it('Then: [正常] - should suppress detailed formatting while maintaining functionality', () => {
@@ -208,6 +229,11 @@ describe('Feature: Plugin Formatters Integration Tests', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario フォーマッター実行時切り替え
+   * @description 実行中にフォーマッターを切り替える時のテスト
+   */
   describe('When: switching formatters during execution', () => {
     // 目的: フォーマッター間の動的切り替え能力
     it('Then: [正常] - should transition between formatter types seamlessly', () => {

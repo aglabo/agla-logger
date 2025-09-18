@@ -6,15 +6,27 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// vitest
 import { describe, expect, it } from 'vitest';
+
+// 型定義
 import { AG_LOGLEVEL } from '../../../../shared/types';
+
+// テストターゲット
 import { parseArgsToAgLogMessage } from '../parseArgsToAgLogMessage';
 
 /**
- * parseArgsToAgLogMessage pure function comprehensive tests.
- * BDD format: Given-When-Then structure with unified functionality testing.
+ * @suite parseArgsToAgLogMessage Pure Function | Unit Tests
+ * @description Comprehensive testing of parseArgsToAgLogMessage pure function with argument processing, data handling, and validation
+ * @testType unit
+ * Scenarios: Argument patterns, Circular reference handling, Large data handling, Deep nesting, Timestamp handling, Unicode handling
  */
 describe('Given: parseArgsToAgLogMessage pure function', () => {
+  /**
+   * @context When
+   * @scenario Various argument patterns
+   * @description Testing argument processing with different data types and structures
+   */
   describe('When: processing various argument patterns', () => {
     it('Then [正常]: format basic message with level', () => {
       const result = parseArgsToAgLogMessage(AG_LOGLEVEL.INFO, 'test message');
@@ -132,7 +144,18 @@ describe('Given: parseArgsToAgLogMessage pure function', () => {
   });
 });
 
+/**
+ * @suite Circular Reference Handling | Unit Tests
+ * @description Testing circular reference detection and safe handling in argument processing
+ * @testType unit
+ * Scenarios: Basic circular references, Nested circular structures
+ */
 describe('Feature: Circular reference handling', () => {
+  /**
+   * @context When
+   * @scenario Circular references processing
+   * @description Testing safe handling of circular reference structures
+   */
   describe('When: circular references are processed', () => {
     it('Then [異常]: handle simple circular object', () => {
       const circularObj = { name: 'circular' } as Record<string, unknown>;
@@ -185,7 +208,18 @@ describe('Feature: Circular reference handling', () => {
   });
 });
 
+/**
+ * @suite Large Data Handling | Unit Tests
+ * @description Testing performance and memory efficiency with large data structures
+ * @testType unit
+ * Scenarios: Large data volumes processing
+ */
 describe('Feature: Large data handling', () => {
+  /**
+   * @context When
+   * @scenario Large data volumes processing
+   * @description Testing performance with large arrays and objects
+   */
   describe('When: large data volumes are processed', () => {
     it('Then [エッジ]: handle extremely long strings', () => {
       const largeString = 'A'.repeat(100000); // 100KB string
@@ -233,7 +267,18 @@ describe('Feature: Large data handling', () => {
   });
 });
 
+/**
+ * @suite Deep Nesting Handling | Unit Tests
+ * @description Testing deep nested structure processing and recursion limits
+ * @testType unit
+ * Scenarios: Deeply nested structures processing
+ */
 describe('Feature: Deep nesting handling', () => {
+  /**
+   * @context When
+   * @scenario Deeply nested structures processing
+   * @description Testing handling of deeply nested objects and arrays
+   */
   describe('When: deeply nested structures are processed', () => {
     it('Then [エッジ]: handle deeply nested objects', () => {
       let deepObj: Record<string, unknown> = { level: 0 };
@@ -291,7 +336,18 @@ describe('Feature: Deep nesting handling', () => {
   });
 });
 
+/**
+ * @suite Timestamp Handling | Unit Tests
+ * @description Testing timestamp processing and edge case timestamp formats
+ * @testType unit
+ * Scenarios: Timestamp arguments processing, Edge case timestamp formats
+ */
 describe('Feature: Timestamp handling', () => {
+  /**
+   * @context When
+   * @scenario Timestamp arguments processing
+   * @description Testing processing of timestamp arguments and date objects
+   */
   describe('When: timestamp arguments are processed', () => {
     it('Then [正常]: use provided ISO timestamp', () => {
       const timestampStr = '2025-07-22T02:45:00.000Z';
@@ -326,6 +382,11 @@ describe('Feature: Timestamp handling', () => {
     });
   });
 
+  /**
+   * @context When
+   * @scenario Edge case timestamp formats
+   * @description Testing handling of edge case timestamp formats and invalid dates
+   */
   describe('When: edge case timestamp formats are processed', () => {
     it('Then [エッジ]: treat date-like words as regular strings', () => {
       const dateWords = ['today', 'now', 'yesterday', 'tomorrow'];
@@ -473,7 +534,18 @@ describe('Feature: Timestamp handling', () => {
   });
 });
 
+/**
+ * @suite Unicode Handling | Unit Tests
+ * @description Testing Unicode character and emoji processing in arguments
+ * @testType unit
+ * Scenarios: Unicode and emoji characters processing
+ */
 describe('Feature: Unicode handling', () => {
+  /**
+   * @context When
+   * @scenario Unicode and emoji characters processing
+   * @description Testing handling of Unicode characters and emoji in message arguments
+   */
   describe('When: Unicode and emoji characters are processed', () => {
     it('Then [正常]: handle standard emoji characters correctly', () => {
       const emojiMessage = '✅ Success! 🎉 Celebration time!';
