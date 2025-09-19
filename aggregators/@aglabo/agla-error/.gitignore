@@ -33,6 +33,10 @@ $~*
 **/temp/
 **/tmp/
 
+## publish
+README.*
+
+
 ##		Editor
 #	VSCode
 .vscode/*
@@ -43,6 +47,7 @@ $~*
 !.vscode/*.code-snippets
 !.vscode/cspell*
 !.vscode/*.md
+
 
 ###	AI Agent
 # claude code

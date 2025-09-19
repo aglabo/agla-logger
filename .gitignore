@@ -33,6 +33,9 @@ $~*
 **/temp/
 **/tmp/
 
+## Develop files
+repomix*
+
 ##		Editor
 #	VSCode
 .vscode/*

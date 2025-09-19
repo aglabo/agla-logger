@@ -7,7 +7,7 @@
 ### 基本仕様
 
 - **リポジトリタイプ**: TypeScript monorepo
-- **パッケージ管理**: pnpm workspaces
+- **パッケージ管理**: pnpm workspaces (v10.17.0)
 - **モジュールシステム**: ESM-first（CommonJS 互換性あり）
 - **ビルドシステム**: tsup による dual-target ビルド
 - **Node.js**: >= 20
@@ -38,7 +38,7 @@ ag-logger/
 
 `packages/@aglabo/` に配置:
 
-#### @aglabo/agla-logger
+#### @aglabo/agla-logger-core (v0.1.0)
 
 - **メインロガーパッケージ**
   - プラグイン式アーキテクチャ（Strategy Pattern）
@@ -46,7 +46,7 @@ ag-logger/
   - 包括的4層テストスイート
   - 完全な型安全設計
 
-#### @aglabo/agla-error
+#### @aglabo/agla-error-core (v0.1.0)
 
 - **エラーハンドリングフレームワーク**
   - 統一エラーハンドリングシステム
@@ -113,8 +113,8 @@ ag-logger/
 
 ```typescript
 // AGLABO パッケージ（統一パッケージ群）
-import { AglaError, ErrorSeverity } from '@aglabo/agla-error';
-import { AgLogger } from '@aglabo/agla-logger';
+import { AglaError, ErrorSeverity } from '@aglabo/agla-error-core';
+import { AgLogger } from '@aglabo/agla-logger-core';
 ```
 
 ## パッケージ構造パターン
@@ -169,7 +169,7 @@ packages/@category/package-name/
 
 ### 依存関係フロー
 
-- **@aglabo/agla-logger** → **@aglabo/agla-error**（依存関係）
+- **@aglabo/agla-logger-core** → **@aglabo/agla-error-core**（依存関係）
 - **@aglabo/*** パッケージが主要フォーカス
 - 統一されたパッケージアーキテクチャ
 

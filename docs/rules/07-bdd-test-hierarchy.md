@@ -201,5 +201,3 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "describe\\('\\w+'" --pa
 ---
 
 **重要**: このルールはプロジェクト全体のテスト品質・保守性向上のため、**例外なく遵守**すること。
-
-**参照**: [todo.md作業進捗](../../packages/@aglabo/agla-logger/todo.md)

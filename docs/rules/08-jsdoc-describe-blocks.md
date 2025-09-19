@@ -266,4 +266,3 @@ pnpm run check:dprint
 **参照**:
 
 - [BDD階層構造ルール](./bdd-test-hierarchy.md)
-- [todo.md作業進捗](../../packages/@aglabo/agla-logger/todo.md)

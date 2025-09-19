@@ -87,7 +87,7 @@ import { randomUUID } from 'node:crypto';
 import { basename } from 'node:path';
 
 // グループ2: 外部ライブラリ
-import { ErrorSeverity } from '@aglabo/agla-error';
+import { ErrorSeverity } from '@aglabo/agla-error-core';
 import { describe, expect, it, vi } from 'vitest';
 
 // グループ3: 型定義・インターフェース
@@ -132,7 +132,7 @@ import { basename, dirname } from 'node:path';
 
 ```typescript
 // 外部ライブラリ: npm/pnpmパッケージ
-import { ErrorSeverity } from '@aglabo/agla-error';
+import { ErrorSeverity } from '@aglabo/agla-error-core';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 ```

@@ -201,7 +201,7 @@ import { randomUUID } from 'node:crypto';
 import { basename } from 'node:path';
 
 // グループ2: 外部ライブラリ
-import { ErrorSeverity } from '@aglabo/agla-error';
+import { ErrorSeverity } from '@aglabo/agla-error-core';
 import { describe, expect, it } from 'vitest';
 
 // グループ3: 型定義・インターフェース

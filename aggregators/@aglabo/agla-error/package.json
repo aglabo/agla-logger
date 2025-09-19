@@ -15,12 +15,15 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.ja.md"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup --config ./configs/tsup.config.esm.ts",
     "prepublishOnly": "pnpm run build && pnpm run check:dprint && pnpm run lint:secrets",
+    "prepack": "cp ../../../README.* .",
+    "build": "tsup --config ./configs/tsup.config.esm.ts",
     "clean": "rimraf dist .cache",
     "format:dprint": "dprint fmt",
     "check:dprint": "dprint check",
