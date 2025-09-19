@@ -77,8 +77,8 @@ pnpm run build
 ```
 packages/
 └── @aglabo/             # メインパッケージ群
-    ├── agla-logger/     # 構造化ロガーパッケージ
-    └── agla-error/      # エラーハンドリングフレームワーク
+    ├── agla-logger-core/     # 構造化ロガーパッケージ
+    └── agla-error-core/      # エラーハンドリングフレームワーク
 ```
 
 ### 技術スタック
@@ -86,7 +86,7 @@ packages/
 - **ESM-first** + CommonJS互換性
 - **デュアルビルド**: `lib/` (CJS), `module/` (ESM)
 - **TypeScript厳格モード** + 包括的型定義
-- **4層テスト戦略**: Unit/Functional/Integration/E2E
+- **4層テスト戦略**: Unit/Functional/Integration/E2E（53テストファイル）
 
 ## 🎯 重要な開発ルール
 
@@ -116,10 +116,11 @@ packages/
 
 ### 完了済み主要マイルストーン ✅
 
-- AglaError基本実装完了
+- AglaError基本実装完了（@aglabo/agla-error-core v0.1.0）
+- 4層テストアーキテクチャ確立（53テストファイル）
 - ドキュメント体系化完了（13ファイル作成）
-- 品質保証システム確立
-- パッケージ構造の最適化（@aglabo統一)
+- 品質保証システム確立（lefthook + 5項目チェック）
+- パッケージ構造の最適化（@aglabo統一: agla-logger-core, agla-error-core）
 
 ## 🔍 詳細情報へのアクセス
 
