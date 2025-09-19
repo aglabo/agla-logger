@@ -1,5 +1,5 @@
 {
-  "name": "@aglabo/ag-logger",
+  "name": "@aglabo-monorepo/ag-logger",
   "_comment": "@(#) : monorepo for @aglabo/ag-logger",
   "private": true,
   "version": "0.0.1",
@@ -7,13 +7,15 @@
   "author": "atsushifx <https://github.com/atsushifx>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
   "keywords": [],
   "packageManager": "pnpm@10.17.0",
   "engines": {
     "node": ">=20",
     "pnpm:": ">=10"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm -r run build",
     "build:esm": "pnpm -r run build:esm",
@@ -48,6 +50,7 @@
     "@types/node": "^22.18.4",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "@typescript-eslint/parser": "^8.44.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.35.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
