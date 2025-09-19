@@ -33,6 +33,9 @@ $~*
 **/temp/
 **/tmp/
 
+## publish
+README.*
+
 ##		Editor
 #	VSCode
 .vscode/*
@@ -61,8 +64,10 @@ $~*
 .serena/
 .lsmcp
 
+
 #  Test Result
 **/*results/*
+
 
 ### Develop
 # Node
