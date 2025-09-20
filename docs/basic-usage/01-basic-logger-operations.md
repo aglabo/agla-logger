@@ -36,48 +36,58 @@ copyright:
 ```typescript
 import { AgLogger } from '@aglabo/agla-logger-core';
 
-// 最もシンプルなロガーの作成
-const logger = new AgLogger();
+// 最もシンプルなロガーの作成 (シングルトンパターン)
+const logger = AgLogger.createLogger();
 
-// すぐに使用可能
-logger.info('ロガーが作成されました');
+// ⚠️ 注意: デフォルト設定では安全のため空文字列を返す NullFormatter, 何も出力しない NullLoggerを設定します。
+logger.info('このメッセージは出力されません'); // NullFormatter + NUllLogger のため
 ```
 
-### オプション付きでのロガー作成
+> 重要
+>
+> AgLoggerはデフォルトで`NullLogger`と`NullFormatter`を使用し、意図しないログ出力を防ぐ安全な設計になっています。
+> 実際にログを出力するには明示的な設定が必要です。
+
+### 実際にログを出力するための設定
 
 ```typescript
-import { AG_LOGLEVEL, AgLogger } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL, AgLogger, ConsoleLogger, PlainFormatter } from '@aglabo/agla-logger-core';
 
-// 詳細設定でロガーを作成
-const customLogger = new AgLogger({
+// ログを出力するには defaultLogger と formatter の両方が必要
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger, // 出力先を指定（重要）
+  formatter: PlainFormatter, // フォーマッターを指定（重要）
   logLevel: AG_LOGLEVEL.DEBUG, // ログレベルを DEBUG に設定
-  enabled: true, // ログ出力を有効化
-  formatter: 'json', // JSON形式で出力
 });
 
-customLogger.debug('カスタム設定ロガーが作成されました');
+logger.debug('これで実際にログが出力されます');
+logger.info('アプリケーション開始');
 ```
 
 ### 設定オプションの詳細
 
 ```typescript
 interface AgLoggerOptions {
-  logLevel?: AgLogLevel | string; // ログレベル (デフォルト: 'info')
-  enabled?: boolean; // ログ出力の有効/無効 (デフォルト: true)
-  formatter?: AgFormatFunction | string; // フォーマッター (デフォルト: 'plain')
+  defaultLogger?: AgLoggerFunction; // デフォルト出力先 (デフォルト: NullLogger)
+  formatter?: AgFormatterInput; // フォーマッター (デフォルト: NullFormatter)
+  logLevel?: AgLogLevel; // ログレベル (デフォルト: AG_LOGLEVEL.OFF)
+  verbose?: boolean; // verboseモード (デフォルト: false)
+  loggerMap?: Partial<AgLoggerMap>; // レベル別ロガー設定 (デフォルト: {})
 }
 
 // 各オプションの使用例
-const productionLogger = new AgLogger({
-  logLevel: 'warn', // 警告レベル以上のみ出力
-  enabled: true, // 本番環境でも有効
-  formatter: 'json', // ログ収集に適した JSON 形式
+const productionLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger, // 出力先を指定
+  formatter: JsonFormatter, // JSON形式で出力
+  logLevel: AG_LOGLEVEL.WARN, // 警告レベル以上のみ出力
+  verbose: false, // verbose無効
 });
 
-const developmentLogger = new AgLogger({
-  logLevel: 'trace', // 全レベル出力
-  enabled: true, // 開発中は有効
-  formatter: 'plain', // 読みやすいプレーン形式
+const developmentLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger, // 出力先を指定
+  formatter: PlainFormatter, // 読みやすいプレーン形式
+  logLevel: AG_LOGLEVEL.TRACE, // 全レベル出力
+  verbose: true, // verbose有効
 });
 ```
 
@@ -88,7 +98,12 @@ const developmentLogger = new AgLogger({
 ### 各ログレベルでの出力
 
 ```typescript
-const logger = new AgLogger();
+// ログを出力するための設定
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.TRACE,
+});
 
 // 各ログレベルでの基本的な出力
 logger.trace('最も詳細なデバッグ情報');
@@ -152,41 +167,52 @@ logger.warn('処理中のエラー:', errors);
 
 ### 現在のログレベル確認
 
-```typescript
-const logger = new AgLogger({ logLevel: 'debug' });
+````typescript
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.DEBUG,
+});
 
 // 現在のログレベルを確認
-console.log('現在のログレベル:', logger.getLogLevel());
-// 出力: 現在のログレベル: debug
+console.log('現在のログレベル:', logger.logLevel);
+// 出力: 現在のログレベル: 5 (= AG_LOGLEVEL.DEBUG)
 
-// ログレベルの数値表現
-console.log('ログレベル数値:', logger.getLogLevelValue());
-// 出力: ログレベル数値: 20 (DEBUG レベルの数値)
-```
-
-### ログレベル判定メソッド
+### ログレベル設定
 
 ```typescript
-const logger = new AgLogger({ logLevel: 'info' });
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.INFO,
+});
 
-// 各ログレベルが有効かどうかを判定
-console.log('trace 有効:', logger.isTraceEnabled()); // false
-console.log('debug 有効:', logger.isDebugEnabled()); // false
-console.log('info 有効:', logger.isInfoEnabled()); // true
-console.log('warn 有効:', logger.isWarnEnabled()); // true
-console.log('error 有効:', logger.isErrorEnabled()); // true
-console.log('fatal 有効:', logger.isFatalEnabled()); // true
-```
+// ログレベルを動的に変更
+logger.logLevel = AG_LOGLEVEL.DEBUG;
+console.log('変更後のログレベル:', logger.logLevel); // 5 (= AG_LOGLEVEL.DEBUG)
+
+// 設定したレベル以上のログが出力される
+logger.trace('このメッセージは出力されます');     // TRACE = 6: DEBUG(5) 以上のため出力される
+logger.debug('このメッセージは出力されます');     // DEBUG = 5: 設定レベルと同じため出力される
+logger.info('このメッセージは出力されません');    // INFO  = 4: DEBUG(5) より低いため出力されない
+````
 
 ### 条件付きログ出力の活用
 
 ```typescript
 // 重い処理を含む場合の効率的なログ出力
 function processLargeDataset(data: unknown[]) {
+  const logger = AgLogger.createLogger({
+    defaultLogger: ConsoleLogger,
+    formatter: PlainFormatter,
+    logLevel: AG_LOGLEVEL.DEBUG,
+  });
+
   logger.info('大容量データ処理開始:', data.length, '件');
 
   // デバッグレベルが有効な場合のみ詳細情報を生成
-  if (logger.isDebugEnabled()) {
+  // (TRACE=6, DEBUG=5, INFO=4なので、DEBUG以下なら詳細ログを出力)
+  if (logger.logLevel <= AG_LOGLEVEL.DEBUG) {
     const memoryUsage = process.memoryUsage();
     const detailedInfo = {
       heapUsed: memoryUsage.heapUsed,
@@ -198,7 +224,7 @@ function processLargeDataset(data: unknown[]) {
 
   data.forEach((item, index) => {
     // トレースレベルが有効な場合のみ各アイテムをログ
-    if (logger.isTraceEnabled()) {
+    if (logger.logLevel <= AG_LOGLEVEL.TRACE) {
       logger.trace(`処理中 [${index}/${data.length}]:`, item);
     }
 
@@ -218,6 +244,13 @@ function processLargeDataset(data: unknown[]) {
 ```typescript
 // アプリケーション起動時のログ
 function initializeApplication() {
+  // ログを出力するための設定
+  const logger = AgLogger.createLogger({
+    defaultLogger: ConsoleLogger,
+    formatter: PlainFormatter,
+    logLevel: AG_LOGLEVEL.INFO,
+  });
+
   logger.info('=== アプリケーション起動 ===');
 
   try {
