@@ -23,14 +23,13 @@
       ],
       "env": {}
     },
-    "spec-workflow-mcp": {
+    "codex": {
       "type": "stdio",
-      "command": "pnpx",
+      "command": "codex",
       "args": [
-        "@pimzino/spec-workflow-mcp@latest",
-        ".",
-        "--AutoStartDashboard"
-      ]
+        "mcp"
+      ],
+      "env": {}
     }
   }
 }
