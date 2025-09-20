@@ -18,7 +18,7 @@ copyright:
 
 ## フォーマッター活用
 
-このセクションでは、agla-logger のフォーマッター機能について詳しく解説します。
+このセクションでは、`agla-logger` のフォーマッター機能について詳しく解説します。
 組み込みフォーマッターの使い分けから、カスタムフォーマッターの実装、動的なフォーマッター切り替えまで、実践的な活用方法を学べます。
 
 ---
@@ -36,10 +36,10 @@ const plainLogger = new AgLogger({
 });
 
 plainLogger.info('ユーザーログイン', { userId: '12345', timestamp: new Date() });
-// 出力例: [2025-09-20T10:30:15.123Z] INFO: ユーザーログイン {"userId":"12345","timestamp":"2025-09-20T10:30:15.123Z"}
+// 出力例: [2025-09-20T10:30:15Z] INFO: ユーザーログイン {"userId":"12345","timestamp":"2025-09-20T10:30:15.123Z"}
 
 plainLogger.error('データベース接続エラー', { host: 'localhost', port: 5432 });
-// 出力例: [2025-09-20T10:30:15.456Z] ERROR: データベース接続エラー {"host":"localhost","port":5432}
+// 出力例: [2025-09-20T10:30:15Z] ERROR: データベース接続エラー {"host":"localhost","port":5432}
 ```
 
 ### JSON フォーマッター
@@ -53,10 +53,10 @@ const jsonLogger = new AgLogger({
 });
 
 jsonLogger.info('ユーザーログイン', { userId: '12345', sessionId: 'abc123' });
-// 出力例: {"level":"info","message":"ユーザーログイン","timestamp":"2025-09-20T10:30:15.123Z","data":{"userId":"12345","sessionId":"abc123"}}
+// 出力例: {"level":"info","message":"ユーザーログイン","timestamp":"2025-09-20T10:30:15Z","data":{"userId":"12345","sessionId":"abc123"}}
 
 jsonLogger.warn('メモリ使用量警告', { usage: '85%', threshold: '80%' });
-// 出力例: {"level":"warn","message":"メモリ使用量警告","timestamp":"2025-09-20T10:30:15.456Z","data":{"usage":"85%","threshold":"80%"}}
+// 出力例: {"level":"warn","message":"メモリ使用量警告","timestamp":"2025-09-20T10:30:15Z","data":{"usage":"85%","threshold":"80%"}}
 ```
 
 ### フォーマッター比較
@@ -70,14 +70,22 @@ const logData = {
   size: 2048576,
 };
 
-const plainLogger = new AgLogger({ formatter: new PlainFormatter() });
-const jsonLogger = new AgLogger({ formatter: new JsonFormatter() });
+// シングルトンロガーでフォーマッターを動的に変更
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+});
+
+// Plain フォーマッターを設定
+logger.setFormatter(PlainFormatter);
 
 console.log('=== Plain フォーマッター ===');
-plainLogger.info('ファイルアップロード完了', logData);
+logger.info('ファイルアップロード完了', logData);
+
+// フォーマッターを JSON に変更
+logger.setFormatter(JsonFormatter);
 
 console.log('=== JSON フォーマッター ===');
-jsonLogger.info('ファイルアップロード完了', logData);
+logger.info('ファイルアップロード完了', logData);
 ```
 
 ---
@@ -87,20 +95,26 @@ jsonLogger.info('ファイルアップロード完了', logData);
 ### 基本的なカスタムフォーマッター
 
 ```typescript
-import type { AgFormatFunction } from '@aglabo/agla-logger-core';
+import type { AgFormatFunction, AgLogMessage } from '@aglabo/agla-logger-core';
 
 // シンプルなカスタムフォーマッター
-const simpleFormatter: AgFormatFunction = (level, message, args) => {
-  const timestamp = new Date().toISOString();
+const simpleFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
+  const timestamp = logMessage.timestamp.toISOString();
+  const level = logMessage.logLevel;
+  const message = logMessage.message;
+  const args = logMessage.args;
   const argsStr = args.length > 0
     ? ' | ' + args.map((arg) => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ')
     : '';
 
-  return `${timestamp} [${level.toUpperCase()}] ${message}${argsStr}`;
+  return `${timestamp} [${level.toString().toUpperCase()}] ${message}${argsStr}`;
 };
 
 // カスタムフォーマッターを適用
-const customLogger = new AgLogger({ formatter: simpleFormatter });
+const customLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: simpleFormatter,
+});
 
 customLogger.info('カスタムフォーマット例', { data: 'test', count: 42 });
 // 出力例: 2025-09-20T10:30:15.123Z [INFO] カスタムフォーマット例 | {"data":"test","count":42}
@@ -110,8 +124,11 @@ customLogger.info('カスタムフォーマット例', { data: 'test', count: 42
 
 ```typescript
 // ANSI カラーコードを使用した色付きフォーマッター
-const colorFormatter: AgFormatFunction = (level, message, args) => {
-  const timestamp = new Date().toISOString();
+const colorFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
+  const timestamp = logMessage.timestamp.toISOString();
+  const level = logMessage.logLevel;
+  const message = logMessage.message;
+  const args = logMessage.args;
   const argsStr = args.length > 0
     ? ' ' + args.map((arg) => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)).join(' ')
     : '';
@@ -127,13 +144,17 @@ const colorFormatter: AgFormatFunction = (level, message, args) => {
   };
 
   const reset = '\x1b[0m';
-  const color = colors[level as keyof typeof colors] || '';
+  const levelString = level.toString();
+  const color = colors[levelString as keyof typeof colors] || '';
 
-  return `\x1b[90m${timestamp}${reset} ${color}[${level.toUpperCase()}]${reset} ${message}${argsStr}`;
+  return `\x1b[90m${timestamp}${reset} ${color}[${levelString.toUpperCase()}]${reset} ${message}${argsStr}`;
 };
 
 // 開発環境での使用例
-const colorLogger = new AgLogger({ formatter: colorFormatter });
+const colorLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: colorFormatter,
+});
 
 colorLogger.debug('デバッグ情報', { step: 1 });
 colorLogger.info('処理開始', { timestamp: Date.now() });
@@ -145,17 +166,17 @@ colorLogger.error('エラーが発生', { code: 'ERR001' });
 
 ```typescript
 // 構造化ログ専用フォーマッター
-const structuredFormatter: AgFormatFunction = (level, message, args) => {
+const structuredFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
   const logEntry = {
-    '@timestamp': new Date().toISOString(),
-    '@level': level,
-    '@message': message,
+    '@timestamp': logMessage.timestamp.toISOString(),
+    '@level': logMessage.logLevel.toString(),
+    '@message': logMessage.message,
     '@version': '1.0',
     fields: {},
   };
 
   // 引数を構造化データに変換
-  args.forEach((arg, index) => {
+  logMessage.args.forEach((arg, index) => {
     if (typeof arg === 'object' && arg !== null) {
       Object.assign(logEntry.fields, arg);
     } else {
@@ -167,7 +188,10 @@ const structuredFormatter: AgFormatFunction = (level, message, args) => {
 };
 
 // ELK Stack やその他のログ収集システム向け
-const structuredLogger = new AgLogger({ formatter: structuredFormatter });
+const structuredLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: structuredFormatter,
+});
 
 structuredLogger.info('API リクエスト', {
   method: 'POST',
@@ -183,8 +207,11 @@ structuredLogger.info('API リクエスト', {
 
 ```typescript
 // CSV 形式フォーマッター（データ分析用）
-const csvFormatter: AgFormatFunction = (level, message, args) => {
-  const timestamp = new Date().toISOString();
+const csvFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
+  const timestamp = logMessage.timestamp.toISOString();
+  const level = logMessage.logLevel.toString();
+  const message = logMessage.message;
+  const args = logMessage.args;
 
   // CSV エスケープ処理
   const escapeCSV = (value: string): string => {
@@ -212,7 +239,10 @@ const csvFormatter: AgFormatFunction = (level, message, args) => {
 // ヘッダー付きの CSV ログ
 console.log('timestamp,level,message,args'); // CSV ヘッダー
 
-const csvLogger = new AgLogger({ formatter: csvFormatter });
+const csvLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: csvFormatter,
+});
 csvLogger.info('ユーザー操作', { action: 'login', userId: '12345' });
 csvLogger.error('エラー発生', { code: 'ERR001', message: 'Connection failed' });
 ```
@@ -251,16 +281,16 @@ function getFormatterForEnvironment(): AgFormatFunction {
       return colorFormatter; // 開発時は色付きで見やすく
 
     case 'test':
-      return new PlainFormatter(); // テスト時はシンプルに
+      return PlainFormatter; // テスト時はシンプルに
 
     case 'production':
-      return new JsonFormatter(); // 本番は JSON でログ収集
+      return JsonFormatter; // 本番は JSON でログ収集
 
     case 'analytics':
       return csvFormatter; // 分析環境では CSV
 
     default:
-      return new PlainFormatter();
+      return PlainFormatter;
   }
 }
 
@@ -274,19 +304,22 @@ const logger = new AgLogger({
 
 ```typescript
 // 条件に応じてフォーマッターを切り替える関数
-const conditionalFormatter: AgFormatFunction = (level, message, args) => {
+const conditionalFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
+  const level = logMessage.logLevel.toString();
+
   // エラーレベル以上は詳細な JSON 形式
   if (level === 'error' || level === 'fatal') {
-    const jsonFormatter = new JsonFormatter();
-    return jsonFormatter(level, message, args);
+    return JsonFormatter(logMessage);
   }
 
   // その他は簡潔な Plain 形式
-  const plainFormatter = new PlainFormatter();
-  return plainFormatter(level, message, args);
+  return PlainFormatter(logMessage);
 };
 
-const adaptiveLogger = new AgLogger({ formatter: conditionalFormatter });
+const adaptiveLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: conditionalFormatter,
+});
 
 adaptiveLogger.info('通常の情報ログ'); // Plain 形式
 adaptiveLogger.error('エラーログ', { code: 'ERR001' }); // JSON 形式
@@ -303,8 +336,12 @@ adaptiveLogger.error('エラーログ', { code: 'ERR001' }); // JSON 形式
 class TemplateFormatter {
   constructor(private template: string) {}
 
-  format: AgFormatFunction = (level, message, args) => {
-    const timestamp = new Date().toISOString();
+  format: AgFormatFunction = (logMessage: AgLogMessage) => {
+    const timestamp = logMessage.timestamp.toISOString();
+    const level = logMessage.logLevel.toString();
+    const message = logMessage.message;
+    const args = logMessage.args;
+
     const argsData = args.reduce((acc, arg, index) => {
       if (typeof arg === 'object' && arg !== null) {
         return { ...acc, ...arg };
@@ -329,7 +366,10 @@ const templateFormatter = new TemplateFormatter(
   '[{timestamp}] {level}: {message} | User: {userId} | Action: {action}',
 );
 
-const templateLogger = new AgLogger({ formatter: templateFormatter.format });
+const templateLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: templateFormatter.format,
+});
 
 templateLogger.info('ユーザー操作記録', { userId: '12345', action: 'login' });
 // 出力例: [2025-09-20T10:30:15.123Z] info: ユーザー操作記録 | User: 12345 | Action: login
@@ -339,7 +379,7 @@ templateLogger.info('ユーザー操作記録', { userId: '12345', action: 'logi
 
 ```typescript
 // 機密情報をマスクするフォーマッター
-const secureFormatter: AgFormatFunction = (level, message, args) => {
+const secureFormatter: AgFormatFunction = (logMessage: AgLogMessage) => {
   const sensitiveKeys = ['password', 'token', 'apiKey', 'secret', 'ssn'];
 
   // 機密情報をマスクする関数
@@ -365,15 +405,23 @@ const secureFormatter: AgFormatFunction = (level, message, args) => {
   };
 
   // 引数をマスク処理
-  const maskedArgs = args.map(maskSensitiveData);
+  const maskedArgs = logMessage.args.map(maskSensitiveData);
+
+  // マスク処理済みのログメッセージを作成
+  const maskedLogMessage: AgLogMessage = {
+    ...logMessage,
+    args: maskedArgs,
+  };
 
   // JSON フォーマッターで出力
-  const jsonFormatter = new JsonFormatter();
-  return jsonFormatter(level, message, maskedArgs);
+  return JsonFormatter(maskedLogMessage);
 };
 
 // セキュアロガーの使用
-const secureLogger = new AgLogger({ formatter: secureFormatter });
+const secureLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: secureFormatter,
+});
 
 secureLogger.info('ユーザー登録', {
   userId: '12345',
@@ -391,8 +439,11 @@ secureLogger.info('ユーザー登録', {
 class PerformanceFormatter {
   private startTime = Date.now();
 
-  format: AgFormatFunction = (level, message, args) => {
-    const timestamp = new Date().toISOString();
+  format: AgFormatFunction = (logMessage: AgLogMessage) => {
+    const timestamp = logMessage.timestamp.toISOString();
+    const level = logMessage.logLevel.toString();
+    const message = logMessage.message;
+    const args = logMessage.args;
     const uptime = Date.now() - this.startTime;
     const memoryUsage = process.memoryUsage();
 
@@ -415,7 +466,10 @@ class PerformanceFormatter {
 
 // パフォーマンス監視ロガー
 const perfFormatter = new PerformanceFormatter();
-const perfLogger = new AgLogger({ formatter: perfFormatter.format });
+const perfLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: perfFormatter.format,
+});
 
 perfLogger.info('アプリケーション開始');
 // 重い処理をシミュレート
