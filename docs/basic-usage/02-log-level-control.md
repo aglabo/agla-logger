@@ -25,7 +25,7 @@ copyright:
 
 - Node.js: v20 以上 (ESM サポートのため)
 - TypeScript: v5.0 以上推奨
-- パッケージインストール済み: `@aglabo/agla-logger-core`
+- パッケージインストール済み: `@aglabo/agla-logger`
 
 ---
 
@@ -33,37 +33,41 @@ copyright:
 
 ### ログレベル階層
 
-agla-logger では以下の6つのログレベルが定義されています（重要度順）：
+AG_LOGLEVEL では以下の 7 つのログレベルが定義されています (重要度順):
 
 ```typescript
-import { AG_LOGLEVEL } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL } from '@aglabo/agla-logger';
 
-// ログレベル階層（低い → 高い重要度）
+// ログレベル階層 (数値が小さいほど重要、大きいほど詳細、0=出力なし)
 const logLevels = [
-  AG_LOGLEVEL.TRACE, // 0 - 最も詳細なデバッグ情報
-  AG_LOGLEVEL.DEBUG, // 1 - デバッグ情報
-  AG_LOGLEVEL.INFO, // 2 - 一般的な情報（デフォルト）
+  AG_LOGLEVEL.OFF, // 0 - 出力なし
+  AG_LOGLEVEL.FATAL, // 1 - 致命的エラー
+  AG_LOGLEVEL.ERROR, // 2 - エラー
   AG_LOGLEVEL.WARN, // 3 - 警告
-  AG_LOGLEVEL.ERROR, // 4 - エラー
-  AG_LOGLEVEL.FATAL, // 5 - 致命的エラー
+  AG_LOGLEVEL.INFO, // 4 - 一般的な情報
+  AG_LOGLEVEL.DEBUG, // 5 - デバッグ情報
+  AG_LOGLEVEL.TRACE, // 6 - 最も詳細なデバッグ情報
 ];
-
-// 文字列での指定も可能
-const stringLevels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
 ```
 
 ### ログレベルフィルタリングの仕組み
 
 ```typescript
-const logger = new AgLogger({ logLevel: AG_LOGLEVEL.WARN });
+import { AgLogger, ConsoleLogger, PlainFormatter } from '@aglabo/agla-logger';
+
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.WARN, // 3
+});
 
 // WARN レベル設定時の出力例
-logger.trace('出力されない'); // ❌ TRACE < WARN
-logger.debug('出力されない'); // ❌ DEBUG < WARN
-logger.info('出力されない'); // ❌ INFO < WARN
-logger.warn('出力される'); // ✅ WARN = WARN
-logger.error('出力される'); // ✅ ERROR > WARN
-logger.fatal('出力される'); // ✅ FATAL > WARN
+logger.fatal('出力される'); // ✅ FATAL(1) < WARN(3) でより重要
+logger.error('出力される'); // ✅ ERROR(2) < WARN(3) でより重要
+logger.warn('出力される'); // ✅ WARN(3) = WARN(3) で一致
+logger.info('出力されない'); // ❌ INFO(4) > WARN(3) で詳細すぎる
+logger.debug('出力されない'); // ❌ DEBUG(5) > WARN(3) で詳細すぎる
+logger.trace('出力されない'); // ❌ TRACE(6) > WARN(3) で詳細すぎる
 ```
 
 ---
@@ -73,33 +77,42 @@ logger.fatal('出力される'); // ✅ FATAL > WARN
 ### 作成時のログレベル指定
 
 ```typescript
-import { AG_LOGLEVEL, AgLogger } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL, AgLogger, AgToLogLevel, ConsoleLogger, PlainFormatter } from '@aglabo/agla-logger';
 
 // 定数を使用した指定
-const debugLogger = new AgLogger({ logLevel: AG_LOGLEVEL.DEBUG });
+const debugLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.DEBUG, // 5
+});
 
-// 文字列を使用した指定
-const infoLogger = new AgLogger({ logLevel: 'info' });
-
-// 数値を使用した指定
-const warnLogger = new AgLogger({ logLevel: 3 }); // WARN レベル
+// 文字列を使用した指定（AgToLogLevel関数で変換）
+const infoLogger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AgToLogLevel('info'), // 'info' → 4
+});
 ```
 
 ### 実行時のログレベル変更
 
 ```typescript
-const logger = new AgLogger();
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.INFO,
+});
 
 // 現在のログレベル確認
-console.log('初期ログレベル:', logger.getLogLevel()); // 'info'
+console.log('初期ログレベル:', logger.logLevel); // 4 (= AG_LOGLEVEL.INFO)
 
 // ログレベルを変更
-logger.setLogLevel(AG_LOGLEVEL.DEBUG);
-console.log('変更後ログレベル:', logger.getLogLevel()); // 'debug'
+logger.logLevel = AG_LOGLEVEL.DEBUG;
+console.log('変更後ログレベル:', logger.logLevel); // 5 (= AG_LOGLEVEL.DEBUG)
 
-// 文字列でも変更可能
-logger.setLogLevel('error');
-console.log('再変更後ログレベル:', logger.getLogLevel()); // 'error'
+// 別のレベルに変更
+logger.logLevel = AG_LOGLEVEL.ERROR;
+console.log('再変更後ログレベル:', logger.logLevel); // 2 (= AG_LOGLEVEL.ERROR)
 ```
 
 ### 動的ログレベル制御
@@ -127,20 +140,22 @@ function getLogLevelFromEnvironment(): AgLogLevel {
   }
 }
 
-const logger = new AgLogger({
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
   logLevel: getLogLevelFromEnvironment(),
 });
 
 // 実行時の動的変更
 function adjustLogLevel() {
   if (process.env.NODE_ENV === 'development') {
-    logger.setLogLevel(AG_LOGLEVEL.DEBUG);
+    logger.logLevel = AG_LOGLEVEL.DEBUG;
     logger.debug('開発環境: デバッグレベル有効');
   } else if (process.env.NODE_ENV === 'production') {
-    logger.setLogLevel(AG_LOGLEVEL.WARN);
+    logger.logLevel = AG_LOGLEVEL.WARN;
     logger.warn('本番環境: 警告レベル以上のみ');
   } else {
-    logger.setLogLevel(AG_LOGLEVEL.INFO);
+    logger.logLevel = AG_LOGLEVEL.INFO;
     logger.info('その他環境: 情報レベル有効');
   }
 }
@@ -150,22 +165,25 @@ function adjustLogLevel() {
 
 ## 条件付きログ出力
 
-### ログレベル判定メソッド
+### ログレベル確認
 
 ```typescript
-const logger = new AgLogger({ logLevel: 'debug' });
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
+  logLevel: AG_LOGLEVEL.DEBUG, // 5
+});
 
-// 各ログレベルの有効性確認
-const levelChecks = {
-  trace: logger.isTraceEnabled(), // false (DEBUG > TRACE)
-  debug: logger.isDebugEnabled(), // true  (DEBUG = DEBUG)
-  info: logger.isInfoEnabled(), // true  (DEBUG < INFO)
-  warn: logger.isWarnEnabled(), // true  (DEBUG < WARN)
-  error: logger.isErrorEnabled(), // true  (DEBUG < ERROR)
-  fatal: logger.isFatalEnabled(), // true  (DEBUG < FATAL)
-};
+// 現在のログレベル確認
+console.log('現在のログレベル:', logger.logLevel); // 5 (= AG_LOGLEVEL.DEBUG)
 
-console.log('ログレベル有効性:', levelChecks);
+// 手動でのレベル比較（必要な場合）
+const currentLevel = logger.logLevel;
+const isTraceOutput = currentLevel >= AG_LOGLEVEL.TRACE; // false (5 < 6)
+const isDebugOutput = currentLevel >= AG_LOGLEVEL.DEBUG; // true (5 >= 5)
+const isInfoOutput = currentLevel >= AG_LOGLEVEL.INFO; // true (5 >= 4)
+
+console.log('出力レベル確認:', { isTraceOutput, isDebugOutput, isInfoOutput });
 ```
 
 ### 効率的な条件付きログ
@@ -173,10 +191,16 @@ console.log('ログレベル有効性:', levelChecks);
 ```typescript
 // 重い処理を含む場合の最適化
 function processComplexData(data: ComplexData[]) {
+  const logger = AgLogger.createLogger({
+    defaultLogger: ConsoleLogger,
+    formatter: PlainFormatter,
+    logLevel: AG_LOGLEVEL.DEBUG, // 5
+  });
+
   logger.info('複雑データ処理開始:', data.length, '件');
 
   // デバッグレベルが有効な場合のみ詳細分析実行
-  if (logger.isDebugEnabled()) {
+  if (logger.logLevel >= AG_LOGLEVEL.DEBUG) {
     const analysisStart = Date.now();
     const detailedAnalysis = performExpensiveAnalysis(data);
     const analysisTime = Date.now() - analysisStart;
@@ -190,7 +214,7 @@ function processComplexData(data: ComplexData[]) {
 
   data.forEach((item, index) => {
     // トレースレベルでの詳細進捗
-    if (logger.isTraceEnabled()) {
+    if (logger.logLevel >= AG_LOGLEVEL.TRACE) {
       logger.trace(`処理進捗: [${index + 1}/${data.length}] ${item.id}`);
     }
 
@@ -198,7 +222,7 @@ function processComplexData(data: ComplexData[]) {
       const result = processItem(item);
 
       // デバッグレベルでの処理結果
-      if (logger.isDebugEnabled()) {
+      if (logger.logLevel >= AG_LOGLEVEL.DEBUG) {
         logger.debug(`アイテム処理完了: ${item.id}`, {
           processingTime: result.processingTime,
           memoryUsage: result.memoryUsage,
@@ -222,18 +246,22 @@ class ApplicationManager {
   private isDebugMode: boolean = false;
 
   constructor() {
-    this.logger = new AgLogger({ logLevel: 'info' });
+    this.logger = AgLogger.createLogger({
+      defaultLogger: ConsoleLogger,
+      formatter: PlainFormatter,
+      logLevel: AG_LOGLEVEL.INFO,
+    });
   }
 
   enableDebugMode(): void {
     this.isDebugMode = true;
-    this.logger.setLogLevel(AG_LOGLEVEL.DEBUG);
+    this.logger.logLevel = AG_LOGLEVEL.DEBUG;
     this.logger.debug('デバッグモード有効化');
   }
 
   disableDebugMode(): void {
     this.isDebugMode = false;
-    this.logger.setLogLevel(AG_LOGLEVEL.INFO);
+    this.logger.logLevel = AG_LOGLEVEL.INFO;
     this.logger.info('デバッグモード無効化');
   }
 
@@ -286,33 +314,38 @@ class LoggerConfig {
 
     switch (environment) {
       case 'development':
-        return new AgLogger({
+        return AgLogger.createLogger({
+          defaultLogger: ConsoleLogger,
+          formatter: PlainFormatter, // 開発時は読みやすい形式
           logLevel: AG_LOGLEVEL.TRACE,
-          formatter: 'plain', // 開発時は読みやすい形式
         });
 
       case 'test':
-        return new AgLogger({
+        return AgLogger.createLogger({
+          defaultLogger: ConsoleLogger,
+          formatter: PlainFormatter,
           logLevel: AG_LOGLEVEL.WARN, // テスト時は警告以上のみ
-          formatter: 'plain',
         });
 
       case 'staging':
-        return new AgLogger({
+        return AgLogger.createLogger({
+          defaultLogger: ConsoleLogger,
+          formatter: JsonFormatter, // ステージングでは JSON 形式
           logLevel: AG_LOGLEVEL.INFO,
-          formatter: 'json', // ステージングでは JSON 形式
         });
 
       case 'production':
-        return new AgLogger({
+        return AgLogger.createLogger({
+          defaultLogger: ConsoleLogger,
+          formatter: JsonFormatter, // ログ収集に適した JSON 形式
           logLevel: AG_LOGLEVEL.WARN, // 本番は警告以上のみ
-          formatter: 'json', // ログ収集に適した JSON 形式
         });
 
       default:
-        return new AgLogger({
+        return AgLogger.createLogger({
+          defaultLogger: ConsoleLogger,
+          formatter: PlainFormatter,
           logLevel: AG_LOGLEVEL.INFO,
-          formatter: 'plain',
         });
     }
   }
@@ -331,7 +364,11 @@ class FeatureLogger {
   private features: Map<string, boolean>;
 
   constructor(baseLogLevel: AgLogLevel = AG_LOGLEVEL.INFO) {
-    this.logger = new AgLogger({ logLevel: baseLogLevel });
+    this.logger = AgLogger.createLogger({
+      defaultLogger: ConsoleLogger,
+      formatter: PlainFormatter,
+      logLevel: baseLogLevel,
+    });
     this.features = new Map();
   }
 
@@ -391,7 +428,11 @@ class TimeBasedLogger {
   private scheduleTimer?: NodeJS.Timeout;
 
   constructor() {
-    this.logger = new AgLogger();
+    this.logger = AgLogger.createLogger({
+      defaultLogger: ConsoleLogger,
+      formatter: PlainFormatter,
+      logLevel: AG_LOGLEVEL.INFO,
+    });
     this.adjustLogLevelByTime();
     this.startScheduler();
   }
@@ -401,15 +442,15 @@ class TimeBasedLogger {
 
     if (hour >= 22 || hour < 6) {
       // 夜間：重要なログのみ
-      this.logger.setLogLevel(AG_LOGLEVEL.WARN);
+      this.logger.logLevel = AG_LOGLEVEL.WARN;
       this.logger.warn('夜間モード: 警告レベル以上のみ出力');
     } else if (hour >= 9 && hour < 18) {
       // 業務時間：詳細ログ
-      this.logger.setLogLevel(AG_LOGLEVEL.DEBUG);
+      this.logger.logLevel = AG_LOGLEVEL.DEBUG;
       this.logger.debug('業務時間: デバッグレベル有効');
     } else {
       // その他：標準ログ
-      this.logger.setLogLevel(AG_LOGLEVEL.INFO);
+      this.logger.logLevel = AG_LOGLEVEL.INFO;
       this.logger.info('標準時間: 情報レベル有効');
     }
   }
