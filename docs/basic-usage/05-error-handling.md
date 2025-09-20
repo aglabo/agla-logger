@@ -21,14 +21,6 @@ copyright:
 このセクションでは、agla-logger を使用した効果的なエラーハンドリングについて詳しく解説します。
 AglaError フレームワークとの連携、構造化エラーログ、エラー分類とログレベルの自動選択など、実践的なエラー管理手法を学べます。
 
-### 必要要件
-
-- Node.js: v20 以上 (ESM サポートのため)
-- TypeScript: v5.0 以上推奨
-- パッケージインストール済み:
-  - `@aglabo/agla-logger-core`
-  - `@aglabo/agla-error-core`
-
 ---
 
 ## AglaError フレームワークとの連携

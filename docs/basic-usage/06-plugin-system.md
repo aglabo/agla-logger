@@ -21,12 +21,6 @@ copyright:
 このセクションでは、agla-logger のプラグインシステムについて詳しく解説します。
 カスタムフォーマッターの作成、カスタムロガーの実装、プラグインの登録と切り替えなど、agla-logger を拡張する実践的な方法を学べます。
 
-### 必要要件
-
-- Node.js: v20 以上 (ESM サポートのため)
-- TypeScript: v5.0 以上推奨
-- パッケージインストール済み: `@aglabo/agla-logger-core`
-
 ---
 
 ## プラグインシステム概要
@@ -804,6 +798,7 @@ logger.info('アプリケーション開始');
 - [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
 - [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
 - [エラーハンドリング](04-error-handling.md) - エラーログの効果的な活用
+- [高度なロガー機能](06-advanced-logging.md) - 特殊ログメソッドと LoggerMap
 - [プラグインシステム詳細](../projects/03-plugin-system.md) - プラグインシステム設計仕様
 - [Basic Usage Guide](README.md) - 目次に戻る
 
