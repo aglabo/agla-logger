@@ -21,12 +21,6 @@ copyright:
 このセクションでは、agla-logger のログレベル制御について詳しく解説します。
 ログレベルの設定・変更方法、条件付きログ出力、環境に応じたログレベル管理など、実践的な使用方法を学べます。
 
-### 必要要件
-
-- Node.js: v20 以上 (ESM サポートのため)
-- TypeScript: v5.0 以上推奨
-- パッケージインストール済み: `@aglabo/agla-logger`
-
 ---
 
 ## ログレベルの基本概念
@@ -480,7 +474,7 @@ class TimeBasedLogger {
 
 - [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
 - [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](04-error-handling.md) - エラーログの効果的な活用
+- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
 - [Basic Usage Guide](README.md) - 目次に戻る
 
 ---

@@ -21,12 +21,6 @@ copyright:
 このセクションでは、agla-logger の最も基本的な操作について解説します。
 ロガーインスタンスの作成から、各ログレベルでの出力、基本的な使用方法まで、実用的なコード例とともに学べます。
 
-### 必要要件
-
-- Node.js: v20 以上 (ESM サポートのため)
-- TypeScript: v5.0 以上推奨
-- パッケージインストール済み: `@aglabo/agla-logger-core`
-
 ---
 
 ## ロガーインスタンスの作成
@@ -316,7 +310,7 @@ function handleAPIRequest(request: Request) {
 
 - [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
 - [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](04-error-handling.md) - エラーログの効果的な活用
+- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
 - [Basic Usage Guide](README.md) - 目次に戻る
 
 ---

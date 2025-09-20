@@ -21,12 +21,6 @@ copyright:
 このセクションでは、agla-logger のフォーマッター機能について詳しく解説します。
 組み込みフォーマッターの使い分けから、カスタムフォーマッターの実装、動的なフォーマッター切り替えまで、実践的な活用方法を学べます。
 
-### 必要要件
-
-- Node.js: v20 以上 (ESM サポートのため)
-- TypeScript: v5.0 以上推奨
-- パッケージインストール済み: `@aglabo/agla-logger-core`
-
 ---
 
 ## 組み込みフォーマッター
@@ -436,8 +430,8 @@ setTimeout(() => {
 
 - [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
 - [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [エラーハンドリング](04-error-handling.md) - エラーログの効果的な活用
-- [プラグインシステム](05-plugin-system.md) - プラグインベースの拡張
+- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
+- [プラグインシステム](06-plugin-system.md) - プラグインベースの拡張
 - [Basic Usage Guide](README.md) - 目次に戻る
 
 ---
