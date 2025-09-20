@@ -50,12 +50,17 @@ copyright:
    - カスタムフォーマッターの実装
    - フォーマッター設定の動的変更
 
-4. [エラーハンドリング](04-error-handling.md)
+4. [高度なロガー機能](04-logger-details.md)
+   - logger.log() 強制出力メソッド
+   - 特殊ログレベル (VERBOSE, LOG, DEFAULT)
+   - LoggerMap によるレベル別出力先設定
+
+5. [エラーハンドリング](05-error-handling.md)
    - AglaError フレームワークとの連携
    - 構造化エラーログ
    - エラー分類とログレベル自動選択
 
-5. [プラグインシステム](05-plugin-system.md)
+6. [プラグインシステム](06-plugin-system.md)
    - カスタムフォーマッターの作成
    - カスタムロガーの実装
    - プラグイン登録と切り替え
