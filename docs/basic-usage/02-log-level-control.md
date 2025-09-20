@@ -472,10 +472,9 @@ class TimeBasedLogger {
 
 ### See Also
 
-- [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
-- [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [ログレベルの設定・変更](02-log-level-control.md)
+- [ロガー詳細](04-logger-details.md)
+- [目次](README.md)
 
 ---
 

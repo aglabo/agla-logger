@@ -704,11 +704,9 @@ async function getUserFromDatabase(userId: string): Promise<User> {
 
 ### See Also
 
-- [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
-- [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [プラグインシステム](05-plugin-system.md) - プラグインベースの拡張
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [ロガー詳細](04-logger-details.md)
+- [プラグインシステム](06-plugin-system.md)
+- [目次](README.md)
 
 ---
 

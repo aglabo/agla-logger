@@ -428,11 +428,9 @@ setTimeout(() => {
 
 ### See Also
 
-- [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
-- [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
-- [プラグインシステム](06-plugin-system.md) - プラグインベースの拡張
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [基本的なロガー操作](01-basic-logger-operations.md)
+- [フォーマッタ活用](03-formatter-usage.md)
+- [目次](README.md)
 
 ---
 

@@ -308,10 +308,8 @@ function handleAPIRequest(request: Request) {
 
 ### See Also
 
-- [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [ログレベル制御](02-log-level-control.md)
+- [目次](README.md)
 
 ---
 

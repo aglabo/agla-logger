@@ -279,7 +279,7 @@ import { ConsoleLogger, PlainFormatter } from '@aglabo/agla-logger-core';
 **適用場面:**
 
 - ライブラリ開発
-- バンドルサイズが重要なWebアプリ
+- バンドルサイズが重要な Web アプリ
 - 特定の機能のみ必要な場合
 
 ### 選択の指針
@@ -356,12 +356,9 @@ productionLogger.log('Production system started', {
 
 ### See Also
 
-- [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
-- [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](05-error-handling.md) - エラーログの効果的な活用
-- [プラグインシステム](06-plugin-system.md) - プラグインベースの拡張
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [フォーマッター活用](03-formatter-usage.md)
+- [エラーハンドリング](05-error-handling.md)
+- [目次](README.md)
 
 ---
 

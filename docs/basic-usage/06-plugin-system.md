@@ -794,13 +794,8 @@ logger.info('アプリケーション開始');
 
 ### See Also
 
-- [基本的なロガー操作](01-basic-logger-operations.md) - ロガーの基本的な使用方法
-- [ログレベル制御](02-log-level-control.md) - ログレベルの詳細設定
-- [フォーマッター活用](03-formatter-usage.md) - 出力形式のカスタマイズ
-- [エラーハンドリング](04-error-handling.md) - エラーログの効果的な活用
-- [高度なロガー機能](06-advanced-logging.md) - 特殊ログメソッドと LoggerMap
-- [プラグインシステム詳細](../projects/03-plugin-system.md) - プラグインシステム設計仕様
-- [Basic Usage Guide](README.md) - 目次に戻る
+- [エラーハンドリング](05-error-handling.md)
+- [目次](README.md)
 
 ---
 
