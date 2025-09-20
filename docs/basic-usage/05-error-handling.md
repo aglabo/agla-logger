@@ -2,8 +2,8 @@
 header:
   - src: 04-error-handling.md
   - @(#): Error Handling
-title: agla-logger
-description: AglaError フレームワークとの連携と効果的なエラーログ活用法
+title: エラーハンドリング
+description: AgLoggerError を使用したエラーハンドリングと効果的なエラーログ活用法
 version: 1.0.0
 created: 2025-09-20
 authors:
@@ -18,22 +18,25 @@ copyright:
 
 ## エラーハンドリング
 
-このセクションでは、agla-logger を使用した効果的なエラーハンドリングについて詳しく解説します。
-AglaError フレームワークとの連携、構造化エラーログ、エラー分類とログレベルの自動選択など、実践的なエラー管理手法を学べます。
+このセクションでは、効果的なエラーハンドリングについて詳しく解説します。
+`AgLoggerError` を使用したエラーハンドリング、構造化エラーログ、エラー分類とログレベルの自動選択など、実践的なエラー管理手法を学べます。
 
 ---
 
-## AglaError フレームワークとの連携
+## AgLoggerError を使用したエラーハンドリング
 
-### 基本的な AglaError 連携
+### 基本的な AgLoggerError 使用方法
 
 ```typescript
-import { AglaError, ErrorSeverity } from '@aglabo/agla-error-core';
-import { AgLogger } from '@aglabo/agla-logger-core';
+import { AgLoggerError, ErrorSeverity } from '@aglabo/agla-logger';
+import { AgLogger, ConsoleLogger, JsonFormatter } from '@aglabo/agla-logger';
 
-const logger = new AgLogger({ formatter: 'json' });
+const logger = AgLogger.createLogger({
+  defaultLogger: ConsoleLogger,
+  formatter: JsonFormatter,
+});
 
-// AglaError を使用したエラーハンドリング
+// AgLoggerError を使用したエラーハンドリング
 function processUserData(userData: UserData) {
   try {
     validateUserData(userData);
@@ -47,8 +50,9 @@ function processUserData(userData: UserData) {
 
     return result;
   } catch (error) {
-    // AglaError でエラーを標準化
-    const aglaError = new AglaError(
+    // AgLoggerError でエラーを標準化
+    const agLoggerError = new AgLoggerError(
+      ErrorSeverity.ERROR,
       'USER_DATA_PROCESSING_FAILED',
       'ユーザーデータの処理に失敗しました',
       {
@@ -56,17 +60,16 @@ function processUserData(userData: UserData) {
         originalError: error instanceof Error ? error.message : String(error),
         stackTrace: error instanceof Error ? error.stack : undefined,
       },
-      ErrorSeverity.ERROR,
     );
 
     // エラーの重要度に応じたログレベル選択
-    logAglaError(aglaError);
-    throw aglaError;
+    logAgLoggerError(agLoggerError);
+    throw agLoggerError;
   }
 }
 
-// AglaError のログ出力関数
-function logAglaError(error: AglaError): void {
+// AgLoggerError のログ出力関数
+function logAgLoggerError(error: AgLoggerError): void {
   const errorLog = {
     errorCode: error.code,
     message: error.message,
@@ -123,11 +126,12 @@ async function handleAPIRequest(request: APIRequest): Promise<APIResponse> {
   } catch (error) {
     const duration = Date.now() - startTime;
 
-    // エラータイプに応じた AglaError 作成
-    let aglaError: AglaError;
+    // エラータイプに応じた AgLoggerError 作成
+    let agLoggerError: AgLoggerError;
 
     if (error instanceof ValidationError) {
-      aglaError = new AglaError(
+      agLoggerError = new AgLoggerError(
+        ErrorSeverity.WARNING,
         'API_VALIDATION_ERROR',
         'API リクエストの検証に失敗しました',
         {
@@ -136,10 +140,10 @@ async function handleAPIRequest(request: APIRequest): Promise<APIResponse> {
           validationErrors: error.errors,
           duration: `${duration}ms`,
         },
-        ErrorSeverity.WARNING,
       );
     } else if (error instanceof NetworkError) {
-      aglaError = new AglaError(
+      agLoggerError = new AgLoggerError(
+        ErrorSeverity.ERROR,
         'API_NETWORK_ERROR',
         'ネットワークエラーが発生しました',
         {
@@ -148,10 +152,10 @@ async function handleAPIRequest(request: APIRequest): Promise<APIResponse> {
           networkError: error.message,
           duration: `${duration}ms`,
         },
-        ErrorSeverity.ERROR,
       );
     } else {
-      aglaError = new AglaError(
+      agLoggerError = new AgLoggerError(
+        ErrorSeverity.FATAL,
         'API_UNKNOWN_ERROR',
         '予期しないエラーが発生しました',
         {
@@ -161,12 +165,11 @@ async function handleAPIRequest(request: APIRequest): Promise<APIResponse> {
           stack: error instanceof Error ? error.stack : undefined,
           duration: `${duration}ms`,
         },
-        ErrorSeverity.FATAL,
       );
     }
 
-    logAglaError(aglaError);
-    throw aglaError;
+    logAgLoggerError(agLoggerError);
+    throw agLoggerError;
   }
 }
 ```
@@ -267,7 +270,10 @@ class ErrorAggregator {
   private logger: AgLogger;
 
   constructor() {
-    this.logger = new AgLogger({ formatter: 'json' });
+    this.logger = AgLogger.createLogger({
+      defaultLogger: ConsoleLogger,
+      formatter: JsonFormatter,
+    });
   }
 
   logError(error: Error, context: any): void {
@@ -459,7 +465,10 @@ class AdaptiveErrorLogger {
   private readonly highFrequencyThreshold = 10; // 1分間に10回以上でhigh frequency
 
   constructor() {
-    this.logger = new AgLogger({ formatter: 'json' });
+    this.logger = AgLogger.createLogger({
+      defaultLogger: ConsoleLogger,
+      formatter: JsonFormatter,
+    });
   }
 
   logError(error: Error, context: any = {}): void {
