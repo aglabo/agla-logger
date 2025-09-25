@@ -16,6 +16,8 @@ copyright:
   - https://opensource.org/licenses/MIT
 ---
 
+## 高度なAPI活用
+
 このページは **agla-logger を拡張運用するための実践的なパターン集**です。
 カスタムプラグイン開発、内部構造の理解、パフォーマンス最適化、複雑な設定レシピを一括で参照できます。
 
@@ -141,7 +143,7 @@ AgLogger.createLogger({
 
 - `AgLogHelpers.AgToLabel` と `AgToLogLevel` でラベル↔数値変換を統一
 - フォーマッターを `AgMockConstructor` として渡すと `isAgMockConstructor` が検出し、自動で統計インスタンス化
-- `createLoggerMap()` に特殊レベル `VERBOSE`, `LOG`, `DEFAULT` を含めると `AgLoggerConfig` が安全にフォールバック
+- 特殊ログ (`verbose`, `log`, `default`)は、通常、`defaultLogger`にフォールバック
 
 ---
 

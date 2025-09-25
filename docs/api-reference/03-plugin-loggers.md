@@ -16,6 +16,8 @@ copyright:
   - https://opensource.org/licenses/MIT
 ---
 
+### ロガープラグインAPI
+
 このページは **agla-logger のロガープラグイン層**の詳細技術リファレンスです。
 標準提供されるロガー実装とテスト専用モックを網羅し、運用と自動テストの双方に対応する構成を解説します。
 
@@ -30,8 +32,10 @@ copyright:
 
 ## 🔌 ロガープラグイン概要
 
-agla-logger のロガー実装は Strategy パターンで作られており、`AgLoggerConfig` の `loggerMap` に差し替えて利用します。
-標準セットは以下の 4 種類で構成する。
+agla-logger のロガー実装は Strategy パターンで作られており、`AgLoggerConfig` の `defaultLogger` に設定して利用します。
+また、`loggerMap`を使用することで、ログレベルに応じて別々のロガーを使用できます。
+
+標準セットは以下の 4 種類で構成します。
 
 - `ConsoleLogger`: Node.js の `console` API をラップした本番向け実装
 - `AgMockBufferLogger`: 単体・機能テスト向けのバッファ型モック
@@ -41,6 +45,8 @@ agla-logger のロガー実装は Strategy パターンで作られており、`
 ---
 
 ## 🖥️ ConsoleLogger
+
+`ConsoleLogger`はログをコンソールに出力する、基本的なロガーです。
 
 ### ConsoleLogger の特徴
 
@@ -56,10 +62,12 @@ import {
   AgLogger,
   ConsoleLogger,
   ConsoleLoggerMap,
-} from '@aglabo/agla-logger-core';
+  PlainFormatter,
+} from '@aglabo/agla-logger';
 
 const logger = AgLogger.createLogger({
   defaultLogger: ConsoleLogger,
+  formatter: PlainFormatter,
   loggerMap: ConsoleLoggerMap,
   logLevel: AG_LOGLEVEL.INFO,
 });
@@ -71,11 +79,13 @@ logger.error('致命的なエラー', new Error('fatal'));
 ### ConsoleLoggerMap
 
 `ConsoleLoggerMap` はロガーレベルごとに `console` メソッドを割り当てた `Partial<AgLoggerMap>` です。
+`logger`作成時に`loggerMap`を指定しなかった場合、`loggerMap`に`ConsoleLoggerMap`が自動的に設定されます。
+
 `AgLoggerConfig` が LOG/VERBOSE を含むレベル別ルーティングを行う際の推奨設定です。
 
 ---
 
-## 🧪 AgMockBufferLogger (MockLogger.buffer)
+## 🧪 AgMockBufferLogger (`MockLogger.buffer`)
 
 ### AgMockBufferLogger の特徴
 
@@ -88,16 +98,17 @@ logger.error('致命的なエラー', new Error('fatal'));
 ### AgMockBufferLogger の使用例
 
 ```typescript
-import { AG_LOGLEVEL, AgLogger, MockLogger } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL, AgLogger, MockFormatter, MockLogger } from '@aglabo/agla-logger';
 
 const logger = AgLogger.createLogger({
-  defaultLogger: new MockLogger.buffer().createLoggerFunction(),
+  formatter: MockFormatter.passthrough,
+  defaultLogger: MockLogger.buffer,
 });
 
 logger.debug('Debug message');
 
-const mock = new MockLogger.buffer();
-mock.info('expected message');
+const mock = logger.getDefaultLogger();
+logger.info('expected message');
 expect(mock.getMessages(AG_LOGLEVEL.INFO)).toHaveLength(1);
 ```
 
@@ -122,27 +133,28 @@ expect(mock.getMessages(AG_LOGLEVEL.INFO)).toHaveLength(1);
 ### E2eMockLogger の使用例
 
 ```typescript
-import { AG_LOGLEVEL, AgLogger, E2eMockLogger } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL, AgLogger, E2eMockLogger, MockFormatter } from '@aglabo/agla-logger';
 
 const e2eLogger = new E2eMockLogger('checkout-flow');
 e2eLogger.startTest();
 
 const logger = AgLogger.createLogger({
-  defaultLogger: e2eLogger.createLoggerFunction(),
-  loggerMap: e2eLogger.createLoggerMap(),
+  formatter: MockFormatter.passthrough,
+  loggerMap: e2eLogger.defaultLoggerMap,
   logLevel: AG_LOGLEVEL.INFO,
 });
 
 logger.info('[INFO] 決済APIレスポンス OK');
 
 expect(e2eLogger.hasAnyMessages()).toBe(true);
-e2eLogger.endTest(e2eLogger.getCurrentTestId() as string);
+e2eLogger.endTest();
 ```
 
 ### E2eMockLogger の運用ヒント
 
 - 並列テスト実行後は `endTest()` を呼び出しメモリを開放
 - `parseLogLevelFromFormattedMessage()` が `[LEVEL]` ラベルを基準とするため、フォーマッターをカスタムする際はラベル付与を維持
+- 特にテストに指定がない限り、フォーマッターには`MockFormatter.passthrough`を推奨
 
 ---
 
@@ -157,7 +169,7 @@ e2eLogger.endTest(e2eLogger.getCurrentTestId() as string);
 ### NullLogger の使用例
 
 ```typescript
-import { AgLogger, NullLogger } from '@aglabo/agla-logger-core';
+import { AgLogger, NullLogger } from '@aglabo/agla-logger';
 
 const logger = AgLogger.createLogger({
   defaultLogger: NullLogger,

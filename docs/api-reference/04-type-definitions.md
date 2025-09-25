@@ -2,7 +2,7 @@
 header:
   - src: 04-type-definitions.md
   - @(#): Type Definitions & Constants API
-title: 型定義・定数 API
+title: 型、インターフェース定義・定数 API
 description: TypeScript型定義・定数・インターフェース仕様書
 version: 1.0.0
 created: 2025-01-25
@@ -16,7 +16,9 @@ copyright:
   - https://opensource.org/licenses/MIT
 ---
 
-このページは **agla-logger の TypeScript 型システム**の完全なリファレンスです。
+## 型定義・インターフェース定義・定数宣言
+
+このページは **agla-logger の TypeScript 型システム**のリファレンスです。
 型安全なログ実装に必要なすべての型定義、定数、インターフェースを詳細に解説します。
 
 ## 🎯 対象読者
@@ -55,7 +57,7 @@ const AG_LOGLEVEL = {
   VERBOSE: -11,
   /** special level: LOG output (force output) */
   LOG: -12,
-  /** Special level: default (defaultLogger: LogLevel  is same for INFO) */
+  /** Special level: default  */
   DEFAULT: -99,
 } as const;
 ```
@@ -165,8 +167,10 @@ function customFormatter(logMessage: AgLogMessage): string {
 
 フォーマット済みログメッセージ。
 
+> 通常は文字列を返すが、テスト／デバッグ時にLogLevelやtimestampをそのまま使えるよう、`AgLogMessage`も返せるようにしている
+
 ```typescript
-export type AgFormattedLogMessage = string;
+export type AgFormattedLogMessage = string | AgLogMessage;
 ```
 
 ---
@@ -272,6 +276,8 @@ const customLogger: AgLoggerFunction = (formattedMessage) => {
 export type AgFormatterInput = AgFormatFunction | AgMockConstructor;
 ```
 
+> AgMockConstructor は統計機能付きフォーマッタクラス用の特別な型
+
 ---
 
 ## 🗺️ ロガーマップ型
@@ -310,19 +316,21 @@ function isValidLogLevel(value: unknown): value is AgLogLevel {
 }
 ```
 
-### isLogMessage
+### isStandardLogLevel
 
-ログメッセージ構造体の妥当性検証。
+ログレベルのうち、特に標準ログであるかを検証。
 
 ```typescript
-function isLogMessage(obj: unknown): obj is AgLogMessage {
-  return obj !== null
-    && typeof obj === 'object'
-    && 'logLevel' in obj
-    && 'timestamp' in obj
-    && 'message' in obj
-    && 'args' in obj;
-}
+export const isStandardLogLevel = (logLevel: AgLogLevel | undefined): boolean => {
+  // Early type check for performance
+  if (logLevel === undefined || !isValidLogLevel(logLevel)) {
+    return false;
+  }
+
+  // Check integer constraint and range in one go
+  return logLevel >= AG_LOGLEVEL.OFF // 0
+    && logLevel <= AG_LOGLEVEL.TRACE; // 6
+};
 ```
 
 ---

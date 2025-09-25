@@ -16,6 +16,8 @@ copyright:
   - https://opensource.org/licenses/MIT
 ---
 
+## エラーハンドリングAPI
+
 このページは **AglaError フレームワークと agla-logger の統合メカニズム**を解説します。
 エラー分類、重大度管理、ログ出力との連携方法を体系化し、堅牢なロギング基盤を構築するための指針を提供します。
 
@@ -32,7 +34,8 @@ copyright:
 
 ### `AglaError` (packages/@aglabo/agla-error-core)
 
-- すべてのエラークラスの基底。保持するプロパティは `message`・`code`・`severity`・`timestamp`・`context`・`cause`
+- すべてのエラークラスの基底。仮想クラスであるため、使用するためには継承して具象クラスを作成する必要がある
+- 保持するプロパティは `message`・`code`・`severity`・`timestamp`・`context`・`cause`
 - `toJSON()` でシリアライズ可能。監査ログや API レスポンスに直接利用できる形式を返却
 - `chain(cause: Error)` で原因例外を連結し、`context` にスタック情報を保存
 - `guardAglaErrorContext(value)` や `isValidAglaErrorContext(value)` で型安全なコンテキスト操作を提供
@@ -50,7 +53,8 @@ copyright:
 
 ## 🚨 AgLoggerError
 
-`AgLoggerError` は `AglaError` を拡張し、ロガー固有の `errorType` と `message` を統一フォーマットで扱います。
+`AgLoggerError` は `AglaError` ベースでエラーを扱うための具象クラスです。
+`AglaError`を継承し、ロガー固有の `errorType` と `message` を統一フォーマットで扱います。
 
 ### コンストラクタ
 

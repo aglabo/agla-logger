@@ -16,6 +16,8 @@ copyright:
   - https://opensource.org/licenses/MIT
 ---
 
+## ユーティリティ関数API
+
 このページは **agla-logger の補助ユーティリティ群**を整理したリファレンスです。
 マネージャー初期化、メッセージ整形、入力バリデーション、テスト ID 生成など、
 プロダクションとテスト双方で利用するファンクションを網羅します。
@@ -56,13 +58,13 @@ copyright:
 #### 使用例
 
 ```typescript
-import { createManager, getLogger, setupManager } from '@aglabo/agla-logger-core/AgManagerUtils';
+import { createManager, getLogger, setupManager } from '@aglabo/agla-logger';
 
-setupManager();
+// setupManager();  // index.ts で実行済み
 createManager({ verbose: true });
 
 const logger = getLogger();
-logger.info('AgManagerUtils 初期化完了');
+logger.log('AgManagerUtils 初期化完了');
 ```
 
 ---
@@ -78,7 +80,7 @@ logger.info('AgManagerUtils 初期化完了');
 - 文字列引数はスペース区切りで結合し、複雑オブジェクトは `args` 配列に保持
 
 ```typescript
-import { AG_LOGLEVEL, AgLoggerGetMessage } from '@aglabo/agla-logger-core';
+import { AG_LOGLEVEL, AgLoggerGetMessage } from '@aglabo/agla-logger';
 
 const structured = AgLoggerGetMessage(AG_LOGLEVEL.INFO, 'ユーザー', 42, { status: 'ok' });
 // structured.message === 'ユーザー 42'
@@ -151,7 +153,7 @@ const structured = AgLoggerGetMessage(AG_LOGLEVEL.INFO, 'ユーザー', 42, { st
 - `E2eMockLogger` のデフォルト識別子として利用。任意長でカスタマイズ可能
 
 ```typescript
-import { createTestId } from '@aglabo/agla-logger-core/utils/testIdUtils';
+import { createTestId } from '@aglabo/agla-logger/utils/testIdUtils';
 
 const testId = createTestId('CheckoutFlow', 12);
 // 例: "checkoutflow-1737529200000-1a2b3c4d5e6f"
@@ -170,7 +172,7 @@ const testId = createTestId('CheckoutFlow', 12);
 
 ## 📚 関連情報
 
-- [コアクラス API](01-core-api.md) - `AgLogger` と `AgLoggerManager` の公開メソッド
+- [コアクラス API](01-api.md) - `AgLogger` と `AgLoggerManager` の公開メソッド
 - [ロガープラグイン API](03-plugin-loggers.md) - ユーティリティと組み合わせる出力層
 - [高度なAPI活用](07-advanced-usage.md) - カスタム実装の戦略とベストプラクティス
 
