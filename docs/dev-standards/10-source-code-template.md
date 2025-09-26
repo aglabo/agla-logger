@@ -1,27 +1,45 @@
-# ソースコードテンプレート統一ルール
+---
+header:
+  - src: 07-source-code-template.md
+  - @(#): Source Code Template
+title: agla-logger
+description: ソースコードテンプレートとファイル構造の標準
+version: 1.0.0
+created: 2025-09-22
+authors:
+  - atsushifx
+changes:
+  - 2025-09-22: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
+
+## ソースコードテンプレート統一ルール
 
 このドキュメントは、ag-loggerプロジェクトにおけるソースコードテンプレートの統一ルールを定義します。
 
-## 🎯 基本方針
+## 1. 🎯 基本方針
 
 ### コード統一性の確保
 
 **全ソースファイルで統一されたヘッダー・import・型定義・定数定義パターンを使用し、保守性・可読性を最大化する。**
 
-- **ファイルヘッダー**: 機能説明・著作権・ライセンスの統一形式
-- **import分類**: 7グループ分類による明確な依存関係表現
-- **型定義**: 内部型・外部型の明確な分離
-- **定数定義**: const assertions・readonly使用の徹底
+- ファイルヘッダー: 機能説明・著作権・ライセンスの統一形式
+- import分類: 7グループ分類による明確な依存関係表現
+- 型定義: 内部型・外部型の明確な分離
+- 定数定義: const assertions・readonly使用の徹底
 
-## 📝 ファイルヘッダーテンプレート
+## 2. 📝 ファイルヘッダーテンプレート
 
-### クラス定義ファイル（*.class.ts）
+### クラス定義ファイル (*.class.ts)
 
 ```typescript
 // src: /src/[ファイルパス]
 // @(#) : [クラス名] [機能概要説明]
 //
-// [詳細説明（複数行可）]
+// [詳細説明 (複数行可) ]
 //
 // Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
@@ -29,7 +47,7 @@
 // https://opensource.org/licenses/MIT
 ```
 
-### ユーティリティ関数ファイル（utils/*.ts）
+### ユーティリティ関数ファイル (utils/*.ts)
 
 ```typescript
 // src: /src/utils/[ファイル名]
@@ -44,7 +62,7 @@
 // https://opensource.org/licenses/MIT
 ```
 
-### 型定義ファイル（*.types.ts）
+### 型定義ファイル (*.types.ts)
 
 ```typescript
 // src: /shared/types/[ファイル名]
@@ -56,7 +74,7 @@
 // https://opensource.org/licenses/MIT
 ```
 
-### 定数定義ファイル（*.constants.ts）
+### 定数定義ファイル (*.constants.ts)
 
 ```typescript
 // src: /shared/constants/[ファイル名]
@@ -75,7 +93,7 @@
 // https://opensource.org/licenses/MIT
 ```
 
-## 📦 import文統一ルール（7グループ分類）
+## 3. 📦 import文統一ルール (7グループ分類)
 
 ### 基本構造
 
@@ -203,10 +221,10 @@ import { AG_LOGLEVEL } from '@shared/types';
 // テスト対象: AgLoggerとエントリーポイント
 import { AgLogger } from '@/AgLogger.class';
 
-// プラグイン（フォーマッター）: 出力フォーマット実装
+// プラグイン (フォーマッター) : 出力フォーマット実装
 import { JsonFormatter } from '@/plugins/formatter/JsonFormatter';
 
-// プラグイン（ロガー）: 出力先実装
+// プラグイン (ロガー) : 出力先実装
 import { MockLogger } from '@/plugins/logger/MockLogger';
 
 // テストヘルパー: テスト支援機能
@@ -221,7 +239,7 @@ import { createTestId, resetTestState } from '@/utils/testHelpers';
 4. **相対パス統一** - `../shared/`, `./plugins/` 等の一貫性
 5. **アルファベット順** - 同一グループ内では名前順ソート
 
-## 🏷️ 内部型定義テンプレート
+## 4. 🏷️ 内部型定義テンプレート
 
 ### インターフェース定義
 
@@ -293,7 +311,7 @@ type ConfigValue =
   | { type: 'boolean'; value: boolean };
 ```
 
-## 🔢 定数定義テンプレート
+## 5. 🔢 定数定義テンプレート
 
 ### const assertions使用
 
@@ -379,7 +397,7 @@ const MESSAGE_TEMPLATES = {
 } as const;
 ```
 
-## 📚 クラス/関数ヘッダーコメント
+## 6. 📚 クラス/関数ヘッダーコメント
 
 ### クラスヘッダー
 
@@ -451,7 +469,7 @@ export function functionName(param1: string, param2?: number): Result<Data> {
 public methodName(param: Type): ReturnType {
 ````
 
-## ⚠️ 重要ルール・制約事項
+## 7. ⚠️ 重要ルール・制約事項
 
 ### 必須遵守事項
 
@@ -480,7 +498,7 @@ public methodName(param: Type): ReturnType {
 3. **型安全性違反** - `any` 使用・型ガード省略
 4. **マジックナンバー使用** - 定数定義せずの直接使用
 
-## 🔧 実装確認コマンド
+## 8. 🔧 実装確認コマンド
 
 ### テンプレート準拠確認
 
@@ -510,10 +528,17 @@ pnpm run check:dprint
 
 ---
 
-**重要**: このテンプレートはag-loggerプロジェクトの**コード品質・一貫性・保守性**確保のため必須遵守。
+重要: このテンプレートはag-loggerプロジェクトの**コード品質・一貫性・保守性**確保のため必須遵守。
 
-**参照**:
+参照:
 
 - [BDD階層構造ルール](./bdd-test-hierarchy.md)
 - [JSDoc describeブロックルール](./jsdoc-describe-blocks.md)
 - [todo.md タスク管理ルール](./todo-task-management.md)
+
+---
+
+## 9. License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx

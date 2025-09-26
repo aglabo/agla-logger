@@ -1,18 +1,36 @@
-# コーディング規約・開発ガイドライン
+---
+header:
+  - src: 05-coding-conventions.md
+  - @(#): Coding Conventions
+title: agla-logger
+description: コーディング規約とベストプラクティス集
+version: 1.0.0
+created: 2025-09-22
+authors:
+  - atsushifx
+changes:
+  - 2025-09-22: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
 
-## 概要
+## コーディング規約・開発ガイドライン
+
+## 1. 概要
 
 ag-loggerプロジェクトにおける包括的なコーディング規約とベストプラクティス。セキュリティ、品質、一貫性を重視した開発標準を提供します。
 
-## 基本開発原則
+## 2. 基本開発原則
 
 ### 実行原則
 
-**重要**: 求められたことを行う。それ以上でも以下でもない。
+重要: 求められたことを行う。それ以上でも以下でもない。
 
-- **必要最小限**: 目標達成に絶対必要なファイルのみ作成
-- **既存優先**: 新規作成より既存ファイル編集を優先
-- **文書化制限**: READMEやドキュメントファイル (*.md) の積極的作成禁止（明示的要求時のみ）
+- 必要最小限: 目標達成に絶対必要なファイルのみ作成
+- 既存優先: 新規作成より既存ファイル編集を優先
+- 文書化制限: READMEやドキュメントファイル (*.md) の積極的作成禁止 (明示的要求時のみ)
 
 ### MCPツール必須活用原則
 
@@ -20,10 +38,10 @@ ag-loggerプロジェクトにおける包括的なコーディング規約と�
 
 #### 必須使用場面
 
-- **コード理解**: 既存コード構造・パターンの把握
-- **パターン調査**: 実装方針・設計パターンの研究
-- **影響範囲分析**: 変更による影響の事前確認
-- **依存関係確認**: ライブラリ・モジュールの使用状況確認
+- コード理解: 既存コード構造・パターンの把握
+- パターン調査: 実装方針・設計パターンの研究
+- 影響範囲分析: 変更による影響の事前確認
+- 依存関係確認: ライブラリ・モジュールの使用状況確認
 
 #### MCPツールによる事前調査
 
@@ -39,51 +57,51 @@ mcp__lsmcp__search_symbols --query "関連シンボル" --root "$ROOT"
 mcp__serena-mcp__get_symbols_overview --relative_path "対象ファイル"
 ```
 
-## ファイル操作規約
+## 3. ファイル操作規約
 
 ### 編集対象の制限
 
 #### 絶対に編集してはいけないファイル
 
-- `lib/` ディレクトリ（CommonJS ビルド出力）
-- `module/` ディレクトリ（ESM ビルド出力）
-- `maps/` ディレクトリ（TypeScript 宣言ファイル出力）
-- `.cache/` ディレクトリ（各種キャッシュファイル）
-- `node_modules/` ディレクトリ（依存関係）
+- `lib/` ディレクトリ (CommonJS ビルド出力)
+- `module/` ディレクトリ (ESM ビルド出力)
+- `maps/` ディレクトリ (TypeScript 宣言ファイル出力)
+- `.cache/` ディレクトリ (各種キャッシュファイル)
+- `node_modules/` ディレクトリ (依存関係)
 
 #### 常に編集すべきファイル
 
 - `src/` ディレクトリのソースファイル
 - `shared/` ディレクトリのソースファイル (型定義、定数定義)
-- 設定ファイル（`configs/` 内）
-- テストファイル（`__tests__/`, `tests/` 内）
+- 設定ファイル (`configs/` 内)
+- テストファイル (`__tests__/`, `tests/` 内)
 
 ### ファイル作成・編集フロー
 
 #### MCPツールによる事前確認フロー
 
 ```bash
-# 1. 既存パターン確認（必須）
+# 1. 既存パターン確認 (必須) 
 mcp__serena-mcp__find_symbol --name_path "類似機能" --include_body true --relative_path "src"
 
-# 2. 設定継承パターン研究（必須）
+# 2. 設定継承パターン研究 (必須) 
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/対象設定ファイル"
 
-# 3. テスト戦略確認（必須）
+# 3. テスト戦略確認 (必須) 
 mcp__serena-mcp__find_file --file_mask "*類似機能*.spec.ts" --relative_path "src/__tests__"
 ```
 
 #### 実装後検証フロー
 
 ```bash
-# 4. ビルド実行・検証（必須）
+# 4. ビルド実行・検証 (必須) 
 pnpm run build
 
-# 5. 影響範囲確認（MCPツール必須）
+# 5. 影響範囲確認 (MCPツール必須) 
 mcp__serena-mcp__find_referencing_symbols --name_path "変更シンボル" --relative_path "変更ファイル"
 ```
 
-## TypeScriptコーディング標準
+## 4. TypeScriptコーディング標準
 
 ### 型定義規約
 
@@ -175,7 +193,7 @@ import { AglaError } from '../../../shared/packages/types/types/AglaError.types'
 // ✅ 良い例: 名前付きエクスポート
 export { AglaError, AglaErrorContext } from './AglaError.types';
 
-// ❌ 悪い例: デフォルトエクスポート（混在回避）
+// ❌ 悪い例: デフォルトエクスポート (混在回避)
 export default AglaError;
 ```
 
@@ -189,7 +207,7 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "import.*@shared" --rela
 mcp__lsmcp__parse_imports --filePath "src/index.ts" --root "$ROOT"
 ```
 
-#### import文整理・グルーピング規約（統一標準）
+#### import文整理・グルーピング規約 (統一標準)
 
 **すべてのTypeScriptファイルでimport文を統一された6グループに分類し、日本語説明コメントを付与**
 
@@ -234,9 +252,9 @@ import { isStandardLogLevel, validateFormatter, validateLogLevel } from './utils
 ##### 重要ルール
 
 - **各グループ間に空行を挿入必須**
-- **日本語コメント必須**: 各グループの目的を明確化
-- **type import優先**: `import type` は必ず「型定義・インターフェース」グループ
-- **相対パス深度**: `../../../` 等の深い相対パスも適切にグループ化
+- 日本語コメント必須: 各グループの目的を明確化
+- type import優先: `import type` は必ず「型定義・インターフェース」グループ
+- 相対パス深度: `../../../` 等の深い相対パスも適切にグループ化
 
 ##### テストファイル特有パターン
 
@@ -251,16 +269,16 @@ import { AG_LOGLEVEL } from '@shared/types';
 // テスト対象: AgLoggerとエントリーポイント
 import { AgLogger } from '@/AgLogger.class';
 
-// プラグイン（フォーマッター）: 出力フォーマット実装
+// プラグイン (フォーマッター) : 出力フォーマット実装
 import { JsonFormatter } from '@/plugins/formatter/JsonFormatter';
 
-// プラグイン（ロガー）: 出力先実装
+// プラグイン (ロガー) : 出力先実装
 import { MockLogger } from '@/plugins/logger/MockLogger';
 ```
 
-## セキュリティ・安全性規約
+## 5. セキュリティ・安全性規約
 
-### セキュリティベストプラクティス（必須）
+### セキュリティベストプラクティス (必須)
 
 #### 機密情報管理の徹底
 
@@ -284,9 +302,9 @@ logger.info('Authentication successful for user:', username);
 
 #### リポジトリコミット規約
 
-- **secretlint**: 自動スキャンによる機密情報検出
-- **gitleaks**: 追加的なセキュリティチェック
-- **manual review**: コミット前の手動確認
+- secretlint: 自動スキャンによる機密情報検出
+- gitleaks: 追加的なセキュリティチェック
+- manual review: コミット前の手動確認
 
 ### エラーハンドリング規約
 
@@ -327,20 +345,20 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "AglaError|throw new|try
 mcp__serena-mcp__find_referencing_symbols --name_path "AglaError" --relative_path "shared/types/AglaError.types.ts"
 ```
 
-## ライブラリ・依存関係規約
+## 6. ライブラリ・依存関係規約
 
-### ライブラリ使用前検証（必須）
+### ライブラリ使用前検証 (必須)
 
 #### MCPツールによる検証フロー
 
 ```bash
-# 1. 既存使用状況の確認（必須）
+# 1. 既存使用状況の確認 (必須) 
 mcp__lsmcp__get_typescript_dependencies --root "$ROOT"
 
-# 2. プロジェクト内使用パターンの調査（必須）
+# 2. プロジェクト内使用パターンの調査 (必須) 
 mcp__serena-mcp__search_for_pattern --substring_pattern "import.*対象ライブラリ" --relative_path "." --restrict_search_to_code_files true
 
-# 3. package.json での定義確認（必須）
+# 3. package.json での定義確認 (必須) 
 mcp__serena-mcp__find_file --file_mask "package.json" --relative_path "."
 ```
 
@@ -357,7 +375,7 @@ import lodash from 'lodash'; // プロジェクトで使用されているか未
 import { isEmpty } from 'lodash';
 ```
 
-## テスト記述規約
+## 7. テスト記述規約
 
 ### BDDスタイル記述の徹底
 
@@ -396,15 +414,15 @@ mcp__serena-mcp__find_symbol --name_path "Mock" --relative_path "src/__tests__" 
 
 #### テスト命名規約
 
-- **自然言語**: `should + 期待される動作`
-- **具体的**: 何をテストしているか明確に
-- **実行可能**: テスト名から実装がイメージできる
+- 自然言語: `should + 期待される動作`
+- 具体的: 何をテストしているか明確に
+- 実行可能: テスト名から実装がイメージできる
 
-## コメント記述規約
+## 8. コメント記述規約
 
-### コメント制限（重要）
+### コメント制限 (重要)
 
-**原則**: 明示的に求められない限り、コメントを追加しない
+原則: 明示的に求められない限り、コメントを追加しない
 
 #### 自己説明的コード優先
 
@@ -427,7 +445,7 @@ class AglaError extends Error {
   }
 }
 
-// ✅ 例外: 複雑なビジネスロジックの説明（必要時のみ）
+// ✅ 例外: 複雑なビジネスロジックの説明 (必要時のみ) 
 /**
  * Complex error chaining logic for multi-step validation
  * See: https://internal-docs/error-chaining-spec
@@ -437,7 +455,7 @@ private chainErrors(errors: AglaError[]): AglaError {
 }
 ```
 
-## パッケージ・モジュール規約
+## 9. パッケージ・モジュール規約
 
 ### パッケージ構造規約
 
@@ -459,9 +477,9 @@ package-name/
 │   ├── integration/       # 統合テスト
 │   └── e2e/              # E2E テスト
 ├── configs/              # 設定ファイル
-├── lib/                  # CommonJS ビルド出力（編集禁止）
-├── module/               # ESM ビルド出力（編集禁止）
-└── maps/                 # 型定義出力（編集禁止）
+├── lib/                  # CommonJS ビルド出力 (編集禁止) 
+├── module/               # ESM ビルド出力 (編集禁止) 
+└── maps/                 # 型定義出力 (編集禁止)
 ```
 
 #### MCPツールによる構造確認
@@ -492,7 +510,7 @@ export { validateLogLevel } from './utils/AgLogValidators';
 export { createTestId } from './utils/testIdUtils';
 ```
 
-## Git・バージョン管理規約
+## 10. Git・バージョン管理規約
 
 ### コミットメッセージ規約
 
@@ -514,9 +532,9 @@ WIP
 
 #### コミット粒度
 
-- **1 message = 1 test**: BDDサイクルに対応した細かいコミット
-- **機能単位**: 1つの機能追加・修正・テストが1コミット
-- **ビルド成功**: 各コミットでビルド・テストが通る状態を維持
+- 1 message = 1 test: BDDサイクルに対応した細かいコミット
+- 機能単位: 1つの機能追加・修正・テストが1コミット
+- ビルド成功: 各コミットでビルド・テストが通る状態を維持
 
 ### ブランチ戦略
 
@@ -531,14 +549,14 @@ docs/<update>           # 文書更新
 test/<improvement>      # テスト改善
 ```
 
-## 品質保証規約
+## 11. 品質保証規約
 
-### 必須品質チェック（開発完了前）
+### 必須品質チェック (開発完了前)
 
 #### 品質ゲートプロセス
 
 ```bash
-# 1. 型安全性確認（最優先）
+# 1. 型安全性確認 (最優先) 
 pnpm run check:types
 
 # 2. コード品質確認
@@ -576,22 +594,22 @@ pnpm run lint:all -- --fix  # 自動修正
 pnpm run format:dprint       # フォーマット修正
 ```
 
-## 重要なリマインダー
+## 12. 重要なリマインダー
 
 ### 開発中の常時意識事項
 
-1. **セキュリティファースト**: 機密情報の取り扱いに最大限注意
-2. **MCPツール必須活用**: すべての開発段階でMCPツール使用
-3. **既存パターン準拠**: 新規作成より既存の拡張・改善を優先
-4. **品質維持**: 各変更後の品質チェック実行
-5. **最小限実装**: 目標達成に必要な最小限の変更に留める
+1. セキュリティファースト: 機密情報の取り扱いに最大限注意
+2. MCPツール必須活用: すべての開発段階でMCPツール使用
+3. 既存パターン準拠: 新規作成より既存の拡張・改善を優先
+4. 品質維持: 各変更後の品質チェック実行
+5. 最小限実装: 目標達成に必要な最小限の変更に留める
 
-### 禁止事項（重要）
+### 禁止事項 (重要)
 
-- 機密情報（APIキー、パスワード等）のコード内記述
+- 機密情報 (APIキー、パスワード等) のコード内記述
 - 機密情報のログ出力・コンソール出力
 - 依存関係存在確認なしでのライブラリ使用
-- ビルド出力ディレクトリ（`lib/`, `module/`, `maps/`）の直接編集
+- ビルド出力ディレクトリ (`lib/`, `module/`, `maps/`) の直接編集
 - 不要なコメント・文書の積極的作成
 - MCPツールを使わない開発作業
 
@@ -604,3 +622,10 @@ pnpm run format:dprint       # フォーマット修正
 - MCPツールによる効率的なコードナビゲーション
 
 このガイドラインに従うことで、ag-loggerプロジェクトの一貫性、品質、セキュリティを確保できます。
+
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx
