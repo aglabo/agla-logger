@@ -17,6 +17,7 @@
     "dist"
   ],
   "scripts": {
+    "prepare": "lefthook install",
     "build": "pnpm -r run build",
     "build:esm": "pnpm -r run build:esm",
     "build:cjs": "pnpm -r run build:cjs",
