@@ -58,6 +58,7 @@ $PnpmPackages = @(
 
     # AIエージェント
     "@anthropic/claude-code",
+    "@openai/codex",
 )
 
 $EgetPackages = @(

@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "prepare": "lefthook install",
-    "build": "pnpm -r run build",
+    "build": "pnpm -r run build && echo 'build completed successfully'",
     "build:esm": "pnpm -r run build:esm",
     "build:cjs": "pnpm -r run build:cjs",
     "build:types": "pnpm -r run build:types",
@@ -36,7 +36,7 @@
     "lint:text": "textlint --config ./configs/textlintrc.yaml --cache --cache-location .cache/textlint-cache/textlintCache ",
     "lint:markdown": "markdownlint-cli2 --config ./configs/.markdownlint.yaml ",
     "lint:secrets": "secretlint --secretlintrc ./configs/secretlint.config.yaml --secretlintignore .gitignore --maskSecrets **/*",
-    "test:all": "pnpm -r run test:all",
+    "test:all": "pnpm -r run test:all && echo `All tests passed`",
     "new:doc": "tsx ./scripts/new-doc.ts",
     "lint:docs": "tsx ./scripts/check-doc-frontmatter.ts",
     "sync:configs": "bash scripts/sync-configs.sh"
