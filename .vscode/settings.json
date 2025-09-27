@@ -1,0 +1,120 @@
+// agla-logger typescript settings
+{
+  // agla
+  // environ
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "module": true,
+    "coverage": true
+  },
+  // .vscode
+  "files.associations": {
+    ".vscode": "vscode-workspace"
+  },
+  // workbench common settings
+  "workbench.startupEditor": "none",
+  "workbench.commandPalette.experimental.suggestCommands": true,
+  "workbench.editor.closeEmptyGroups": true,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.showTabs": "multiple",
+  // editor settings
+  "editor.fontLigatures": false,
+  "editor.fontSize": 14,
+  "editor.autoIndent": "advanced",
+  "editor.tabSize": 4,
+  "editor.useTabStops": true,
+  "editor.wordWrap": "on",
+  "editor.unicodeHighlight.includeComments": true,
+  "editor.cursorStyle": "block",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.suggestSelection": "recentlyUsed",
+  "editor.minimap.autohide": "mouseover",
+  "editor.minimap.enabled": false,
+  "editor.minimap.showSlider": "mouseover",
+  "editor.minimap.renderCharacters": false,
+  "editor.renderLineHighlight": "all",
+  "editor.renderWhitespace": "boundary",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "editor.defaultFormatter": "dprint.dprint",
+  // diff editor
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.codeLens": true,
+  // file saves & encoding
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "explorer.confirmDelete": true,
+  // terminal
+  "terminal.integrated.fontFamily": "monospace",
+  "terminal.integrated.tabs.location": "left",
+  // javascript
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  // git settings
+  "git.autofetch": false,
+  "git.suggestSmartCommit": false,
+  "git.ignoreMissingGitWarning": true,
+  "git.openRepositoryInParentFolders": "never",
+  "git.confirmSync": false,
+  // Licenser: cense for My Programs
+  "licenser.author": "atsushifx <http://github.com/atsushifx>", // use your name, github id or email
+  "licenser.license": "MIT",
+  // config files (json, yaml)
+  "json.validate.enable": true,
+  // markdownlint
+  "markdownlint.run": "onSave",
+  "markdownlint.configFile": "./configs/.markdownlint.yaml",
+  // textlint
+  "textlint.autoFixOnSave": true,
+  // "textlint.nodePath": "C:\\Users\\atsushifx\\.local\\share\\pnpm\\5", // Example for Windows pnpm
+  "textlint.languages": [
+    "plaintext",
+    "markdown"
+  ],
+  "textlint.configPath": "configs/textlintrc.yaml",
+  // formatter
+  "dprint.verbose": false,
+  // Development Extensions
+  // eslint
+  "eslint.enable": true,
+  "eslint.useFlatConfig": true,
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  // vitest
+  // better comments
+  "better-comments.highlightPlainText": true,
+  // Code Spell Checker
+  "cSpell.import": [
+    "${env:XDG_CONFIG_HOME}/vscode/cspell.config.json"
+  ],
+  // typescript
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  // --- AI agent
+  // copilot
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "chat.agent.enabled": true,
+  // git lens
+  "gitlens.ai.enabled": true,
+  // github
+  // github pull requests
+  "githubPullRequests.createOnPublishBranch": "never",
+  "githubPullRequests.pullBranch": "never"
+}
