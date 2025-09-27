@@ -42,8 +42,9 @@
     "test:e2e": "pnpm exec vitest run --config ./configs/vitest.config.e2e.ts",
     "sync:configs": "bash ../../../scripts/sync-configs.sh . "
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "@aglabo/agla-error-core": "workspace:*"
+  },
+  "devDependencies": {
   }
 }

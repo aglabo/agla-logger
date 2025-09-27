@@ -1,0 +1,47 @@
+{
+  // agla-logger: Recommended VSCode Extensions
+  "recommendations": [
+    // --- Core Development ---
+    "dbaeumer.vscode-eslint", // ESLint: 必須
+    "dprint.dprint", // Dprint: フォーマッタ
+    "vitest.explorer", // Vitest: テスト実行統合
+
+    // --- TypeScript & JSON ---
+    "ms-vscode.vscode-typescript-next", // 最新TypeScript機能 (preview)
+    "redhat.vscode-yaml", // YAMLサポート
+    "zainchen.json", // JSON整形支援
+    "christian-kohler.path-intellisense", // importパス補完
+    "ionutvmi.path-autocomplete", // 相対パス補完強化
+
+    // --- Documentation & Writing ---
+    "davidanson.vscode-markdownlint", // Markdownlint
+    "3w36zj6.textlint", // Textlint: 日本語・文章校正
+    "yzhang.markdown-all-in-one", // Markdown支援
+    "waddy.zenn-style-markdown-preview", // Zenn風プレビュー
+
+    // --- Git & GitHub ---
+    "eamodio.gitlens", // GitLens
+    "mhutchie.git-graph", // Git履歴グラフ
+    "github.vscode-pull-request-github", // GitHub PR連携
+    "github.vscode-github-actions", // GitHub Actions 連携
+
+    // --- AI Assist (optional) ---
+    "google.geminicodeassist", // Gemini AI コード支援
+    "codeium.codeium", // Windsurf (Codeium) AI補完
+
+    // --- UX & Styling ---
+    "aaron-bond.better-comments", // コメント色分け
+    "sdras.night-owl", // Night Owl テーマ
+    "usernamehw.errorlens", // エラー行を強調表示
+    "shardulm94.trailing-spaces", // 末尾スペースの可視化
+
+    // --- Environment ---
+    "ms-vscode-remote.remote-wsl" // WSL統合
+  ],
+  // 不要または競合する拡張を非推奨にする
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-tslint-plugin", // 非推奨
+    "dbaeumer.jshint", // 旧Linter
+    "formulahendry.code-runner" // TypeScript環境では非推奨
+  ]
+}
