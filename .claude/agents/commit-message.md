@@ -134,38 +134,6 @@ type(scope): summary
 - ソースコード (`src/`, `packages/`): core, logger, error
 - テスト (`__tests__/`, `tests/`): test
 
-## Output Format Control
-
-### 使用方法
-
-#### Claude Code での直接実行
-
-```bash
-# 標準形式でコミットメッセージ生成
-/commit-message
-
-# スクリプト互換形式で生成 (ヘッダー・フッター付き)
-/commit-message --with-markers
-```
-
-#### スクリプトからの呼び出し
-
-```bash
-# .claude/agents/commit-message.md を使用
-cat .claude/agents/commit-message.md | codex exec --model gpt-5-codex
-
-# マーカー付き出力指定
-echo "--with-markers" | cat - .claude/agents/commit-message.md | codex exec --model gpt-5-codex
-```
-
-### マーカー検出ロジック
-
-エージェントは以下の条件でマーカー付き出力を判定:
-
-- 入力に `--with-markers` フラグが含まれる場合
-- `scripts/prepare-commit-msg.sh` からの呼び出しを検出した場合
-- 環境変数 `COMMIT_MESSAGE_MARKERS=true` が設定されている場合
-
 ## Integration Guidelines
 
 ### Bash ツール使用パターン
@@ -205,17 +173,18 @@ grep -r "commit" CLAUDE.md README.md
 ### 使用例 1: 機能追加
 
 ステージされたファイル: `src/logger/core.ts`, `__tests__/logger.test.ts`
+ステージされたファイル: `src/logger/core.ts`, `__tests__/logger.test.ts`
 
 #### 標準出力
 
-```text
-feat(logger): ログレベルフィルタリング機能を追加
+生成されるメッセージ:
 
 変更ファイル:
-- src/logger/core.ts: LogLevel enum とフィルタリングロジックを実装
-- __tests__/logger.test.ts: ログレベルフィルタリングのユニットテストを追加
-```
 
+- src/logger/core.ts: LogLevel enum とフィルタリングロジックを実装
+- **tests**/logger.test.ts: ログレベルフィルタリングのユニットテストを追加
+
+````
 #### スクリプト互換出力 (--with-markers)
 
 ```text
@@ -226,7 +195,7 @@ feat(logger): ログレベルフィルタリング機能を追加
 - src/logger/core.ts: LogLevel enum とフィルタリングロジックを実装
 - __tests__/logger.test.ts: ログレベルフィルタリングのユニットテストを追加
 === COMMIT MESSAGE END ===
-```
+````
 
 ### 使用例 2: ドキュメント更新
 

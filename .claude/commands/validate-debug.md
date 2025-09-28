@@ -1,51 +1,88 @@
-# /validate-debug Command
+---
+header:
+  - src: validate-debug.md
+  - @(#): Validation & Debug Command
+title: ag-logger
+description: ag-logger 開発時の 6 段階包括的品質検証・デバッグワークフローコマンド
+version: 1.0.0
+created: 2025-09-28
+authors:
+  - atsushifx
+changes:
+  - 2025-09-28: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
 
-Comprehensive validation and debugging workflow for the E2E framework.
+## /validate-debug Command
+
+ag-logger 開発時のコード品質・テスト・型安全性を包括的に検証するワークフロー。
 
 ## Phase 1: Code Quality
 
-### Phase 1-2: Code Quality (ESTA Root)
-
-- Run `pnpm run lint-all` - ESLint code analysis
-- If fails: Parse ESLint output, categorize errors (syntax, style, best practices), auto-fix fixable issues with `--fix`, report remaining issues with explanations
-- Run `pnpm run lint-all:types` - TypeScript ESLint analysis
-- If fails: Parse ESLint output, categorize errors (syntax, style, best practices), auto-fix fixable issues with `--fix`, report remaining issues with explanations
-
-### Phase 1-2: Code Quality
+### ESLint Code Analysis
 
 - Run `pnpm run lint` - ESLint code analysis
-- If fails: Parse ESLint output, categorize errors (syntax, style, best practices), auto-fix fixable issues with `--fix`, report remaining issues with explanations
+- エラー時の対応:
+  - ESLint 出力を解析してエラー分類
+  - `--fix` で自動修正可能な項目を処理
+  - 残りの問題に対して修正案を提示
+
+### TypeScript ESLint Analysis
+
 - Run `pnpm run lint:types` - TypeScript ESLint analysis
-- If fails: Parse ESLint output, categorize errors (syntax, style, best practices), auto-fix fixable issues with `--fix`, report remaining issues with explanations
+- エラー時の対応:
+  - TypeScript ESLint 出力を解析してエラー分類
+  - `--fix` で自動修正可能な項目を処理
+  - 残りの問題に対して修正案を提示
 
 ## Phase 2: Testing
 
-- Run `pnpm run test:develop` - Execute development tests
-- Run `pnpm run test:ci` - Execute CI (Integrate) tests
-- Run `pnpm run test:e2e` - Execute CI (E2E) tests
-- If fails: Read test output, identify failing tests, analyze error messages, check for common issues (imports, types, async/await, mocking), suggest specific fixes
+- Run `pnpm run test:develop` - 単体／開発テスト
+- Run `pnpm run test:functional` - 機能テスト
+- Run `pnpm run test:ci` - CI (インテグレーション) テスト
+- Run `pnpm run test:e2e` - E2E テスト
+- エラー時の対応:
+  - テスト出力を読み取り失敗テストを特定
+  - エラーメッセージを解析
+  - 一般的な問題 (import・型・async/await・モック) をチェック
+  - 具体的な修正案を提示
 
-**Note**: `/shared/` packages (constants and type definitions only) are expected to have missing node_modules and no test files. This is normal and should not be reported as errors.
+Note:
+`/shared/` パッケージ (定数・型定義のみ) では node_modules 不足・テストファイル不足が予想されます。これは正常であり、エラーとして報告すべきではありません。
 
 ## Phase 3: Type Checking
 
 - Run `pnpm run check:types` - TypeScript compiler validation
-- If fails: Parse TypeScript compiler errors, identify missing types, import issues, type mismatches, suggest specific fixes for each error
+- エラー時の対応:
+  - TypeScript コンパイラエラーを解析
+  - 型不足・import 問題・型不一致を特定
+  - 各エラーに対する具体的な修正案を提示
 
 ## Phase 4: Content Validation
 
-- Run `pnpm run check:spells "**/*.{js,ts,json,md}"` - spell checking
-- If fails: List misspelled words, suggest corrections, check if they should be added to dictionary
+- Run `pnpm run check:spells "**/*.{js,ts,json,md}"` - Spell checking
+- エラー時の対応:
+  - スペルミスした単語をリスト化
+  - 修正候補を提示
+  - 辞書への追加要否を確認
 
 ## Phase 5: Filename Validation
 
 - Run `pnpm run lint:filenames` - Filename lint
-- If fails: List misspelled words, suggest corrections, check if they should be added to dictionary
+- エラー時の対応:
+  - 不正なファイル名をリスト化
+  - 修正候補を提示
+  - 命名規則への適合要否を確認
 
 ## Phase 6: Formatting
 
 - Run `pnpm run check:dprint` - Code formatting validation
-- If fails: Auto-run `pnpm run format:dprint`, then re-check
+- エラー時の対応:
+  - `pnpm run format:dprint` を自動実行
+  - 再チェックを実行
 
 ## Error Analysis Protocol
 
@@ -60,7 +97,22 @@ For each failed command:
 
 ## Final Report
 
-- ✅ Passed steps
-- ❌ Failed steps with detailed analysis
-- 🔧 Suggested fixes (manual and automatic)
-- 📊 Overall health score
+- Passed steps
+- Failed steps with detailed analysis
+- Suggested fixes (manual and automatic)
+- Overall health score
+
+---
+
+### See Also
+
+- [開発ワークフロー](../docs/rules/01-development-workflow.md) - BDD 開発プロセス詳細
+- [品質保証システム](../docs/rules/03-quality-assurance.md) - 品質ゲート・テスト戦略
+- [コマンドリファレンス](../docs/projects/07-command-reference.md) - 開発コマンド一覧
+
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx
