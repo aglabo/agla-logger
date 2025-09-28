@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# src: ./scripts/prepare-code-msg.sh
-# @(#) : prepare commit message using codegpt if no message exists
+# src: ./scripts/prepare-codex-msg.sh
+# @(#) : prepare commit message using Codex CLI if no message exists
 #
-# Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
+# Copyright (c) 2025 atsushifx
 # Released under the MIT License.
 # https://opensource.org/licenses/MIT
 
@@ -13,6 +13,8 @@ readonly REPO_ROOT="$(git rev-parse --show-toplevel)"
 
 ## Default message file
 GIT_COMMIT_MSG=".git/COMMIT_EDITMSG"
+TMP_MSG="temp/commit-msg"
+mkdir -p temp
 
 ## Allow custom message file as first argument
 if [[ $# -ge 1 && -n "$1" ]]; then
@@ -36,24 +38,19 @@ make_context_block() {
   echo "----- END DIFF -----"
 }
 
-## 関数: Claude agents を呼ぶ
+## 関数: Codex CLI を呼ぶ
 generate_commit_message() {
   local full_output
   full_output=$({
-    echo "--with-markers"
-    echo
-    cat .claude/agents/commit-message.md
+    cat scripts/commit-msg.md
     echo
     make_context_block
   } | codex exec --model gpt-5-codex
   )
 
-  # コミットメッセージ部分のみを抽出し、不要なプレフィックスを除去
-  echo "$full_output" | \
-    sed 's/^GIT コミットメッセージ:[[:space:]]*//g' | \
-    sed -n '/=== COMMIT MESSAGE START ===/,/=== COMMIT MESSAGE END ===/p' | \
-    sed '1d;$d' | \
-    sed '/^[[:space:]]*$/d'
+  # コミットメッセージ部分のみを抽出
+  echo "$full_output" | sed -n '/=== COMMIT MESSAGE START ===/,/=== COMMIT MESSAGE END ===/p' | \
+    sed '1d;$d'
 }
 
 generate_commit_by_codegpt() {
@@ -69,7 +66,7 @@ generate_commit_by_codegpt() {
 cd "$REPO_ROOT"
 
 if has_existing_message "$GIT_COMMIT_MSG"; then
-  echo "✦ Detected existing Git-generated commit message. Skipping Claude agents."
+  echo "✦ Detected existing Git-generated commit message. Skipping Codex."
   exit 0
 fi
 
