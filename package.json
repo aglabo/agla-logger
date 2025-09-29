@@ -37,6 +37,13 @@
     "lint:markdown": "markdownlint-cli2 --config ./configs/.markdownlint.yaml ",
     "lint:secrets": "secretlint --secretlintrc ./configs/secretlint.config.yaml --secretlintignore .gitignore --maskSecrets **/*",
     "test:all": "pnpm -r run test:all && echo `All tests passed`",
+    "test:coverage": "pnpm -r run test:coverage:all",
+    "test:coverage:unit": "pnpm -r run test:coverage:unit",
+    "test:coverage:functional": "pnpm -r run test:coverage:functional",
+    "test:coverage:integration": "pnpm -r run test:coverage:integration",
+    "test:coverage:e2e": "pnpm -r run test:coverage:e2e",
+    "coverage:analyze": "node scripts/analyze-coverage.js",
+    "coverage:report": "pnpm run test:coverage && pnpm run coverage:analyze",
     "new:doc": "tsx ./scripts/new-doc.ts",
     "lint:docs": "tsx ./scripts/check-doc-frontmatter.ts",
     "sync:configs": "bash scripts/sync-configs.sh"
