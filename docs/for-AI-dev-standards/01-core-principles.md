@@ -18,16 +18,16 @@ copyright:
 
 ## AI開発核心原則
 
-このドキュメントはAIコーディングエージェントが agla-logger プロジェクトで開発する際の核心原則とMCP必須ルールを定義します。
-すべての開発作業で厳格に遵守する必要があります。
+このドキュメントは AI コーディングエージェントが agla-logger プロジェクトで開発する際の核心原則と MCP 必須ルールを定義します。
+すべての開発作業で厳格に遵守してください。
 
 ## 必須遵守事項
 
 ### MCPツール活用の必須化
 
-🔴 **必須**: すべての開発段階で MCP ツール (lsmcp, serena-mcp) を積極活用
-🔴 **必須**: ファイル編集前の既存パターン調査・理解
-🔴 **必須**: 実装後の影響範囲確認・整合性チェック
+- 必須: すべての開発段階で MCP ツール (lsmcp, serena-mcp) を積極活用
+- 必須: ファイル編集前の既存パターン調査・理解
+- 必須: 実装後の影響範囲確認・整合性チェック
 
 #### 必須使用場面
 
@@ -39,13 +39,13 @@ copyright:
 
 ### BDD開発プロセスの厳格遵守
 
-🔴 **必須**: Red-Green-Refactor サイクルの段階的実行
-🔴 **必須**: 1 message = 1 test の原則を守る
-🔴 **必須**: 3階層 BDD 構造 (Given/Feature → When → Then) の遵守
+- 必須: Red-Green-Refactor サイクルの段階的実行。
+- 必須: 1 message = 1 test の原則を守る。
+- 必須: 3階層 BDD 構造 (Given/Feature → When → Then) の遵守。
 
 #### BDDサイクル実行手順
 
-```
+```text
 1. RED: 失敗するテスト作成
    ↓
 2. GREEN: テスト通過する最小実装
@@ -57,9 +57,9 @@ copyright:
 
 ### 品質ゲートの確実な実行
 
-🔴 **必須**: 実装完了前の5項目チェック実行
-🔴 **必須**: 型チェック・テスト・リント・フォーマット・ビルドの確認
-🔴 **必須**: エラー・警告がある場合は修正まで完了
+- 必須: 実装完了前の 5 項目チェック実行
+- 必須: 型チェック・テスト・リント・フォーマット・ビルドの確認
+- 必須: エラー・警告がある場合は修正まで完了
 
 #### 5項目品質チェック
 
@@ -75,7 +75,7 @@ copyright:
 
 ### 推奨実装フロー
 
-```
+```text
 1. 既存コード理解 → MCP ツールで構造・パターン分析
 2. テスト作成 → 既存テストパターンを参考に BDD 構造で記述
 3. 最小実装 → テスト通過に必要な最小限のコード実装
@@ -126,7 +126,7 @@ mcp__lsmcp__lsp_get_diagnostics --relativePath "ファイル" --root "$ROOT"
 ### 編集禁止ディレクトリ
 
 - `lib/` - ビルド出力
-- `module/` - ESMビルド出力
+- `module/` - ESM ビルド出力
 - `maps/` - ソースマップ
 - `.cache/` - キャッシュ
 - `node_modules/` - 依存関係
@@ -165,8 +165,8 @@ packages/@aglabo/
 
 ### ONLY mark a task as completed when you have FULLY accomplished it
 
-- テストが全て成功している
-- 実装が完全に完了している
+- テストがすべて成功している
+- 実装が完了している
 - エラー・警告が解決されている
 - 必要なファイル・依存関係が存在している
 
@@ -174,15 +174,15 @@ packages/@aglabo/
 
 - エラー・ブロッカー・部分実装の場合は in_progress を維持
 - ブロック時は新しいタスクで解決事項を記述
-- 失敗・エラー時は原因分析と修正を実行
+- 失敗・エラー時は原因分析と修正
 
 ---
 
 ### See Also
 
-- [02-bdd-workflow.md](02-bdd-workflow.md) - BDD開発フロー詳細
-- [03-bdd-implementation-details.md](03-bdd-implementation-details.md) - atsushifx式BDD実装ガイド詳細
-- [04-mcp-tools-usage.md](04-mcp-tools-usage.md) - MCPツール完全ガイド
+- [02-bdd-workflow.md](02-bdd-workflow.md) - BDD 開発フロー詳細
+- [03-bdd-implementation-details.md](03-bdd-implementation-details.md) - atsushifx 式 BDD 実装ガイド詳細
+- [04-mcp-tools-usage.md](04-mcp-tools-usage.md) - MCP ツール完全ガイド
 - [06-quality-assurance.md](06-quality-assurance.md) - 品質ゲート詳細
 
 ---
