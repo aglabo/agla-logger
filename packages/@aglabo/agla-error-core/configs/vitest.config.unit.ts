@@ -14,7 +14,7 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 // base directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const __rootDir = path.relative(__dirname, '../');
+const __rootDir = path.resolve(__dirname, '../');
 
 // system config
 import { mergeConfig } from 'vitest/config';
@@ -42,12 +42,9 @@ export default mergeConfig(baseConfig, {
     },
     //
     coverage: {
-      reporter: ['text'],
-      exclude: [
-        '**/node_modules/**',
-        'configs/**',
-        'tests/**',
-      ],
+      provider: 'v8',
+      reporter: ['json', 'lcov'],
+      reportsDirectory: path.resolve(__rootDir, 'coverage/unit'),
     },
   },
 });

@@ -25,8 +25,7 @@
     "build:cjs": "tsup --config ./configs/tsup.config.cjs.ts",
     "build:esm": "tsup --config ./configs/tsup.config.esm.ts",
     "build:types": "tsc -p ./tsconfig.build.json",
-
-    "clean": "rimraf lib module .cache",
+    "clean": "rimraf lib maps module .cache",
     "format:dprint": "dprint fmt",
     "check:dprint": "dprint check",
     "check:types": "tsc --noEmit --incremental",
@@ -41,6 +40,11 @@
     "test:functional": "pnpm exec vitest run --config ./configs/vitest.config.functional.ts",
     "test:ci": "pnpm exec vitest run --config ./configs/vitest.config.integration.ts",
     "test:e2e": "pnpm exec vitest run --config ./configs/vitest.config.e2e.ts",
+    "test:coverage:unit": "pnpm exec vitest run --coverage --config ./configs/vitest.config.unit.ts",
+    "test:coverage:functional": "pnpm exec vitest run --coverage --config ./configs/vitest.config.functional.ts",
+    "test:coverage:integration": "pnpm exec vitest run --coverage --config ./configs/vitest.config.integration.ts",
+    "test:coverage:e2e": "pnpm exec vitest run --coverage --config ./configs/vitest.config.e2e.ts",
+    "test:coverage:all": "concurrently \"pnpm run test:coverage:unit\" \"pnpm run test:coverage:functional\" \"pnpm run test:coverage:integration\" \"pnpm run test:coverage:e2e\"",
     "sync:configs": "bash ../../../scripts/sync-configs.sh . "
   },
   "dependencies": {},

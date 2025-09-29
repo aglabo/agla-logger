@@ -54,8 +54,12 @@ export default defineConfig({
         '**/node_modules/**',
         'configs/**',
         'tests/**',
+        '**/*.spec.ts',
       ],
+      provider: 'v8',
+      reporter: ['text', 'json'],
     },
+    // coverage: moved to individual test configs to avoid conflicts
   },
   resolve: {
     // set on sub-packages configs

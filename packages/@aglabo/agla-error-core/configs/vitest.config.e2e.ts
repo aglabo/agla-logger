@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 
 // base directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const __rootDir = path.relative(__dirname, '../');
+const __rootDir = path.resolve(__dirname, '../');
 
 // plugins
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -40,6 +40,12 @@ export default mergeConfig(baseConfig, {
     // parallel test
     sequence: {
       concurrent: true,
+    },
+    //
+    coverage: {
+      provider: 'v8',
+      reporter: ['json', 'lcov'],
+      reportsDirectory: path.resolve(__rootDir, 'coverage/e2e'),
     },
   },
 });
