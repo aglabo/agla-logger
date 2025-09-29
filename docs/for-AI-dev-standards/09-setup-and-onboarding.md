@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 08-setup-and-onboarding.md
+  - src: 09-setup-and-onboarding.md
   - @(#): AI Development Environment Setup
 title: agla-logger
 description: AIコーディングエージェント向け開発環境セットアップ・オンボーディング

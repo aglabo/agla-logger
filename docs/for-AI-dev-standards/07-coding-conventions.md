@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 06-coding-conventions.md
+  - src: 07-coding-conventions.md
   - @(#): Coding Conventions and MCP Integration
 title: agla-logger
 description: AIコーディングエージェント向けコーディング規約・MCP活用パターン
