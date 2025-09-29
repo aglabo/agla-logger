@@ -71,6 +71,6 @@ if has_existing_message "$GIT_COMMIT_MSG"; then
 fi
 
 # commit
-# rm -f ${GIT_COMMIT_MSG}
-# generate_commit_message > $GIT_COMMIT_MSG
-generate_commit_by_codegpt
+ rm -f ${GIT_COMMIT_MSG}
+ generate_commit_message > $GIT_COMMIT_MSG
+#generate_commit_by_codegpt
