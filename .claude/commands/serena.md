@@ -1,194 +1,224 @@
 ---
+# Claude Code 必須要素
 allowed-tools: Read, Glob, Grep, Edit, MultiEdit, Write, Bash, TodoWrite, mcp__serena__check_onboarding_performed, mcp__serena__delete_memory, mcp__serena__find_file, mcp__serena__find_referencing_symbols, mcp__serena__find_symbol, mcp__serena__get_symbols_overview, mcp__serena__insert_after_symbol, mcp__serena__insert_before_symbol, mcp__serena__list_dir, mcp__serena__list_memories, mcp__serena__onboarding, mcp__serena__read_memory, mcp__serena__remove_project, mcp__serena__replace_regex, mcp__serena__replace_symbol_body, mcp__serena__restart_language_server, mcp__serena__search_for_pattern, mcp__serena__switch_modes, mcp__serena__think_about_collected_information, mcp__serena__think_about_task_adherence, mcp__serena__think_about_whether_you_are_done, mcp__serena__write_memory, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
-description: Token-efficient Serena MCP command for structured app development and problem-solving
+argument-hint: <problem> [options]
+description: serena-mcp を活用した構造化アプリ開発・問題解決コマンド
+
+# ag-logger プロジェクト要素
+title: agla-logger
+version: 1.0.0
+created: 2025-09-28
+authors:
+  - atsushifx
+changes:
+  - 2025-09-28: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
 ---
 
 ## Quick Reference
 
 ```bash
-/serena <problem> [options]           # Basic usage
-/serena debug "memory leak in prod"   # Debug pattern (5-8 thoughts)
-/serena design "auth system"          # Design pattern (8-12 thoughts)
-/serena review "optimize this code"   # Review pattern (4-7 thoughts)
-/serena implement "add feature X"     # Implementation (6-10 thoughts)
+/serena <problem> [options]           # 基本使用法
+/serena debug "memory leak in prod"   # デバッグパターン (5-8 思考)
+/serena design "auth system"          # 設計パターン (8-12 思考)
+/serena review "optimize this code"   # レビューパターン (4-7 思考)
+/serena implement "add feature X"     # 実装パターン (6-10 思考)
 ```
 
 ## Options
 
-| Option | Description                      | Usage                               | Use Case                         |
-| ------ | -------------------------------- | ----------------------------------- | -------------------------------- |
-| `-q`   | Quick mode (3-5 thoughts/steps)  | `/serena "fix button" -q`           | Simple bugs, minor features      |
-| `-d`   | Deep mode (10-15 thoughts/steps) | `/serena "architecture design" -d`  | Complex systems, major decisions |
-| `-c`   | Code-focused analysis            | `/serena "optimize performance" -c` | Code review, refactoring         |
-| `-s`   | Step-by-step implementation      | `/serena "build dashboard" -s`      | Full feature development         |
-| `-v`   | Verbose output (show process)    | `/serena "debug issue" -v`          | Learning, understanding process  |
-| `-r`   | Include research phase           | `/serena "choose framework" -r`     | Technology decisions             |
-| `-t`   | Create implementation todos      | `/serena "new feature" -t`          | Project management               |
+| オプション | 説明                        | 使用例                              | 使用場面                         |
+| ---------- | --------------------------- | ----------------------------------- | -------------------------------- |
+| `-q`       | クイックモード (3-5 思考)   | `/serena "fix button" -q`           | 簡単なバグ・軽微な機能           |
+| `-d`       | ディープモード (10-15 思考) | `/serena "architecture design" -d`  | 複雑なシステム・重要な意思決定   |
+| `-c`       | コード重視分析              | `/serena "optimize performance" -c` | コードレビュー・リファクタリング |
+| `-s`       | ステップバイステップ実装    | `/serena "build dashboard" -s`      | フル機能開発                     |
+| `-v`       | 詳細出力 (プロセス表示)     | `/serena "debug issue" -v`          | 学習・プロセス理解               |
+| `-r`       | リサーチフェーズ含む        | `/serena "choose framework" -r`     | 技術選定                         |
+| `-t`       | 実装 TODO 作成              | `/serena "new feature" -t`          | プロジェクト管理                 |
 
-## Usage Patterns
+## 使用パターン
 
-### Basic Usage
+### 基本的な使用法
 
 ```bash
-# Simple problem solving
+# シンプルな問題解決
 /serena "fix login bug"
 
-# Quick feature implementation
+# クイック機能実装
 /serena "add search filter" -q
 
-# Code optimization
+# コード最適化
 /serena "improve load time" -c
 ```
 
-### Advanced Usage
+### 高度な使用法
 
 ```bash
-# Complex system design with research
+# 複雑なシステム設計とリサーチ
 /serena "design microservices architecture" -d -r -v
 
-# Full feature development with todos
+# フル機能開発と TODO 作成
 /serena "implement user dashboard with charts" -s -t -c
 
-# Deep analysis with documentation
+# 詳細分析とドキュメント作成
 /serena "migrate to new framework" -d -r -v --focus=frontend
 ```
 
-## Context (Auto-gathered)
+## コンテキスト (自動収集)
 
-- Project files: !`find . -maxdepth 2 -name "package.json" -o -name "*.config.*" | head -5 2>/dev/null || echo "No config files"`
-- Git status: !`git status --porcelain 2>/dev/null | head -3 || echo "Not git repo"`
+<!-- textlint-disable ja-technical-writing/sentence-length -->
 
-## Core Workflow
+- プロジェクトファイル: `find . -maxdepth 2 -name "package.json" -o -name "*.config.*" | head -5 2>/dev/null || echo "No config files"`
+- Git ステータス: `git status --porcelain 2>/dev/null | head -3 || echo "Not git repo"`
 
-### 1. Problem Detection & Template Selection
+<!-- textlint-enable -->
 
-Automatically select thinking pattern based on keywords:
+## コアワークフロー
 
-- **Debug**: error, bug, issue, broken, failing → 5-8 thoughts
-- **Design**: architecture, system, structure, plan → 8-12 thoughts
-- **Implement**: build, create, add, feature → 6-10 thoughts
-- **Optimize**: performance, slow, improve, refactor → 4-7 thoughts
-- **Review**: analyze, check, evaluate → 4-7 thoughts
+### 1. 問題検出とテンプレート選択
 
-### 2. MCP Selection & Execution
+キーワードに基づく思考パターンの自動選択。
 
+<!-- textlint-disable ja-technical-writing/max-comma -->
+
+- デバッグ: error, bug, issue, broken, failing → 5-8 思考
+- 設計: architecture, system, structure, plan → 8-12 思考
+- 実装: build, create, add, feature → 6-10 思考
+- 最適化: performance, slow, improve, refactor → 4-7 思考
+- レビュー: analyze, check, evaluate → 4-7 思考
+
+<!-- textlint-enable -->
+
+### 2. MCP 選択と実行
+
+```text
+アプリ開発タスク → serena-mcp
+- コンポーネント実装
+- API 開発
+- 機能構築
+- システムアーキテクチャ
+
+すべてのタスク → serena-mcp
+- コンポーネント実装
+- API 開発
+- 機能構築
+- システムアーキテクチャ
+- 問題解決と分析
 ```
-App Development Tasks → Serena MCP
-- Component implementation
-- API development
-- Feature building
-- System architecture
 
-All Tasks → Serena MCP
-- Component implementation
-- API development
-- Feature building
-- System architecture
-- Problem solving and analysis
-```
+### 3. 出力モード
 
-### 3. Output Modes
+- デフォルト: 重要な洞察 + 推奨アクション
+- 詳細 (-v): 思考プロセス表示
+- 実装 (-s): TODO 作成 + 実行開始
 
-- **Default**: Key insights + recommended actions
-- **Verbose (-v)**: Show thinking process
-- **Implementation (-s)**: Create todos + start execution
+## 問題特有テンプレート
 
-## Problem-Specific Templates
+### デバッグパターン (5-8 思考)
 
-### Debug Pattern (5-8 thoughts)
+1. 症状分析と再現
+2. エラーコンテキストと環境確認
+3. 根本原因仮説生成
+4. 証拠収集と検証
+5. 解決策設計とリスク評価
+6. 実装計画
+7. 検証戦略
+8. 予防策
 
-1. Symptom analysis & reproduction
-2. Error context & environment check
-3. Root cause hypothesis generation
-4. Evidence gathering & validation
-5. Solution design & risk assessment
-6. Implementation plan
-7. Verification strategy
-8. Prevention measures
+### 設計パターン (8-12 思考)
 
-### Design Pattern (8-12 thoughts)
+1. 要件明確化
+2. 制約と前提条件
+3. ステークホルダー分析
+4. アーキテクチャオプション生成
+5. オプション評価 (長所・短所)
+6. 技術選定
+7. 設計決定とトレードオフ
+8. 実装フェーズ
+9. リスク軽減
+10. 成功指標
+11. 検証計画
+12. ドキュメント要件
 
-1. Requirements clarification
-2. Constraints & assumptions
-3. Stakeholder analysis
-4. Architecture options generation
-5. Option evaluation (pros/cons)
-6. Technology selection
-7. Design decisions & tradeoffs
-8. Implementation phases
-9. Risk mitigation
-10. Success metrics
-11. Validation plan
-12. Documentation needs
+### 実装パターン (6-10 思考)
 
-### Implementation Pattern (6-10 thoughts)
+1. 機能仕様とスコープ
+2. 技術アプローチ選択
+3. コンポーネント・モジュール設計
+4. 依存関係と統合ポイント
+5. 実装シーケンス
+6. テスト戦略
+7. エッジケース処理
+8. パフォーマンス考慮事項
+9. エラーハンドリングと復旧
+10. デプロイとロールバック計画
 
-1. Feature specification & scope
-2. Technical approach selection
-3. Component/module design
-4. Dependencies & integration points
-5. Implementation sequence
-6. Testing strategy
-7. Edge case handling
-8. Performance considerations
-9. Error handling & recovery
-10. Deployment & rollback plan
+### レビュー・最適化パターン (4-7 思考)
 
-### Review/Optimize Pattern (4-7 thoughts)
+1. 現状分析
+2. ボトルネック特定
+3. 改善機会
+4. 解決策オプションと実現可能性
+5. 実装優先度
+6. パフォーマンス影響推定
+7. 検証・監視計画
 
-1. Current state analysis
-2. Bottleneck identification
-3. Improvement opportunities
-4. Solution options & feasibility
-5. Implementation priority
-6. Performance impact estimation
-7. Validation & monitoring plan
+## 高度なオプション
 
-## Advanced Options
+思考制御:
 
-**Thought Control:**
+- `--max-thoughts=N`: デフォルト思考数の上書き
+- `--focus=AREA`: ドメイン特有分析 (frontend, backend, database, security)
+- `--token-budget=N`: トークン制限での最適化
 
-- `--max-thoughts=N`: Override default thought count
-- `--focus=AREA`: Domain-specific analysis (frontend, backend, database, security)
-- `--token-budget=N`: Optimize for token limit
+統合:
 
-**Integration:**
+- `-r`: Context7 リサーチフェーズ含む
+- `-t`: 実装 TODO 作成
+- `--context=FILES`: 特定ファイルの優先分析
 
-- `-r`: Include Context7 research phase
-- `-t`: Create implementation todos
-- `--context=FILES`: Analyze specific files first
+出力:
 
-**Output:**
+- `--summary`: 要約のみ出力
+- `--json`: 自動化向け構造化出力
+- `--progressive`: 要約優先、詳細は要求時
 
-- `--summary`: Condensed output only
-- `--json`: Structured output for automation
-- `--progressive`: Show summary first, details on request
+## タスク実行
 
-## Task Execution
+serena-mcp を主に使用するエキスパートアプリ開発者・問題解決者として、各リクエストに対して次のように対応します。
 
-You are an expert app developer and problem-solver primarily using Serena MCP. For each request:
+1. 問題タイプの自動検出とアプローチ選択 (問題キーワードに基づく)
+2. serena-mcp 使用:
+   - すべての開発タスク: [serena-mcp ツール](https://github.com/oraios/serena) 使用
+   - 分析・デバッグ・実装: serena のセマンティックコードツール活用
+3. 選択した MCP による構造化アプローチ実行
+4. Context7 MCP による関連ドキュメントリサーチ (必要時)
+5. 具体的な次のステップを含む実行可能解決策の統合
+6. `-s` フラグ使用時の実装 TODO 作成
 
-1. **Auto-detect problem type** and select appropriate approach
-2. **Use Serena MCP**:
-   - **All development tasks**: Use Serena MCP tools (https://github.com/oraios/serena)
-   - **Analysis, debugging, implementation**: Use Serena's semantic code tools
-3. **Execute structured approach** with chosen MCP
-4. **Research relevant docs** with Context7 MCP if needed
-5. **Synthesize actionable solution** with specific next steps
-6. **Create implementation todos** if `-s` flag used
+主要ガイドライン:
 
-**Key Guidelines:**
+- プライマリ: すべてのタスクで serena-mcp ツール使用 (コンポーネント・API・機能・分析)
+- 活用: serena のセマンティックコード取得・編集機能
+- 問題分析から開始し、具体的なアクションで終了
+- 深度とトークン効率のバランス
+- 常に具体的で実行可能な推奨事項提供
+- セキュリティ・パフォーマンス・保守性を考慮
 
-- **Primary**: Use Serena MCP tools for all tasks (components, APIs, features, analysis)
-- **Leverage**: Serena's semantic code retrieval and editing capabilities
-- Start with problem analysis, end with concrete actions
-- Balance depth with token efficiency
-- Always provide specific, actionable recommendations
-- Consider security, performance, and maintainability
+トークン効率化のヒント:
 
-**Token Efficiency Tips:**
+- シンプルな問題には `-q` 使用 (約 40% トークン節約)
+- 概要のみ必要な場合は `--summary` 使用
+- 関連問題を単一セッションで組み合わせ
+- 無関係な分析を避けるため `--focus` 使用
 
-- Use `-q` for simple problems (saves ~40% tokens)
-- Use `--summary` for overview-only needs
-- Combine related problems in single session
-- Use `--focus` to avoid irrelevant analysis
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx

@@ -307,9 +307,8 @@ pnpm run check:dprint       # フォーマットチェック
 
 ### See Also
 
-- [フロントマターガイド](frontmatter-guide.md) - フロントマター詳細
-- [textlint ルール](textlint-rules.md) - 品質基準
-- [命名規則](naming-conventions.md) - ファイル名ルール
+- [フロントマターガイド](frontmatter-guide.md): フロントマター詳細ルール
+- [執筆ルール](writing-rules.md): Claude 向け執筆禁則事項
 
 ---
 

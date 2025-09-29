@@ -53,6 +53,8 @@ repomix*
 .claude/*
 !.claude/commands
 !.claude/commands/*
+!.claude/agents
+!.claude/agents/*
 
 # CLAUDE Memory file
 !CLAUDE*.md
@@ -64,6 +66,10 @@ repomix*
 .serena/
 .lsmcp
 **/.spec-workflow
+
+# SDD Working Dir
+./cc-sdd/
+**/.cc-sdd/
 
 #  Test Result
 **/*results/*

@@ -401,9 +401,8 @@ pnpm run lint:markdown      # markdownlint チェック
 
 ### See Also
 
-- [ドキュメントテンプレート](document-template.md) - 基本構造
-- [命名規則](naming-conventions.md) - ファイル名ルール
-- [textlint ルール](textlint-rules.md) - 品質基準
+- [ドキュメントテンプレート](document-template.md): 基本構造とテンプレート
+- [執筆ルール](writing-rules.md): Claude 向け執筆禁則事項
 
 ---
 
