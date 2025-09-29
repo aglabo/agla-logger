@@ -33,41 +33,43 @@ copyright:
 
 - [01-core-principles.md](01-core-principles.md) - AI開発の核心原則・MCP必須ルール
 - [02-bdd-workflow.md](02-bdd-workflow.md) - BDD開発フロー・Red-Green-Refactorサイクル
+- [03-bdd-implementation-details.md](03-bdd-implementation-details.md) - atsushifx式BDD実装ガイド詳細
 
 #### 2. ツール・技術活用
 
-- [03-mcp-tools-usage.md](03-mcp-tools-usage.md) - MCPツール完全活用ガイド
-- [04-code-navigation.md](04-code-navigation.md) - プロジェクトナビゲーション・コード検索
-- [05-quality-assurance.md](05-quality-assurance.md) - AI用品質ゲート・自動チェック
+- [04-mcp-tools-usage.md](04-mcp-tools-usage.md) - MCPツール完全活用ガイド
+- [05-code-navigation.md](05-code-navigation.md) - プロジェクトナビゲーション・コード検索
+- [06-quality-assurance.md](06-quality-assurance.md) - AI用品質ゲート・自動チェック
 
 #### 3. 実装・規約
 
-- [06-coding-conventions.md](06-coding-conventions.md) - コーディング規約・MCP活用パターン
-- [07-test-implementation.md](07-test-implementation.md) - テスト実装・BDD階層構造
-- [08-setup-and-onboarding.md](08-setup-and-onboarding.md) - AI開発環境セットアップ
+- [07-coding-conventions.md](07-coding-conventions.md) - コーディング規約・MCP活用パターン
+- [08-test-implementation.md](08-test-implementation.md) - テスト実装・BDD階層構造
+- [09-setup-and-onboarding.md](09-setup-and-onboarding.md) - AI開発環境セットアップ
 
 #### 4. テンプレート・標準
 
-- [09-templates-and-standards.md](09-templates-and-standards.md) - ソースコードテンプレート・JSDocルール
+- [10-templates-and-standards.md](10-templates-and-standards.md) - ソースコードテンプレート・JSDocルール
 
 ### 使用方法
 
 #### 開発開始前
 
 1. [01-core-principles.md](01-core-principles.md) で基本原則を確認
-2. [08-setup-and-onboarding.md](08-setup-and-onboarding.md) で環境セットアップ
-3. [03-mcp-tools-usage.md](03-mcp-tools-usage.md) でMCPツール使用法を習得
+2. [09-setup-and-onboarding.md](09-setup-and-onboarding.md) で環境セットアップ
+3. [04-mcp-tools-usage.md](04-mcp-tools-usage.md) でMCPツール使用法を習得
 
 #### 実装時
 
 1. [02-bdd-workflow.md](02-bdd-workflow.md) でBDDサイクル実行
-2. [04-code-navigation.md](04-code-navigation.md) でプロジェクト理解
-3. [06-coding-conventions.md](06-coding-conventions.md) で規約遵守
+2. [03-bdd-implementation-details.md](03-bdd-implementation-details.md) で詳細実装ガイド確認
+3. [05-code-navigation.md](05-code-navigation.md) でプロジェクト理解
+4. [07-coding-conventions.md](07-coding-conventions.md) で規約遵守
 
 #### 品質確認時
 
-1. [05-quality-assurance.md](05-quality-assurance.md) で品質ゲート実行
-2. [07-test-implementation.md](07-test-implementation.md) でテスト検証
+1. [06-quality-assurance.md](06-quality-assurance.md) で品質ゲート実行
+2. [08-test-implementation.md](08-test-implementation.md) でテスト検証
 
 ### プロジェクト理解
 

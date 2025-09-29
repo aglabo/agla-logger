@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 07-test-implementation.md
+  - src: 08-test-implementation.md
   - @(#): Test Implementation and BDD Hierarchy
 title: agla-logger
 description: AIコーディングエージェント向けテスト実装・BDD階層構造ガイド

@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 05-quality-assurance.md
+  - src: 06-quality-assurance.md
   - @(#): Quality Assurance System
 title: agla-logger
 description: AIコーディングエージェント用品質ゲート・自動チェックシステム

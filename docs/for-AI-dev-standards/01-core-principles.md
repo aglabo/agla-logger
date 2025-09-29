@@ -181,8 +181,9 @@ packages/@aglabo/
 ### See Also
 
 - [02-bdd-workflow.md](02-bdd-workflow.md) - BDD開発フロー詳細
-- [03-mcp-tools-usage.md](03-mcp-tools-usage.md) - MCPツール完全ガイド
-- [05-quality-assurance.md](05-quality-assurance.md) - 品質ゲート詳細
+- [03-bdd-implementation-details.md](03-bdd-implementation-details.md) - atsushifx式BDD実装ガイド詳細
+- [04-mcp-tools-usage.md](04-mcp-tools-usage.md) - MCPツール完全ガイド
+- [06-quality-assurance.md](06-quality-assurance.md) - 品質ゲート詳細
 
 ---
 

@@ -1,15 +1,15 @@
 ---
 header:
-  - src: atsushifx-bdd-implementation.md
+  - src: 03-bdd-implementation-details.md
   - @(#): Spec-Driven BDD Implementation Guide
 title: agla-logger
 description: コーディングエージェント向け atsushifx 式 BDD 実践ガイド
 version: 1.0.0
-created: 2025-09-28
+created: 2025-09-29
 authors:
   - atsushifx
 changes:
-  - 2025-09-28: 初版作成
+  - 2025-09-29: 初版作成
 copyright:
   - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
   - This software is released under the MIT License.
@@ -895,3 +895,18 @@ jobs:
 
 エージェント実行の成功基準として、このドキュメントの指示に従うことで 95%以上の確率で期待される実装が完了できることを目指しています。
 不明な点があれば、該当セクションを再確認し、例示されたテンプレートを活用してください。
+
+---
+
+### See Also
+
+- [02-bdd-workflow.md](02-bdd-workflow.md) - BDD開発フロー概要
+- [04-mcp-tools-usage.md](04-mcp-tools-usage.md) - MCPツール完全活用ガイド
+- [06-quality-assurance.md](06-quality-assurance.md) - AI用品質ゲート・自動チェック
+
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx

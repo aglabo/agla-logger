@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 04-code-navigation.md
+  - src: 05-code-navigation.md
   - @(#): Code Navigation and Project Understanding
 title: agla-logger
 description: AIコーディングエージェント向けプロジェクトナビゲーション・コード検索戦略

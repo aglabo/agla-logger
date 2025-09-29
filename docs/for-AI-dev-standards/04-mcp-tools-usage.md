@@ -1,6 +1,6 @@
 ---
 header:
-  - src: 03-mcp-tools-usage.md
+  - src: 04-mcp-tools-usage.md
   - @(#): MCP Tools Complete Usage Guide
 title: agla-logger
 description: lsmcp・serena-mcp・codex の完全活用ガイドとトークン効率最適化手法
