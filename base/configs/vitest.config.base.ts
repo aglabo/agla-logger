@@ -32,19 +32,34 @@ export default defineConfig({
     ],
     exclude: [
       'node_modules/**',
-      // 出力ディレクトリ
+      // output directories
       'dist/**',
       'lib/**',
       'module/**',
-      // キャッシュ
+      // cache
       '.cache/**',
-      // コメントアウト
+      // exclude test files
       `**/#*.ts`,
       `**/#*tests*`,
     ],
     coverage: {
-      reporter: ['text', 'json-summary'],
+      all: true,
+      clean: true,
+      extension: ['.ts'],
+      include: [
+        'src/**/*.ts',
+        'shared/**/*.ts',
+      ],
+      exclude: [
+        '**/node_modules/**',
+        'configs/**',
+        'tests/**',
+        '**/*.spec.ts',
+      ],
+      provider: 'v8',
+      reporter: ['text', 'json'],
     },
+    // coverage: moved to individual test configs to avoid conflicts
   },
   resolve: {
     // set on sub-packages configs
