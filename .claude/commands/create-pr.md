@@ -165,9 +165,18 @@ from pathlib import Path
 DRAFT_FILE_NAME = "pr_draft_current.md"
 
 def get_draft_path():
-    """Get standardized path for PR draft file"""
-    temp_dir = Path(tempfile.gettempdir())
-    return temp_dir / DRAFT_FILE_NAME
+    """Get standardized path for PR draft file in repository temp/pr/ directory"""
+    # Get git repository root
+    git_root = run_command('git rev-parse --show-toplevel')
+    if not git_root:
+        # Fallback to system temp if not in git repo
+        temp_dir = Path(tempfile.gettempdir())
+        return temp_dir / DRAFT_FILE_NAME
+
+    # Use repo temp/pr/ directory
+    repo_root = Path(git_root)
+    temp_pr_dir = repo_root / 'temp' / 'pr'
+    return temp_pr_dir / DRAFT_FILE_NAME
 
 def run_command(command, timeout=30):
     """Execute shell command safely and return output"""
@@ -211,6 +220,9 @@ def save_draft(content):
     """Save PR draft to file"""
     draft_path = get_draft_path()
     try:
+        # Create directory if it doesn't exist
+        draft_path.parent.mkdir(parents=True, exist_ok=True)
+
         with open(draft_path, 'w', encoding='utf-8') as f:
             f.write(content)
         print(f"💾 Draft saved: {draft_path}")
