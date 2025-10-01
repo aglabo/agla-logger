@@ -1,734 +1,428 @@
 ---
 # Claude Code 必須要素
-allowed-tools: Bash(git:*, gh:*), Read(*), Write(*)
+allowed-tools: Bash(git:*, gh:*), Read(*), Write(*), Task(*)
 argument-hint: [subcommand] [options]
-description: GitHub Issue 作成・管理システム - 5つのサブコマンドでFeature/Bug/Enhancement/Taskの構造化Issue作成からGitHub連携まで
+description: GitHub Issue 作成・管理システム - issue-generatorエージェントによる構造化Issue作成
+
+# 設定変数
+config:
+  temp_dir: temp/issues
+  issue_types:
+    - feature
+    - bug
+    - enhancement
+    - task
+  default_editor: ${EDITOR:-code}
+  default_pager: ${PAGER:-less}
+
+# サブコマンド定義
+subcommands:
+  new: "issue-generatorエージェントで新規Issue作成 (デフォルト)"
+  list: "保存済みIssueドラフト一覧表示"
+  view: "特定のIssueドラフト表示"
+  edit: "Issueドラフト編集"
+  load: "GitHub IssueをローカルにImport"
+  push: "ドラフトをGitHubにPush (新規作成または更新)"
 
 # ag-logger プロジェクト要素
-title: new-issue
-version: 1.0.0
+title: idd-issue
+version: 2.0.0
 created: 2025-09-30
 authors:
   - atsushifx
 changes:
-  - 2025-09-30: 初版作成 - 5サブコマンド体系でIssue管理機能を実装
+  - 2025-10-02: フロントマターベース構造に再構築、/idd-issue に名称変更
+  - 2025-09-30: 初版作成 - 6サブコマンド体系でIssue管理機能を実装
 ---
 
-## /new-issue
+## /idd-issue
 
-AI を使用して、新規に issue を作成し登録する。あるいは、ロードした issue をレビュー、編集して登録しなおすコマンド。
+issue-generator エージェントを使用して、GitHub Issue を作成・管理するコマンド。
 
-<!-- markdownlint-disable no-duplicate-heading -->
+## Bashヘルパーライブラリ
 
-## Utility Functions
-
-### generate_issue_filename - 決定的なファイル名生成関数
+以下のヘルパー関数は各サブコマンドが使用:
 
 ```bash
-#!/usr/bin/env bash
-# generate_issue_filename - Deterministic issue filename generator
-# Usage: generate_issue_filename <issue_type> <title> [issue_number]
-# Format: [new/123]-yymmdd-hhmmss-<type>-<title-slug>.md
-#
-# Examples:
-#   generate_issue_filename feature "Add logging" new
-#   -> new-251002-143022-feature-add-logging.md
-#
-#   generate_issue_filename bug "Fix error" 123
-#   -> 123-251002-143022-bug-fix-error.md
+#!/bin/bash
+# Issue管理コマンド用ヘルパー関数集
 
-generate_issue_filename() {
-  local issue_type="$1"
-  local title="$2"
-  local issue_number="${3:-new}"
+# 設定初期化
+setup_issue_env() {
+  export REPO_ROOT=$(git rev-parse --show-toplevel)
+  export ISSUES_DIR="$REPO_ROOT/temp/issues"
+  export PAGER="${PAGER:-less}"
+  export EDITOR="${EDITOR:-code}"
+}
 
-  # Generate timestamp: yymmdd-hhmmss
-  local timestamp
-  timestamp=$(date '+%y%m%d-%H%M%S')
+# Issue ディレクトリ作成
+ensure_issues_dir() {
+  mkdir -p "$ISSUES_DIR"
+}
 
-  # Slugify title: lowercase, remove special chars, replace spaces with hyphens
-  local title_slug
-  title_slug=$(echo "$title" | \
+# Issue ファイル検索
+# 引数: $1 - Issue番号またはファイル名 (省略時は最新ファイル)
+# 戻り値: グローバル変数 ISSUE_FILE に見つかったファイルパスを設定
+find_issue_file() {
+  local ISSUE_INPUT="$1"
+  ISSUE_FILE=""
+
+  if [ -z "$ISSUE_INPUT" ]; then
+    # 引数なし: 最新ファイルを使用
+    ISSUE_FILE=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
+    if [ -z "$ISSUE_FILE" ]; then
+      echo "❌ No issue drafts found."
+      echo "💡 Run '/idd-issue new' to create one."
+      return 1
+    fi
+    echo "📄 Using latest draft: $(basename "$ISSUE_FILE" .md)"
+    return 0
+
+  elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
+    # Issue番号: マッチするファイルを検索
+    ISSUE_FILE=$(ls "$ISSUES_DIR"/${ISSUE_INPUT}-*.md 2>/dev/null | head -1)
+    if [ -z "$ISSUE_FILE" ]; then
+      echo "❌ No draft found for issue #$ISSUE_INPUT"
+      return 1
+    fi
+    echo "📄 Found: $(basename "$ISSUE_FILE" .md)"
+    return 0
+
+  else
+    # ファイル名直接指定
+    ISSUE_FILE="$ISSUES_DIR/$ISSUE_INPUT.md"
+    if [ ! -f "$ISSUE_FILE" ]; then
+      echo "❌ Issue not found: $ISSUE_INPUT"
+      return 1
+    fi
+    return 0
+  fi
+}
+
+# Issue ファイル一覧表示
+list_issue_files() {
+  if [ ! -d "$ISSUES_DIR" ] || [ -z "$(ls -A "$ISSUES_DIR"/*.md 2>/dev/null)" ]; then
+    echo "📋 No issue drafts found."
+    echo "💡 Create one with: /idd-issue new"
+    return 0
+  fi
+
+  echo "📋 Issue drafts:"
+  echo "=================================================="
+  echo ""
+
+  for file in "$ISSUES_DIR"/*.md; do
+    [ -f "$file" ] || continue
+
+    local filename=$(basename "$file" .md)
+    local title=$(extract_title "$file")
+    local modified=$(get_modified_time "$file")
+
+    echo "📄 $filename"
+    echo "   Title: $title"
+    echo "   Modified: $modified"
+    echo ""
+  done
+
+  echo "Commands:"
+  echo "  /idd-issue view <issue-name>  # View issue"
+  echo "  /idd-issue edit <issue-name>  # Edit issue"
+  echo "  /idd-issue push <issue-name>  # Push to GitHub"
+}
+
+# タイトル抽出
+# 引数: $1 - ファイルパス
+extract_title() {
+  local file="$1"
+  head -1 "$file" | sed 's/^#[[:space:]]*//'
+}
+
+# 修正日時取得
+# 引数: $1 - ファイルパス
+get_modified_time() {
+  local file="$1"
+  stat -c %y "$file" 2>/dev/null | cut -d' ' -f1,2 | cut -d: -f1,2 || \
+    date -r "$file" '+%Y-%m-%d %H:%M' 2>/dev/null
+}
+
+# Issue種別検出
+# 引数: $1 - タイトル文字列
+detect_issue_type() {
+  local title="$1"
+
+  if [[ "$title" =~ ^\[Feature\] ]]; then
+    echo "feature"
+  elif [[ "$title" =~ ^\[Bug\] ]]; then
+    echo "bug"
+  elif [[ "$title" =~ ^\[Enhancement\] ]]; then
+    echo "enhancement"
+  elif [[ "$title" =~ ^\[Task\] ]]; then
+    echo "task"
+  else
+    echo "issue"
+  fi
+}
+
+# タイトルからスラッグ生成
+# 引数: $1 - タイトル文字列
+generate_slug() {
+  local title="$1"
+
+  echo "$title" | \
     sed 's/\[.*\][[:space:]]*//' | \
     tr '[:upper:]' '[:lower:]' | \
     sed 's/[^a-z0-9[:space:]-]//g' | \
     tr -s '[:space:]' '-' | \
     sed 's/^-\+//; s/-\+$//' | \
-    cut -c1-50)
+    cut -c1-50
+}
 
-  # Normalize issue type
-  local type_prefix
-  case "$issue_type" in
-    feature|Feature) type_prefix="feature" ;;
-    bug|Bug) type_prefix="bug" ;;
-    enhancement|Enhancement) type_prefix="enhancement" ;;
-    task|Task) type_prefix="task" ;;
-    *) type_prefix="issue" ;;
-  esac
+# Issue番号抽出
+# 引数: $1 - ファイル名
+extract_issue_number() {
+  local filename="$1"
+  echo "$filename" | sed 's/-.*//'
+}
 
-  # Build filename: [new/123]-yymmdd-hhmmss-type-title.md
-  local filename="${issue_number}-${timestamp}-${type_prefix}-${title_slug}.md"
+# Issue種別一覧表示
+show_issue_types() {
+  cat << 'EOF'
+Available issue types:
+  1. [Feature] - 新機能追加要求
+  2. [Bug] - バグレポート
+  3. [Enhancement] - 既存機能改善
+  4. [Task] - 開発・メンテナンスタスク
+EOF
+}
 
-  echo "$filename"
+# GitHub Issue取得
+# 引数: $1 - Issue番号
+# 戻り値: グローバル変数 ISSUE_TITLE, ISSUE_BODY に取得内容を設定
+fetch_github_issue() {
+  local ISSUE_NUM="$1"
+
+  echo "🔗 Loading issue #$ISSUE_NUM from GitHub..."
+
+  # Fetch issue using gh CLI
+  if ! ISSUE_JSON=$(gh issue view "$ISSUE_NUM" --json 'title,body' 2>/dev/null); then
+    echo "❌ GitHub CLI error. Make sure 'gh' is installed and authenticated."
+    echo "💡 Run: gh auth login"
+    return 1
+  fi
+
+  # Extract title and body
+  if command -v jq >/dev/null 2>&1; then
+    ISSUE_TITLE=$(echo "$ISSUE_JSON" | jq -r '.title // "Untitled"')
+    ISSUE_BODY=$(echo "$ISSUE_JSON" | jq -r '.body // ""')
+  else
+    ISSUE_TITLE=$(echo "$ISSUE_JSON" | grep '"title"' | cut -d'"' -f4)
+    ISSUE_BODY=$(echo "$ISSUE_JSON" | grep '"body"' | cut -d'"' -f4)
+  fi
+
+  return 0
+}
+
+# Issue番号検証
+# 引数: $1 - Issue番号
+validate_issue_number() {
+  local ISSUE_NUM="$1"
+
+  if [ -z "$ISSUE_NUM" ]; then
+    echo "❌ GitHub issue number is required."
+    echo "Usage: /idd-issue load <issue-number>"
+    return 1
+  fi
+
+  if ! [[ "$ISSUE_NUM" =~ ^[0-9]+$ ]]; then
+    echo "❌ Invalid issue number. Must be a number."
+    return 1
+  fi
+
+  return 0
+}
+
+# Issueファイル保存
+# 引数: $1 - ファイルパス, $2 - タイトル, $3 - 本文
+save_issue_file() {
+  local file="$1"
+  local title="$2"
+  local body="$3"
+
+  cat > "$file" << EOF
+# $title
+
+$body
+EOF
+}
+
+# GitHub Issueプッシュ (新規作成)
+# 引数: $1 - タイトル, $2 - 本文ファイル, $3 - 元のファイル名
+push_new_issue() {
+  local title="$1"
+  local body_file="$2"
+  local old_name="$3"
+
+  echo "🆕 Creating new issue..."
+
+  if NEW_URL=$(gh issue create --title "$title" --body-file "$body_file"); then
+    ISSUE_NUM=$(echo "$NEW_URL" | sed 's/.*\/issues\///')
+
+    echo "✅ New issue #$ISSUE_NUM created successfully!"
+    echo "🔗 URL: $NEW_URL"
+
+    # Rename file: new-* → {issue-num}-*
+    NEW_FILENAME=$(echo "$old_name" | sed "s/^new-/$ISSUE_NUM-/")
+    mv "$ISSUE_FILE" "$ISSUES_DIR/$NEW_FILENAME.md"
+    echo "📝 Issue file renamed: $NEW_FILENAME"
+    return 0
+  else
+    echo "❌ Failed to create issue"
+    return 1
+  fi
+}
+
+# GitHub Issueプッシュ (既存更新)
+# 引数: $1 - Issue番号, $2 - タイトル, $3 - 本文ファイル
+push_existing_issue() {
+  local issue_num="$1"
+  local title="$2"
+  local body_file="$3"
+
+  echo "🔄 Updating existing issue #$issue_num..."
+
+  if gh issue edit "$issue_num" --title "$title" --body-file "$body_file"; then
+    echo "✅ Issue #$issue_num updated successfully!"
+    return 0
+  else
+    echo "❌ Failed to update issue"
+    return 1
+  fi
 }
 ```
 
-## Quick Reference
+## 実行フロー
 
-### Usage
+1. **設定読み込み**: メタデータの `config` セクションから設定を取得
+2. **パス構築**: `{git_root}/{temp_dir}` で Issue ドラフトディレクトリパスを構築
+3. **サブコマンド実行**: 以下のいずれかを実行
 
-```bash
-# Main command (interactive issue creation)
-/new-issue [options]
-
-# Subcommands
-/new-issue <subcommand> [options]
-```
-
-### Subcommands
-
-- `create`: 新しい Issue 作成（対話型）
-- `list`: 保存済み Issue ドラフト一覧表示
-- `view <issue-name>`: 特定の Issue ドラフト表示
-- `edit <issue-name>`: Issue ドラフトをエディタで編集
-- `load <issue-number>`: GitHub Issue 番号でローカルにインポート
-- `push [issue-name]`: ドラフトを GitHub に push（新規作成または既存更新）
-
-### Issue Types
-
-- `[Feature]`: 新機能追加要求
-- `[Bug]`: バグレポート
-- `[Enhancement]`: 既存機能改善
-- `[Task]`: 開発・メンテナンスタスク
-
-### Examples
-
-```bash
-# 対話型でIssue作成
-/new-issue create
-
-# 保存済みIssue一覧
-/new-issue list
-
-# 特定のIssue表示
-/new-issue view feature-user-auth
-
-# Issue編集
-/new-issue edit bug-form-validation
-
-# GitHub IssueをローカルにImport
-/new-issue load 123
-
-# ドラフトをGitHubにpush
-/new-issue push feature-user-auth
-```
-
-## Help Display
-
-```python
-print("new-issue - GitHub Issue 作成・管理システム")
-print("")
-print("Usage: /new-issue [subcommand] [options]")
-print("")
-print("Subcommands:")
-print("  create                新しいIssue作成（対話型）")
-print("  list                  保存済みIssueドラフト一覧")
-print("  view <issue-name>     特定のIssueドラフト表示")
-print("  edit <issue-name>     Issueドラフトをエディタで編集")
-print("  load <issue-number>   GitHub Issue番号でローカルにImport")
-print("  push [issue-name]     ドラフトをGitHubにpush（新規作成または既存更新）")
-print("")
-print("Issue Types:")
-print("  [Feature]             新機能追加要求")
-print("  [Bug]                 バグレポート")
-print("  [Enhancement]         既存機能改善")
-print("  [Task]                開発・メンテナンスタスク")
-print("")
-print("Examples:")
-print("  /new-issue create            # 対話型でIssue作成")
-print("  /new-issue list              # 保存済みIssue一覧")
-print("  /new-issue view feature-auth # 特定のIssue表示")
-print("  /new-issue edit bug-form     # Issue編集")
-print("  /new-issue load 123          # GitHub Import")
-print("  /new-issue push feature-auth # GitHub Push")
-```
-
-## Simple Setup
-
-```python
-import sys
-import os
-import subprocess
-
-# Simple setup - Claude handles all complex logic
-subcommand = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else None
-issue_name = sys.argv[2] if len(sys.argv) > 2 else None
-
-# Help display
-if '--help' in sys.argv or '-h' in sys.argv or (not subcommand and len(sys.argv) == 1):
-    print("new-issue - GitHub Issue 作成・管理システム")
-    print("Usage: /new-issue [subcommand] [options]")
-    print("Subcommands: create, list, view, edit, load, push")
-    exit(0)
-
-# Basic path setup
-try:
-    repo_root = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
-                             capture_output=True, text=True, check=True).stdout.strip()
-except:
-    repo_root = "."
-
-issues_dir = os.path.join(repo_root, 'temp', 'issues')
-os.makedirs(issues_dir, exist_ok=True)
-
-print(f"Subcommand: {subcommand or 'create'}")
-print(f"Issues directory: {issues_dir}")
-
-# Issue types - new-issue-creator agent will generate detailed templates
-ISSUE_TYPES = {
-    'feature': '[Feature] - 新機能追加要求',
-    'bug': '[Bug] - バグレポート',
-    'enhancement': '[Enhancement] - 既存機能改善',
-    'task': '[Task] - 開発・メンテナンスタスク'
-}
-
-# new-issue-creator agent will handle all template generation and processing logic
-```
-
-## Subcommand Execution
-
-### Subcommand: create
+### Subcommand: new (デフォルト)
 
 ```bash
 #!/bin/bash
-set -e
+setup_issue_env
+ensure_issues_dir
 
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-mkdir -p "$ISSUES_DIR"
-
-echo "🔧 Creating new issue..."
-echo "Available issue types:"
-echo "  1. [Feature] - 新機能追加要求"
-echo "  2. [Bug] - バグレポート"
-echo "  3. [Enhancement] - 既存機能改善"
-echo "  4. [Task] - 開発・メンテナンスタスク"
+echo "🚀 Launching issue-generator agent..."
+echo ""
+show_issue_types
 echo ""
 
-# Get issue type
-ISSUE_TYPE=""
-if [[ "$*" == *"--type="* ]]; then
-    ISSUE_TYPE=$(echo "$*" | grep -o -- '--type=[^[:space:]]*' | cut -d= -f2)
-fi
-
-if [ -z "$ISSUE_TYPE" ]; then
-    read -p "Select issue type (1-4): " choice
-    case $choice in
-        1) ISSUE_TYPE="feature" ;;
-        2) ISSUE_TYPE="bug" ;;
-        3) ISSUE_TYPE="enhancement" ;;
-        4) ISSUE_TYPE="task" ;;
-        *) echo "❌ Invalid choice. Please select 1-4."; exit 1 ;;
-    esac
-fi
-
-# Get issue title
-read -p "Enter [$(echo ${ISSUE_TYPE^})] title: " title
-if [ -z "$title" ]; then
-    echo "❌ Title is required."
-    exit 1
-fi
-
-# Generate deterministic filename using utility function
-ISSUE_FILENAME=$(generate_issue_filename "$ISSUE_TYPE" "$title" "new")
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_FILENAME"
-
-echo ""
-echo "🤖 Generating issue with new-issue-creator agent..."
-echo "Issue type: $ISSUE_TYPE"
-echo "Title: $title"
-echo "File: $ISSUE_FILE"
-echo ""
-echo "Claude will now use the new-issue-creator agent to generate detailed issue content."
-echo ""
-
-# Agent will create the file with proper template
-echo "✅ Issue metadata prepared: $ISSUE_FILE"
-echo "📝 Issue filename: $ISSUE_FILENAME"
-echo ""
-echo "Next steps:"
-echo "  /new-issue view $ISSUE_FILENAME  # View content"
-echo "  /new-issue edit $ISSUE_FILENAME  # Edit in editor"
-echo "  /new-issue push $ISSUE_FILENAME  # Push to GitHub"
-echo "  /new-issue list                  # List all issues"
+# Note: Claude will invoke issue-generator agent via Task tool
+# Agent will guide the user through issue creation interactively
 ```
 
 ### Subcommand: list
 
 ```bash
 #!/bin/bash
-set -e
-
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-
-if [ ! -d "$ISSUES_DIR" ]; then
-    echo "No issues directory found. Create an issue first with '/new-issue create'"
-    exit 1
-fi
-
-# Count markdown files
-FILE_COUNT=$(ls -1 "$ISSUES_DIR"/*.md 2>/dev/null | wc -l)
-
-if [ "$FILE_COUNT" -eq 0 ]; then
-    echo "No issue drafts found."
-    echo "Create one with: /new-issue create"
-    exit 0
-fi
-
-echo "📋 Issue drafts in $ISSUES_DIR:"
-echo "=================================================="
-
-i=1
-for file in "$ISSUES_DIR"/*.md; do
-    if [ -f "$file" ]; then
-        issue_name=$(basename "$file" .md)
-
-        # Extract title from first line
-        title=$(head -1 "$file" | sed 's/^#[[:space:]]*//' || echo "No title")
-
-        # Get modification time
-        modified=$(date -r "$file" '+%Y-%m-%d %H:%M' 2>/dev/null || stat -c %y "$file" | cut -d' ' -f1,2 | cut -d: -f1,2)
-
-        printf "%2d. %s\n" "$i" "$issue_name"
-        echo "    Title: $title"
-        echo "    Modified: $modified"
-        echo ""
-
-        i=$((i + 1))
-    fi
-done
-
-echo "Commands:"
-echo "  /new-issue view <issue-name>  # View specific issue"
-echo "  /new-issue edit <issue-name>  # Edit specific issue"
-echo "  /new-issue push <issue-name>  # Push to GitHub"
+setup_issue_env
+list_issue_files
 ```
 
 ### Subcommand: view
 
 ```bash
 #!/bin/bash
-set -e
+setup_issue_env
 
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-
-# Function: Select issue using fzf
-select_issue_with_fzf() {
-    if ! command -v fzf >/dev/null 2>&1; then
-        return 1
-    fi
-
-    cd "$ISSUES_DIR"
-    local selected=$(ls -t *.md 2>/dev/null | fzf \
-        --height=40% \
-        --layout=reverse \
-        --preview='head -20 {}' \
-        --preview-window='right:60%:wrap' \
-        --header='Select issue to view (ESC to cancel)')
-
-    if [ -n "$selected" ]; then
-        basename "$selected" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: Get latest (current) draft
-get_current_draft() {
-    local latest_file=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
-    if [ -n "$latest_file" ]; then
-        basename "$latest_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: Find draft by issue number
-find_draft_by_number() {
-    local issue_num="$1"
-    local matching_file=$(ls "$ISSUES_DIR"/${issue_num}-*.md 2>/dev/null | head -1)
-    if [ -n "$matching_file" ]; then
-        basename "$matching_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: List available drafts
-list_available_drafts() {
-    ls -1 "$ISSUES_DIR"/*.md 2>/dev/null | sed 's/.*\///' | sed 's/\.md$//'
-}
-
-# Main: Resolve issue name from input
-ISSUE_INPUT="$2"
-ISSUE_NAME=""
-
-if [ -z "$ISSUE_INPUT" ]; then
-    # Case 1: No argument → try fzf selection, fallback to current draft
-    if command -v fzf >/dev/null 2>&1; then
-        ISSUE_NAME=$(select_issue_with_fzf)
-        if [ -z "$ISSUE_NAME" ]; then
-            echo "⚠️  Selection cancelled"
-            exit 0
-        fi
-        echo "📄 Selected: $ISSUE_NAME"
-    else
-        ISSUE_NAME=$(get_current_draft)
-        if [ -z "$ISSUE_NAME" ]; then
-            echo "❌ No issue drafts found."
-            exit 1
-        fi
-        echo "📄 Viewing current draft: $ISSUE_NAME"
-    fi
-
-elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
-    # Case 2: Issue number only → find matching draft
-    ISSUE_NAME=$(find_draft_by_number "$ISSUE_INPUT")
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No draft found for issue #$ISSUE_INPUT"
-        echo ""
-        echo "Available drafts:"
-        list_available_drafts
-        exit 1
-    fi
-    echo "📄 Found draft: $ISSUE_NAME"
-
-else
-    # Case 3: Full issue name provided
-    ISSUE_NAME="$ISSUE_INPUT"
+# Get issue name from argument or use latest
+if ! find_issue_file "$1"; then
+  exit 1
 fi
 
-# Validate file exists
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_NAME.md"
-if [ ! -f "$ISSUE_FILE" ]; then
-    echo "❌ Issue not found: $ISSUE_NAME"
-    exit 1
-fi
-
-# Display issue with pager
-PAGER="${PAGER:-less}"
-echo "📁 File: $ISSUE_FILE"
-echo "============================================================"
-
-if command -v "$PAGER" >/dev/null 2>&1; then
-    cat "$ISSUE_FILE" | "$PAGER"
-else
-    cat "$ISSUE_FILE"
-fi
-
-# Show file stats
-LINES=$(wc -l < "$ISSUE_FILE")
-WORDS=$(wc -w < "$ISSUE_FILE")
-echo "============================================================"
-echo "📊 Stats: $LINES lines, $WORDS words"
-
+echo "=================================================="
+$PAGER "$ISSUE_FILE"
+echo "=================================================="
+echo "📊 $(wc -l < "$ISSUE_FILE") lines, $(wc -w < "$ISSUE_FILE") words"
 echo ""
 echo "Commands:"
-echo "  /new-issue edit $ISSUE_NAME  # Edit this issue"
-echo "  /new-issue push $ISSUE_NAME  # Push to GitHub"
-echo "  /new-issue list              # List all issues"
+echo "  /idd-issue edit $(basename "$ISSUE_FILE" .md)  # Edit this issue"
+echo "  /idd-issue push $(basename "$ISSUE_FILE" .md)  # Push to GitHub"
 ```
 
 ### Subcommand: edit
 
 ```bash
 #!/bin/bash
-set -e
+setup_issue_env
 
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-
-# Function: Select issue using fzf
-select_issue_with_fzf() {
-    if ! command -v fzf >/dev/null 2>&1; then
-        return 1
-    fi
-
-    cd "$ISSUES_DIR"
-    local selected=$(ls -t *.md 2>/dev/null | fzf \
-        --height=40% \
-        --layout=reverse \
-        --preview='head -20 {}' \
-        --preview-window='right:60%:wrap' \
-        --header='Select issue to edit (ESC to cancel)')
-
-    if [ -n "$selected" ]; then
-        basename "$selected" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: Get latest (current) draft
-get_current_draft() {
-    local latest_file=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
-    if [ -n "$latest_file" ]; then
-        basename "$latest_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: Find draft by issue number
-find_draft_by_number() {
-    local issue_num="$1"
-    local matching_file=$(ls "$ISSUES_DIR"/${issue_num}-*.md 2>/dev/null | head -1)
-    if [ -n "$matching_file" ]; then
-        basename "$matching_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: List available drafts
-list_available_drafts() {
-    ls -1 "$ISSUES_DIR"/*.md 2>/dev/null | sed 's/.*\///' | sed 's/\.md$//'
-}
-
-# Main: Resolve issue name from input
-ISSUE_INPUT="$2"
-ISSUE_NAME=""
-
-if [ -z "$ISSUE_INPUT" ]; then
-    # Case 1: No argument → try fzf selection, fallback to current draft
-    if command -v fzf >/dev/null 2>&1; then
-        ISSUE_NAME=$(select_issue_with_fzf)
-        if [ -z "$ISSUE_NAME" ]; then
-            echo "⚠️  Selection cancelled"
-            exit 0
-        fi
-        echo "📝 Selected: $ISSUE_NAME"
-    else
-        ISSUE_NAME=$(get_current_draft)
-        if [ -z "$ISSUE_NAME" ]; then
-            echo "❌ No issue drafts found."
-            exit 1
-        fi
-        echo "📝 Editing current draft: $ISSUE_NAME"
-    fi
-
-elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
-    # Case 2: Issue number only → find matching draft
-    ISSUE_NAME=$(find_draft_by_number "$ISSUE_INPUT")
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No draft found for issue #$ISSUE_INPUT"
-        echo ""
-        echo "Available drafts:"
-        list_available_drafts
-        exit 1
-    fi
-    echo "📝 Found draft: $ISSUE_NAME"
-
-else
-    # Case 3: Full issue name provided
-    ISSUE_NAME="$ISSUE_INPUT"
+# Get issue name from argument or use latest
+if ! find_issue_file "$1"; then
+  exit 1
 fi
 
-# Validate file exists
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_NAME.md"
-if [ ! -f "$ISSUE_FILE" ]; then
-    echo "❌ Issue not found: $ISSUE_NAME"
-    exit 1
-fi
-
-# Open in editor
-EDITOR="${EDITOR:-code}"
-echo "📝 Opening $ISSUE_NAME in $EDITOR..."
-if command -v "$EDITOR" >/dev/null 2>&1; then
-    "$EDITOR" "$ISSUE_FILE"
-    echo "✅ Issue edited: $ISSUE_FILE"
-else
-    echo "❌ Editor '$EDITOR' not found."
-    echo "Set EDITOR environment variable or install VS Code."
-    exit 1
-fi
+echo "📝 Opening in $EDITOR..."
+$EDITOR "$ISSUE_FILE"
+echo "✅ Issue edited"
 ```
 
 ### Subcommand: load
 
 ```bash
 #!/bin/bash
-set -e
+setup_issue_env
+ensure_issues_dir
 
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-mkdir -p "$ISSUES_DIR"
-
-# Get issue number from command line
-ISSUE_NUM="$2"
-
-if [ -z "$ISSUE_NUM" ]; then
-    echo "❌ GitHub issue number is required."
-    echo "Usage: /new-issue load 123"
-    exit 1
+# Validate issue number
+if ! validate_issue_number "$1"; then
+  exit 1
 fi
 
-# Validate issue number format
-if ! [[ "$ISSUE_NUM" =~ ^[0-9]+$ ]]; then
-    echo "❌ Invalid issue number. Must be a number."
-    echo "Usage: /new-issue load 123"
-    exit 1
+ISSUE_NUM="$1"
+
+# Fetch from GitHub
+if ! fetch_github_issue "$ISSUE_NUM"; then
+  exit 1
 fi
 
-# Get repository info from git remote
-REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
-if [ -z "$REMOTE_URL" ]; then
-    echo "❌ Could not determine repository. No git remote 'origin' found."
-    exit 1
-fi
+# Generate filename
+ISSUE_TYPE=$(detect_issue_type "$ISSUE_TITLE")
+SLUG=$(generate_slug "$ISSUE_TITLE")
+TIMESTAMP=$(date '+%y%m%d-%H%M%S')
+FILENAME="${ISSUE_NUM}-${TIMESTAMP}-${ISSUE_TYPE}-${SLUG}.md"
+ISSUE_FILE="$ISSUES_DIR/$FILENAME"
 
-# Extract owner/repo from remote URL
-REPO_INFO=$(echo "$REMOTE_URL" | sed 's/.*github\.com[:/]\(.*\)\.git$/\1/' | sed 's/.*github\.com[:/]\(.*\)$/\1/')
-
-echo "🔗 Loading issue from GitHub..."
-echo "Repository: $REPO_INFO"
-echo "Issue: #$ISSUE_NUM"
-
-# Fetch issue data using gh CLI
-if ! ISSUE_JSON=$(gh issue view "$ISSUE_NUM" --json 'title,body' 2>/dev/null); then
-    echo "❌ GitHub CLI error. Make sure 'gh' is installed and you're authenticated."
-    echo "Run: gh auth login"
-    exit 1
-fi
-
-# Extract data using jq or simple parsing
-if command -v jq >/dev/null 2>&1; then
-    TITLE=$(echo "$ISSUE_JSON" | jq -r '.title // "Untitled"')
-    BODY=$(echo "$ISSUE_JSON" | jq -r '.body // "No content available"')
-else
-    # Fallback parsing without jq
-    TITLE=$(echo "$ISSUE_JSON" | grep '"title"' | cut -d'"' -f4)
-    BODY=$(echo "$ISSUE_JSON" | grep '"body"' | cut -d'"' -f4)
-fi
-
-# Detect issue type from title tags
-ISSUE_TYPE="issue"
-if [[ "$TITLE" =~ ^\[Feature\] ]]; then
-    ISSUE_TYPE="feature"
-elif [[ "$TITLE" =~ ^\[Bug\] ]]; then
-    ISSUE_TYPE="bug"
-elif [[ "$TITLE" =~ ^\[Enhancement\] ]]; then
-    ISSUE_TYPE="enhancement"
-elif [[ "$TITLE" =~ ^\[Task\] ]]; then
-    ISSUE_TYPE="task"
-fi
-
-# Generate deterministic filename using utility function
-ISSUE_FILENAME=$(generate_issue_filename "$ISSUE_TYPE" "$TITLE" "$ISSUE_NUM")
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_FILENAME"
-
-# Create markdown content (simple format: title + body only)
-cat > "$ISSUE_FILE" << EOF
-# $TITLE
-
-$BODY
-EOF
+# Save issue file
+save_issue_file "$ISSUE_FILE" "$ISSUE_TITLE" "$ISSUE_BODY"
 
 echo "✅ Issue imported successfully!"
-echo "📝 Saved as: $ISSUE_FILENAME"
-echo "📁 File: $ISSUE_FILE"
+echo "📝 Saved as: $FILENAME"
 echo ""
 echo "Next steps:"
-echo "  /new-issue view $ISSUE_FILENAME  # View imported issue"
-echo "  /new-issue edit $ISSUE_FILENAME  # Edit imported issue"
-echo "  /new-issue push $ISSUE_FILENAME  # Push changes back to GitHub"
+echo "  /idd-issue view $ISSUE_NUM   # View imported issue"
+echo "  /idd-issue edit $ISSUE_NUM   # Edit imported issue"
+echo "  /idd-issue push $ISSUE_NUM   # Push changes back to GitHub"
 ```
 
 ### Subcommand: push
 
 ```bash
 #!/bin/bash
-set -e
+setup_issue_env
 
-# Setup paths
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
-ISSUES_DIR="$REPO_ROOT/temp/issues"
-
-# Function: Get latest (current) draft
-get_current_draft() {
-    local latest_file=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
-    if [ -n "$latest_file" ]; then
-        basename "$latest_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: Find draft by issue number
-find_draft_by_number() {
-    local issue_num="$1"
-    local matching_file=$(ls "$ISSUES_DIR"/${issue_num}-*.md 2>/dev/null | head -1)
-    if [ -n "$matching_file" ]; then
-        basename "$matching_file" .md
-    else
-        echo ""
-    fi
-}
-
-# Function: List available drafts
-list_available_drafts() {
-    ls -1 "$ISSUES_DIR"/*.md 2>/dev/null | sed 's/.*\///' | sed 's/\.md$//'
-}
-
-# Main: Resolve issue name from input
-ISSUE_INPUT="$2"
-ISSUE_NAME=""
-
-if [ -z "$ISSUE_INPUT" ]; then
-    # Case 1: No argument → use current (latest) draft
-    ISSUE_NAME=$(get_current_draft)
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No issue drafts found."
-        exit 1
-    fi
-    echo "📤 Pushing current draft: $ISSUE_NAME"
-
-elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
-    # Case 2: Issue number only → find matching draft
-    ISSUE_NAME=$(find_draft_by_number "$ISSUE_INPUT")
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No draft found for issue #$ISSUE_INPUT"
-        echo ""
-        echo "Available drafts:"
-        list_available_drafts
-        exit 1
-    fi
-    echo "📤 Found draft: $ISSUE_NAME"
-
-else
-    # Case 3: Full issue name provided
-    ISSUE_NAME="$ISSUE_INPUT"
+# Find issue file
+if ! find_issue_file "$1"; then
+  exit 1
 fi
 
-# Validate file exists
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_NAME.md"
-if [ ! -f "$ISSUE_FILE" ]; then
-    echo "❌ Issue not found: $ISSUE_NAME"
-    exit 1
-fi
+ISSUE_NAME=$(basename "$ISSUE_FILE" .md)
 
-# Extract title from first heading (preserve [Feature]/[Bug]/[Enhancement]/[Task] tags)
-TITLE=$(head -20 "$ISSUE_FILE" | grep "^#[^#]" | head -1 | sed 's/^#[[:space:]]*//')
+# Extract title
+TITLE=$(extract_title "$ISSUE_FILE")
 if [ -z "$TITLE" ]; then
-    echo "❌ Could not extract title from issue"
-    exit 1
+  echo "❌ Could not extract title from issue"
+  exit 1
 fi
 
 echo "📝 Title: $TITLE"
@@ -739,174 +433,98 @@ tail -n +2 "$ISSUE_FILE" > "$TEMP_BODY"
 
 # Push to GitHub: Create new or update existing
 if [[ "$ISSUE_NAME" =~ ^new- ]]; then
-    # Create new issue
-    echo "🆕 Creating new issue..."
-
-    if NEW_URL=$(gh issue create --title "$TITLE" --body-file "$TEMP_BODY"); then
-        ISSUE_NUM=$(echo "$NEW_URL" | sed 's/.*\/issues\///')
-
-        echo "✅ New issue #$ISSUE_NUM created successfully!"
-        echo "🔗 URL: $NEW_URL"
-
-        # Rename file: new-yymmdd-hhmmss-type-title.md → 123-yymmdd-hhmmss-type-title.md
-        NEW_ISSUE_NAME=$(echo "$ISSUE_NAME" | sed "s/^new-/$ISSUE_NUM-/")
-        NEW_ISSUE_FILE="$ISSUES_DIR/$NEW_ISSUE_NAME"
-
-        mv "$ISSUE_FILE" "$NEW_ISSUE_FILE"
-        echo "📝 Issue file renamed: $NEW_ISSUE_NAME"
-        ISSUE_NAME="$NEW_ISSUE_NAME"
-    else
-        echo "❌ Failed to create issue"
-        exit 1
-    fi
-
-    # Clean up temporary file
-    rm -f "$TEMP_BODY"
-
+  push_new_issue "$TITLE" "$TEMP_BODY" "$ISSUE_NAME"
+  RESULT=$?
 elif [[ "$ISSUE_NAME" =~ ^[0-9]+ ]]; then
-    # Update existing issue
-    ISSUE_NUM=$(echo "$ISSUE_NAME" | sed 's/-.*//')
-    echo "🔄 Updating existing issue #$ISSUE_NUM"
-
-    if gh issue edit "$ISSUE_NUM" --title "$TITLE" --body-file "$TEMP_BODY"; then
-        echo "✅ Issue #$ISSUE_NUM updated successfully!"
-    else
-        echo "❌ Failed to update issue"
-        exit 1
-    fi
-
-    # Clean up temporary file
-    rm -f "$TEMP_BODY"
-
+  ISSUE_NUM=$(extract_issue_number "$ISSUE_NAME")
+  push_existing_issue "$ISSUE_NUM" "$TITLE" "$TEMP_BODY"
+  RESULT=$?
 else
-    echo "❌ Invalid issue name format. Must start with 'new-' or a number."
-    exit 1
+  echo "❌ Invalid issue name format. Must start with 'new-' or a number."
+  RESULT=1
+fi
+
+# Cleanup
+rm -f "$TEMP_BODY"
+
+if [ $RESULT -ne 0 ]; then
+  exit 1
 fi
 
 echo ""
-echo "🎉 Push completed for $ISSUE_NAME"
+echo "🎉 Push completed!"
 echo ""
 echo "Next steps:"
-echo "  /new-issue view $ISSUE_NAME  # View updated issue"
-echo "  /new-issue list              # List all issues"
+echo "  /idd-issue list  # List all issues"
 ```
 
-## Examples
+## アーキテクチャの特徴
 
-### 使用例 1: 対話型Issue作成
+- エージェント連携: Issue 生成の複雑なロジックを issue-generator エージェントに委譲
+- 関数化設計: 共通ロジックをヘルパー関数に集約し、各サブコマンドは 5-15行程度に簡素化
+- 明確な責務分離: 生成 (agent) とユーティリティ (local scripts) を分離
+- 設定の一元管理: フロントマターで設定・サブコマンド定義を集約
+- 保守しやすい設計: 共通ロジックの修正はヘルパー関数のみで完結
+- 拡張しやすい設計: 新サブコマンドはヘルパー関数を組み合わせるだけで実現可能
 
-**実行**: `/new-issue create`
+## issue-generatorエージェントとの連携
 
-**期待出力**:
+`/idd-issue new` コマンドは以下の流れで動作:
 
-```text
-Initializing new-issue command...
-🔧 Creating new issue...
-Available issue types:
-  1. [Feature] - 新機能追加要求
-  2. [Bug] - バグレポート
-  3. [Enhancement] - 既存機能改善
-  4. [Task] - 開発・メンテナンスタスク
+1. **コマンド実行**: ユーザーが `/idd-issue new` を実行
+2. **Issue種別選択**: 利用可能な Issue 種別を表示
+3. **エージェント起動**: Claude が Task tool で issue-generator エージェントを起動
+4. **エージェント処理**:
+   - Issue 種別とタイトル取得
+   - `.github/ISSUE_TEMPLATE/{種別}.yml` 読み込み
+   - YML 構造解析
+   - 対話的な情報収集
+   - Issue ドラフト生成
+   - `temp/issues/new-{timestamp}-{type}-{slug}.md` に保存
+5. **完了報告**: エージェントが生成結果を報告
 
-Select issue type (1-4): 1
-Enter [Feature] title: User Authentication System
+## ファイル命名規則
 
-🤖 Generating issue with new-issue-creator agent...
-Issue type: feature
-Title: User Authentication System
-File: C:\path\to\repo\temp\issues\new-feature-user-authentication-system.md
+Issue ドラフトファイルは決定的な命名規則を使用:
 
-Claude will now use the new-issue-creator agent to generate detailed issue content.
+- 新規 Issue: `new-{yymmdd-HHMMSS}-{type}-{slug}.md`
+  - 例: `new-251002-143022-feature-user-authentication.md`
+- Import 済み Issue: `{issue-num}-{yymmdd-HHMMSS}-{type}-{slug}.md`
+  - 例: `123-251002-143500-bug-form-validation.md`
 
-✅ Issue metadata prepared: C:\path\to\repo\temp\issues\new-feature-user-authentication-system.md
-📝 Issue name: new-feature-user-authentication-system
+## 使用例
 
-Next steps:
-  /new-issue view new-feature-user-authentication-system  # View content
-  /new-issue edit new-feature-user-authentication-system  # Edit in editor
-  /new-issue list                                          # List all issues
+### 新規Issue作成
+
+```bash
+/idd-issue new
+# → issue-generatorエージェントが起動し、対話的にIssue作成
 ```
 
-### 使用例 2: Issue一覧表示
+### Issue一覧表示
 
-**実行**: `/new-issue list`
-
-**期待出力**:
-
-```text
-📋 Issue drafts in C:\path\to\repo\temp\issues:
-==================================================
- 1. bug-form-validation
-    Title: [Bug] Form validation not working
-    Modified: 2025-09-30 14:30
-
- 2. feature-user-authentication-system
-    Title: [Feature] User Authentication System
-    Modified: 2025-09-30 14:25
-
-Commands:
-  /new-issue view <issue-name>  # View specific issue
-  /new-issue edit <issue-name>  # Edit specific issue
+```bash
+/idd-issue list
+# → temp/issues/ 内のすべてのIssueドラフトを表示
 ```
 
-### 使用例 3: GitHub Issue Import
+### Issue表示・編集
 
-**実行**: `/new-issue load 123`
+```bash
+/idd-issue view 123           # Issue番号で検索
+/idd-issue view new-251002-*  # ファイル名で指定
+/idd-issue view               # 最新のIssueを表示
 
-**期待出力**:
-
-```text
-🔗 Loading issue from GitHub...
-Repository: atsushifx/agla-logger
-Issue: #123
-✅ Issue imported successfully!
-📝 Saved as: 123-improve-error-handling
-📁 File: C:\path\to\repo\temp\issues\123-improve-error-handling.md
-
-Next steps:
-  /new-issue view 123-improve-error-handling  # View imported issue
-  /new-issue edit 123-improve-error-handling  # Edit imported issue
-  /new-issue push 123-improve-error-handling  # Push changes back to GitHub
+/idd-issue edit 123           # Issue番号で検索して編集
+/idd-issue edit               # 最新のIssueを編集
 ```
 
-### 使用例 4: 新規IssueをGitHubにPush
+### GitHub連携
 
-**実行**: `/new-issue push new-feature-user-auth`
-
-**期待出力**:
-
-```text
-📤 Pushing new-feature-user-auth to GitHub...
-📝 Title: User Authentication System
-🆕 Creating new issue...
-✅ New issue #124 created successfully!
-🔗 URL: https://github.com/atsushifx/agla-logger/issues/124
-📝 Issue file renamed: 124-user-auth
-
-🎉 Push completed for 124-user-auth
-
-Next steps:
-  /new-issue view 124-user-auth  # View updated issue
-  /new-issue list                # List all issues
-```
-
-### 使用例 5: 既存Issueの更新
-
-**実行**: `/new-issue push 123-improve-error-handling`
-
-**期待出力**:
-
-```text
-📤 Pushing 123-improve-error-handling to GitHub...
-📝 Title: Improve error handling
-🔄 Updating existing issue #123
-✅ Issue #123 updated successfully!
-
-🎉 Push completed for 123-improve-error-handling
-
-Next steps:
-  /new-issue view 123-improve-error-handling  # View updated issue
-  /new-issue list                             # List all issues
+```bash
+/idd-issue load 123           # GitHubからIssue #123をImport
+/idd-issue push new-251002-*  # 新規Issueを作成
+/idd-issue push 123           # 既存Issue #123を更新
 ```
 
 ---

@@ -5,7 +5,7 @@ description: Git ステージされたファイルから適切なコミットメ
 tools: Bash, Read, Grep
 model: inherit
 
-# ag-logger プロジェクト要素
+# ユーザー管理ヘッダー
 title: agla-logger
 version: 1.0.0
 created: 2025-01-28

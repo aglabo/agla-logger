@@ -13,13 +13,13 @@ config:
 
 # サブコマンド定義
 subcommands:
-  create: "コミットメッセージ生成して保存"
+  new: "コミットメッセージ生成して保存"
   view: "現在のメッセージ表示"
   edit: "メッセージ編集"
   commit: "コミット実行"
 
 # ag-logger プロジェクト要素
-title: commit-message
+title: idd-commit-message
 version: 3.0.0
 created: 2025-09-30
 authors:
@@ -35,10 +35,10 @@ changes:
 
 ```bash
 # Main command (generate and save to temp file)
-/commit-message [options]
+/idd-commit-message [options]
 
 # Subcommands
-/commit-message <subcommand> [options]
+/idd-commit-message <subcommand> [options]
 ```
 
 ### Main Options
@@ -47,7 +47,7 @@ changes:
 
 ### Subcommands
 
-- `create`: コミットメッセージを生成して temp ファイルに保存
+- `new`: コミットメッセージを生成して temp ファイルに保存
 - `view`: 現在のコミットメッセージを表示
 - `edit`: 現在のコミットメッセージをエディタで編集
 - `commit`: 現在のコミットメッセージで実際にコミット実行
@@ -56,15 +56,15 @@ changes:
 
 ```bash
 # コミットメッセージ生成（tempファイルに自動保存）
-/commit-message
+/idd-commit-message
 
 # サブコマンドで詳細操作
-/commit-message view      # 保存されたメッセージ確認
-/commit-message edit      # メッセージ編集
-/commit-message commit    # コミット実行
+/idd-commit-message view      # 保存されたメッセージ確認
+/idd-commit-message edit      # メッセージ編集
+/idd-commit-message commit    # コミット実行
 
 # 英語でメッセージ生成
-/commit-message --lang=en
+/idd-commit-message --lang=en
 ```
 
 <!-- markdownlint-disable no-duplicate-heading -->
@@ -77,7 +77,7 @@ changes:
 2. **パス構築**: `{git_root}/{temp_dir}/{message_file}` でメッセージファイルパスを構築
 3. **サブコマンド実行**: 以下のいずれかを実行
 
-### Subcommand: create (デフォルト)
+### Subcommand: new (デフォルト)
 
 ```bash
 #!/bin/bash
@@ -105,7 +105,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 MSG_FILE="$REPO_ROOT/temp/commit_message_current.md"
 
 if [ ! -f "$MSG_FILE" ]; then
-  echo "❌ No commit message found. Run '/commit-message create' first."
+  echo "❌ No commit message found. Run '/idd-commit-message new' first."
   exit 1
 fi
 
@@ -125,7 +125,7 @@ MSG_FILE="$REPO_ROOT/temp/commit_message_current.md"
 EDITOR="${EDITOR:-code}"
 
 if [ ! -f "$MSG_FILE" ]; then
-  echo "❌ No commit message found. Run '/commit-message create' first."
+  echo "❌ No commit message found. Run '/idd-commit-message new' first."
   exit 1
 fi
 
@@ -142,7 +142,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 MSG_FILE="$REPO_ROOT/temp/commit_message_current.md"
 
 if [ ! -f "$MSG_FILE" ]; then
-  echo "❌ No commit message found. Run '/commit-message create' first."
+  echo "❌ No commit message found. Run '/idd-commit-message new' first."
   exit 1
 fi
 
@@ -172,7 +172,7 @@ git commit -F "$MSG_FILE" && {
 
 ### 使用例 1: コミットメッセージ生成と保存
 
-**実行**: `/commit-message` または `/commit-message create`
+**実行**: `/idd-commit-message` または `/idd-commit-message new`
 
 **期待出力**:
 
@@ -182,7 +182,7 @@ git commit -F "$MSG_FILE" && {
 04f972f chore(claude-commands): issue作成コマンドをバージョンアップ
 ...
 
-.claude/commands/commit-message.md
+.claude/commands/idd-commit-message.md
 
 🤖 Generating commit message...
 Message will be saved to: C:\path\to\repo\temp\commit_message_current.md
@@ -197,33 +197,33 @@ docs(commands): commit-message コマンドを Bash 版に簡略化
 📝 Saved to: C:\path\to\repo\temp\commit_message_current.md
 
 Next steps:
-  /commit-message view   - View message
-  /commit-message edit   - Edit message
-  /commit-message commit - Commit with message
+  /idd-commit-message view   - View message
+  /idd-commit-message edit   - Edit message
+  /idd-commit-message commit - Commit with message
 ```
 
 ### 使用例 2: 標準ワークフロー
 
 ```bash
 # 1. ファイルをステージング
-git add .claude/commands/commit-message.md
+git add .claude/commands/idd-commit-message.md
 
 # 2. コミットメッセージ生成
-/commit-message create
+/idd-commit-message new
 
 # 3. メッセージ確認
-/commit-message view
+/idd-commit-message view
 
 # 4. 必要に応じて編集
-/commit-message edit
+/idd-commit-message edit
 
 # 5. コミット実行
-/commit-message commit
+/idd-commit-message commit
 ```
 
 ### 使用例 3: 英語でメッセージ生成
 
-**実行**: `/commit-message --lang=en`
+**実行**: `/idd-commit-message --lang=en`
 
 **期待動作**: 英語で Conventional Commits 準拠のコミットメッセージを生成。
 

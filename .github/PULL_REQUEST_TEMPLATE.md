@@ -28,18 +28,34 @@ Link any issues this PR closes or relates to:
 
 ---
 
+## ⚠️ Breaking Changes
+
+> **Note**: Skip this section if there are no breaking changes.
+
+If this PR introduces breaking changes, list them here:
+
+- **What breaks**: Description of the breaking change
+- **Migration path**: How to update existing code
+- **Deprecation timeline**: When the old API will be removed (if applicable)
+
+> Example:
+>
+> - **What breaks**: `Logger.log()` now requires a level parameter
+> - **Migration path**: Replace `logger.log(msg)` with `logger.log('info', msg)`
+> - **Deprecation timeline**: Old API removed in v2.0.0
+
+---
+
 ## ✅ Checklist
 
 Please confirm the following before requesting review:
 
-- [ ] Type checks pass (`pnpm run check:types`)
-- [ ] Lint suite passes (`pnpm run lint:all`)
-- [ ] Formatter check passes (`pnpm run check:dprint`)
-- [ ] Tests pass (`pnpm run test:develop`)
-- [ ] Build succeeds (`pnpm run build`)
+- [ ] Code follows project coding standards
+- [ ] Tests pass locally
 - [ ] Documentation is updated (if applicable)
 - [ ] PR title follows [Conventional Commits](https://www.conventionalcommits.org/)
 - [ ] Descriptions and examples are clear
+- [ ] No breaking changes (or documented in Breaking Changes section)
 
 ---
 
