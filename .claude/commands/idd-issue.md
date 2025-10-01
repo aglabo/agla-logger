@@ -20,6 +20,59 @@ AI を使用して、新規に issue を作成し登録する。あるいは、�
 
 <!-- markdownlint-disable no-duplicate-heading -->
 
+## Utility Functions
+
+### generate_issue_filename - 決定的なファイル名生成関数
+
+```bash
+#!/usr/bin/env bash
+# generate_issue_filename - Deterministic issue filename generator
+# Usage: generate_issue_filename <issue_type> <title> [issue_number]
+# Format: [new/123]-yymmdd-hhmmss-<type>-<title-slug>.md
+#
+# Examples:
+#   generate_issue_filename feature "Add logging" new
+#   -> new-251002-143022-feature-add-logging.md
+#
+#   generate_issue_filename bug "Fix error" 123
+#   -> 123-251002-143022-bug-fix-error.md
+
+generate_issue_filename() {
+  local issue_type="$1"
+  local title="$2"
+  local issue_number="${3:-new}"
+
+  # Generate timestamp: yymmdd-hhmmss
+  local timestamp
+  timestamp=$(date '+%y%m%d-%H%M%S')
+
+  # Slugify title: lowercase, remove special chars, replace spaces with hyphens
+  local title_slug
+  title_slug=$(echo "$title" | \
+    sed 's/\[.*\][[:space:]]*//' | \
+    tr '[:upper:]' '[:lower:]' | \
+    sed 's/[^a-z0-9[:space:]-]//g' | \
+    tr -s '[:space:]' '-' | \
+    sed 's/^-\+//; s/-\+$//' | \
+    cut -c1-50)
+
+  # Normalize issue type
+  local type_prefix
+  case "$issue_type" in
+    feature|Feature) type_prefix="feature" ;;
+    bug|Bug) type_prefix="bug" ;;
+    enhancement|Enhancement) type_prefix="enhancement" ;;
+    task|Task) type_prefix="task" ;;
+    *) type_prefix="issue" ;;
+  esac
+
+  # Build filename: [new/123]-yymmdd-hhmmss-type-title.md
+  local filename="${issue_number}-${timestamp}-${type_prefix}-${title_slug}.md"
+
+  echo "$filename"
+}
+```
+
 ## Quick Reference
 
 ### Usage
@@ -187,10 +240,9 @@ if [ -z "$title" ]; then
     exit 1
 fi
 
-# Generate issue name for file (simple sanitization)
-TITLE_SLUG=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-ISSUE_NAME="new-${ISSUE_TYPE}-${TITLE_SLUG}"
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_NAME.md"
+# Generate deterministic filename using utility function
+ISSUE_FILENAME=$(generate_issue_filename "$ISSUE_TYPE" "$title" "new")
+ISSUE_FILE="$ISSUES_DIR/$ISSUE_FILENAME"
 
 echo ""
 echo "🤖 Generating issue with new-issue-creator agent..."
@@ -203,13 +255,13 @@ echo ""
 
 # Agent will create the file with proper template
 echo "✅ Issue metadata prepared: $ISSUE_FILE"
-echo "📝 Issue name: $ISSUE_NAME"
+echo "📝 Issue filename: $ISSUE_FILENAME"
 echo ""
 echo "Next steps:"
-echo "  /new-issue view $ISSUE_NAME  # View content"
-echo "  /new-issue edit $ISSUE_NAME  # Edit in editor"
-echo "  /new-issue push $ISSUE_NAME  # Push to GitHub"
-echo "  /new-issue list              # List all issues"
+echo "  /new-issue view $ISSUE_FILENAME  # View content"
+echo "  /new-issue edit $ISSUE_FILENAME  # Edit in editor"
+echo "  /new-issue push $ISSUE_FILENAME  # Push to GitHub"
+echo "  /new-issue list                  # List all issues"
 ```
 
 ### Subcommand: list
@@ -275,6 +327,27 @@ set -e
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 ISSUES_DIR="$REPO_ROOT/temp/issues"
 
+# Function: Select issue using fzf
+select_issue_with_fzf() {
+    if ! command -v fzf >/dev/null 2>&1; then
+        return 1
+    fi
+
+    cd "$ISSUES_DIR"
+    local selected=$(ls -t *.md 2>/dev/null | fzf \
+        --height=40% \
+        --layout=reverse \
+        --preview='head -20 {}' \
+        --preview-window='right:60%:wrap' \
+        --header='Select issue to view (ESC to cancel)')
+
+    if [ -n "$selected" ]; then
+        basename "$selected" .md
+    else
+        echo ""
+    fi
+}
+
 # Function: Get latest (current) draft
 get_current_draft() {
     local latest_file=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
@@ -306,13 +379,22 @@ ISSUE_INPUT="$2"
 ISSUE_NAME=""
 
 if [ -z "$ISSUE_INPUT" ]; then
-    # Case 1: No argument → use current (latest) draft
-    ISSUE_NAME=$(get_current_draft)
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No issue drafts found."
-        exit 1
+    # Case 1: No argument → try fzf selection, fallback to current draft
+    if command -v fzf >/dev/null 2>&1; then
+        ISSUE_NAME=$(select_issue_with_fzf)
+        if [ -z "$ISSUE_NAME" ]; then
+            echo "⚠️  Selection cancelled"
+            exit 0
+        fi
+        echo "📄 Selected: $ISSUE_NAME"
+    else
+        ISSUE_NAME=$(get_current_draft)
+        if [ -z "$ISSUE_NAME" ]; then
+            echo "❌ No issue drafts found."
+            exit 1
+        fi
+        echo "📄 Viewing current draft: $ISSUE_NAME"
     fi
-    echo "📄 Viewing current draft: $ISSUE_NAME"
 
 elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
     # Case 2: Issue number only → find matching draft
@@ -338,15 +420,21 @@ if [ ! -f "$ISSUE_FILE" ]; then
     exit 1
 fi
 
-# Display issue
+# Display issue with pager
+PAGER="${PAGER:-less}"
 echo "📁 File: $ISSUE_FILE"
 echo "============================================================"
-cat "$ISSUE_FILE"
-echo "============================================================"
+
+if command -v "$PAGER" >/dev/null 2>&1; then
+    cat "$ISSUE_FILE" | "$PAGER"
+else
+    cat "$ISSUE_FILE"
+fi
 
 # Show file stats
 LINES=$(wc -l < "$ISSUE_FILE")
 WORDS=$(wc -w < "$ISSUE_FILE")
+echo "============================================================"
 echo "📊 Stats: $LINES lines, $WORDS words"
 
 echo ""
@@ -365,6 +453,27 @@ set -e
 # Setup paths
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 ISSUES_DIR="$REPO_ROOT/temp/issues"
+
+# Function: Select issue using fzf
+select_issue_with_fzf() {
+    if ! command -v fzf >/dev/null 2>&1; then
+        return 1
+    fi
+
+    cd "$ISSUES_DIR"
+    local selected=$(ls -t *.md 2>/dev/null | fzf \
+        --height=40% \
+        --layout=reverse \
+        --preview='head -20 {}' \
+        --preview-window='right:60%:wrap' \
+        --header='Select issue to edit (ESC to cancel)')
+
+    if [ -n "$selected" ]; then
+        basename "$selected" .md
+    else
+        echo ""
+    fi
+}
 
 # Function: Get latest (current) draft
 get_current_draft() {
@@ -397,13 +506,22 @@ ISSUE_INPUT="$2"
 ISSUE_NAME=""
 
 if [ -z "$ISSUE_INPUT" ]; then
-    # Case 1: No argument → use current (latest) draft
-    ISSUE_NAME=$(get_current_draft)
-    if [ -z "$ISSUE_NAME" ]; then
-        echo "❌ No issue drafts found."
-        exit 1
+    # Case 1: No argument → try fzf selection, fallback to current draft
+    if command -v fzf >/dev/null 2>&1; then
+        ISSUE_NAME=$(select_issue_with_fzf)
+        if [ -z "$ISSUE_NAME" ]; then
+            echo "⚠️  Selection cancelled"
+            exit 0
+        fi
+        echo "📝 Selected: $ISSUE_NAME"
+    else
+        ISSUE_NAME=$(get_current_draft)
+        if [ -z "$ISSUE_NAME" ]; then
+            echo "❌ No issue drafts found."
+            exit 1
+        fi
+        echo "📝 Editing current draft: $ISSUE_NAME"
     fi
-    echo "📝 Editing current draft: $ISSUE_NAME"
 
 elif [[ "$ISSUE_INPUT" =~ ^[0-9]+$ ]]; then
     # Case 2: Issue number only → find matching draft
@@ -500,10 +618,21 @@ else
     BODY=$(echo "$ISSUE_JSON" | grep '"body"' | cut -d'"' -f4)
 fi
 
-# Generate safe filename
-TITLE_SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-ISSUE_NAME="$ISSUE_NUM-$TITLE_SLUG"
-ISSUE_FILE="$ISSUES_DIR/$ISSUE_NAME.md"
+# Detect issue type from title tags
+ISSUE_TYPE="issue"
+if [[ "$TITLE" =~ ^\[Feature\] ]]; then
+    ISSUE_TYPE="feature"
+elif [[ "$TITLE" =~ ^\[Bug\] ]]; then
+    ISSUE_TYPE="bug"
+elif [[ "$TITLE" =~ ^\[Enhancement\] ]]; then
+    ISSUE_TYPE="enhancement"
+elif [[ "$TITLE" =~ ^\[Task\] ]]; then
+    ISSUE_TYPE="task"
+fi
+
+# Generate deterministic filename using utility function
+ISSUE_FILENAME=$(generate_issue_filename "$ISSUE_TYPE" "$TITLE" "$ISSUE_NUM")
+ISSUE_FILE="$ISSUES_DIR/$ISSUE_FILENAME"
 
 # Create markdown content (simple format: title + body only)
 cat > "$ISSUE_FILE" << EOF
@@ -513,13 +642,13 @@ $BODY
 EOF
 
 echo "✅ Issue imported successfully!"
-echo "📝 Saved as: $ISSUE_NAME"
+echo "📝 Saved as: $ISSUE_FILENAME"
 echo "📁 File: $ISSUE_FILE"
 echo ""
 echo "Next steps:"
-echo "  /new-issue view $ISSUE_NAME  # View imported issue"
-echo "  /new-issue edit $ISSUE_NAME  # Edit imported issue"
-echo "  /new-issue push $ISSUE_NAME  # Push changes back to GitHub"
+echo "  /new-issue view $ISSUE_FILENAME  # View imported issue"
+echo "  /new-issue edit $ISSUE_FILENAME  # Edit imported issue"
+echo "  /new-issue push $ISSUE_FILENAME  # Push changes back to GitHub"
 ```
 
 ### Subcommand: push
@@ -595,8 +724,8 @@ if [ ! -f "$ISSUE_FILE" ]; then
     exit 1
 fi
 
-# Extract title from first heading
-TITLE=$(head -20 "$ISSUE_FILE" | grep "^#[^#]" | head -1 | sed 's/^#[[:space:]]*//' | sed 's/\[.*\][[:space:]]*//')
+# Extract title from first heading (preserve [Feature]/[Bug]/[Enhancement]/[Task] tags)
+TITLE=$(head -20 "$ISSUE_FILE" | grep "^#[^#]" | head -1 | sed 's/^#[[:space:]]*//')
 if [ -z "$TITLE" ]; then
     echo "❌ Could not extract title from issue"
     exit 1
@@ -604,22 +733,24 @@ fi
 
 echo "📝 Title: $TITLE"
 
+# Create temporary body file without H1 heading
+TEMP_BODY=$(mktemp)
+tail -n +2 "$ISSUE_FILE" > "$TEMP_BODY"
+
 # Push to GitHub: Create new or update existing
 if [[ "$ISSUE_NAME" =~ ^new- ]]; then
     # Create new issue
     echo "🆕 Creating new issue..."
 
-    if NEW_URL=$(gh issue create --title "$TITLE" --body-file "$ISSUE_FILE"); then
+    if NEW_URL=$(gh issue create --title "$TITLE" --body-file "$TEMP_BODY"); then
         ISSUE_NUM=$(echo "$NEW_URL" | sed 's/.*\/issues\///')
 
         echo "✅ New issue #$ISSUE_NUM created successfully!"
         echo "🔗 URL: $NEW_URL"
 
-        # Rename file: "new-{type}-{slug}" → "{number}-{slug}"
-        TYPE_AND_SLUG=$(echo "$ISSUE_NAME" | sed 's/^new-//')
-        SLUG=$(echo "$TYPE_AND_SLUG" | sed 's/^[^-]*-//')
-        NEW_ISSUE_NAME="$ISSUE_NUM-$SLUG"
-        NEW_ISSUE_FILE="$ISSUES_DIR/$NEW_ISSUE_NAME.md"
+        # Rename file: new-yymmdd-hhmmss-type-title.md → 123-yymmdd-hhmmss-type-title.md
+        NEW_ISSUE_NAME=$(echo "$ISSUE_NAME" | sed "s/^new-/$ISSUE_NUM-/")
+        NEW_ISSUE_FILE="$ISSUES_DIR/$NEW_ISSUE_NAME"
 
         mv "$ISSUE_FILE" "$NEW_ISSUE_FILE"
         echo "📝 Issue file renamed: $NEW_ISSUE_NAME"
@@ -629,17 +760,23 @@ if [[ "$ISSUE_NAME" =~ ^new- ]]; then
         exit 1
     fi
 
+    # Clean up temporary file
+    rm -f "$TEMP_BODY"
+
 elif [[ "$ISSUE_NAME" =~ ^[0-9]+ ]]; then
     # Update existing issue
     ISSUE_NUM=$(echo "$ISSUE_NAME" | sed 's/-.*//')
     echo "🔄 Updating existing issue #$ISSUE_NUM"
 
-    if gh issue edit "$ISSUE_NUM" --title "$TITLE" --body-file "$ISSUE_FILE"; then
+    if gh issue edit "$ISSUE_NUM" --title "$TITLE" --body-file "$TEMP_BODY"; then
         echo "✅ Issue #$ISSUE_NUM updated successfully!"
     else
         echo "❌ Failed to update issue"
         exit 1
     fi
+
+    # Clean up temporary file
+    rm -f "$TEMP_BODY"
 
 else
     echo "❌ Invalid issue name format. Must start with 'new-' or a number."
