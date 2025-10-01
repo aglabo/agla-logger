@@ -23,7 +23,7 @@
       ],
       "env": {}
     },
-    "codex": {
+    "codex-mcp": {
       "type": "stdio",
       "command": "codex",
       "args": [
