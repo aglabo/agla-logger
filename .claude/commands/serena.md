@@ -4,8 +4,8 @@ allowed-tools: Read, Glob, Grep, Edit, MultiEdit, Write, Bash, TodoWrite, mcp__s
 argument-hint: <problem> [options]
 description: serena-mcp を活用した構造化アプリ開発・問題解決コマンド
 
-# ag-logger プロジェクト要素
-title: agla-logger
+# ユーザー管理ヘッダー
+title: serena
 version: 1.0.0
 created: 2025-09-28
 authors:
@@ -71,10 +71,12 @@ copyright:
 ## コンテキスト (自動収集)
 
 <!-- textlint-disable ja-technical-writing/sentence-length -->
+<!-- markdownlint-disable line-length -->
 
-- プロジェクトファイル: `find . -maxdepth 2 -name "package.json" -o -name "*.config.*" | head -5 2>/dev/null || echo "No config files"`
+- プロジェクトファイル: `find . -maxdepth 2 -type f \( -name "*.config.*" -o -name "*rc" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" \) | head -5 2>/dev/null || echo "No config files"`
 - Git ステータス: `git status --porcelain 2>/dev/null | head -3 || echo "Not git repo"`
 
+<!-- markdownlint-enable -->
 <!-- textlint-enable -->
 
 ## コアワークフロー
