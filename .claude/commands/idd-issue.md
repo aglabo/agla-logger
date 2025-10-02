@@ -26,11 +26,12 @@ subcommands:
 
 # ag-logger プロジェクト要素
 title: idd-issue
-version: 2.0.0
+version: 2.1.0
 created: 2025-09-30
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: セッション管理機能追加 - .last-sessionでコマンド間でIssue状態を保持
   - 2025-10-02: フロントマターベース構造に再構築、/idd-issue に名称変更
   - 2025-09-30: 初版作成 - 6サブコマンド体系でIssue管理機能を実装
 ---
@@ -51,6 +52,7 @@ issue-generator エージェントを使用して、GitHub Issue を作成・管
 setup_issue_env() {
   export REPO_ROOT=$(git rev-parse --show-toplevel)
   export ISSUES_DIR="$REPO_ROOT/temp/issues"
+  export SESSION_FILE="$ISSUES_DIR/.last-session"
   export PAGER="${PAGER:-less}"
   export EDITOR="${EDITOR:-code}"
 }
@@ -61,14 +63,21 @@ ensure_issues_dir() {
 }
 
 # Issue ファイル検索
-# 引数: $1 - Issue番号またはファイル名 (省略時は最新ファイル)
+# 引数: $1 - Issue番号またはファイル名 (省略時はセッションファイル優先、次に最新ファイル)
 # 戻り値: グローバル変数 ISSUE_FILE に見つかったファイルパスを設定
 find_issue_file() {
   local ISSUE_INPUT="$1"
   ISSUE_FILE=""
 
   if [ -z "$ISSUE_INPUT" ]; then
-    # 引数なし: 最新ファイルを使用
+    # 引数なし: セッションファイル優先、次に最新ファイル
+    if load_session && [ -f "$ISSUES_DIR/$LAST_ISSUE_FILE" ]; then
+      ISSUE_FILE="$ISSUES_DIR/$LAST_ISSUE_FILE"
+      echo "📄 Using session: $(basename "$ISSUE_FILE" .md)"
+      return 0
+    fi
+
+    # フォールバック: 最新ファイルを使用
     ISSUE_FILE=$(ls -t "$ISSUES_DIR"/*.md 2>/dev/null | head -1)
     if [ -z "$ISSUE_FILE" ]; then
       echo "❌ No issue drafts found."
@@ -298,6 +307,42 @@ push_existing_issue() {
     return 1
   fi
 }
+
+# セッションファイル存在確認
+has_session() {
+  [ -f "$SESSION_FILE" ]
+}
+
+# セッション情報読み込み
+# グローバル変数にLAST_*変数を設定
+load_session() {
+  if has_session; then
+    source "$SESSION_FILE"
+    return 0
+  fi
+  return 1
+}
+
+# セッション情報保存
+# 引数: $1 - ファイル名, $2 - Issue番号, $3 - タイトル, $4 - 種別, $5 - コマンド名
+save_session() {
+  local filename="$1"
+  local issue_num="$2"
+  local title="$3"
+  local issue_type="$4"
+  local command="$5"
+  local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
+  cat > "$SESSION_FILE" << EOF
+# Last issue session
+LAST_ISSUE_FILE="$filename"
+LAST_ISSUE_NUMBER="$issue_num"
+LAST_ISSUE_TITLE="$title"
+LAST_ISSUE_TYPE="$issue_type"
+LAST_TIMESTAMP="$timestamp"
+LAST_COMMAND="$command"
+EOF
+}
 ```
 
 ## 実行フロー
@@ -320,6 +365,8 @@ echo ""
 
 # Note: Claude will invoke issue-generator agent via Task tool
 # Agent will guide the user through issue creation interactively
+# After issue creation, the agent must save session using:
+#   save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "new"
 ```
 
 ### Subcommand: list
@@ -345,6 +392,14 @@ echo "=================================================="
 $PAGER "$ISSUE_FILE"
 echo "=================================================="
 echo "📊 $(wc -l < "$ISSUE_FILE") lines, $(wc -w < "$ISSUE_FILE") words"
+
+# Save session
+FILENAME=$(basename "$ISSUE_FILE" .md)
+TITLE=$(extract_title "$ISSUE_FILE")
+ISSUE_TYPE=$(detect_issue_type "$TITLE")
+ISSUE_NUM=$(extract_issue_number "$FILENAME")
+save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "view"
+
 echo ""
 echo "Commands:"
 echo "  /idd-issue edit $(basename "$ISSUE_FILE" .md)  # Edit this issue"
@@ -365,6 +420,13 @@ fi
 echo "📝 Opening in $EDITOR..."
 $EDITOR "$ISSUE_FILE"
 echo "✅ Issue edited"
+
+# Save session
+FILENAME=$(basename "$ISSUE_FILE" .md)
+TITLE=$(extract_title "$ISSUE_FILE")
+ISSUE_TYPE=$(detect_issue_type "$TITLE")
+ISSUE_NUM=$(extract_issue_number "$FILENAME")
+save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "edit"
 ```
 
 ### Subcommand: load
@@ -395,6 +457,9 @@ ISSUE_FILE="$ISSUES_DIR/$FILENAME"
 
 # Save issue file
 save_issue_file "$ISSUE_FILE" "$ISSUE_TITLE" "$ISSUE_BODY"
+
+# Save session
+save_session "$FILENAME" "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_TYPE" "load"
 
 echo "✅ Issue imported successfully!"
 echo "📝 Saved as: $FILENAME"
@@ -435,6 +500,10 @@ tail -n +2 "$ISSUE_FILE" > "$TEMP_BODY"
 if [[ "$ISSUE_NAME" =~ ^new- ]]; then
   push_new_issue "$TITLE" "$TEMP_BODY" "$ISSUE_NAME"
   RESULT=$?
+  # After successful push, update ISSUE_NAME and ISSUE_FILE for session save
+  if [ $RESULT -eq 0 ]; then
+    ISSUE_NAME=$(basename "$ISSUE_FILE" .md)
+  fi
 elif [[ "$ISSUE_NAME" =~ ^[0-9]+ ]]; then
   ISSUE_NUM=$(extract_issue_number "$ISSUE_NAME")
   push_existing_issue "$ISSUE_NUM" "$TITLE" "$TEMP_BODY"
@@ -450,6 +519,11 @@ rm -f "$TEMP_BODY"
 if [ $RESULT -ne 0 ]; then
   exit 1
 fi
+
+# Save session after successful push
+ISSUE_TYPE=$(detect_issue_type "$TITLE")
+ISSUE_NUM=$(extract_issue_number "$ISSUE_NAME")
+save_session "$ISSUE_NAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "push"
 
 echo ""
 echo "🎉 Push completed!"
@@ -481,7 +555,15 @@ echo "  /idd-issue list  # List all issues"
    - 対話的な情報収集
    - Issue ドラフト生成
    - `temp/issues/new-{timestamp}-{type}-{slug}.md` に保存
+   - セッション保存: `save_session()` でセッション情報を保存
 5. **完了報告**: エージェントが生成結果を報告
+
+### セッション管理
+
+各サブコマンド実行後、`temp/issues/.last-session` にセッション情報を保存:
+
+- 引数なしでコマンド実行時、セッションファイル優先で Issue を選択
+- 後方互換性: セッションがない場合は最新ファイルを使用
 
 ## ファイル命名規則
 
