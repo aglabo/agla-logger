@@ -1,254 +1,366 @@
 ---
 # Claude Code 必須要素
-allowed-tools: Bash(*), Task(*)
+allowed-tools: Bash(*), Read(*), Write(*), Task(*)
 argument-hint: [subcommand] [additional args]
 description: Spec-Driven-Development主要コマンド - init/req/spec/task/code サブコマンドで要件定義から実装まで一貫した開発支援
 
-# ag-logger プロジェクト要素
-title: agla-logger
-version: 1.0.0
+# 設定変数
+config:
+  base_dir: docs/.cc-sdd
+  session_file: .lastSession
+  subdirs:
+    - requirements
+    - specifications
+    - tasks
+    - implementation
+
+# サブコマンド定義
+subcommands:
+  init: "プロジェクト構造初期化"
+  req: "要件定義フェーズ"
+  spec: "設計仕様作成フェーズ"
+  task: "タスク分解フェーズ"
+  code: "BDD実装フェーズ"
+
+# ユーザー管理ヘッダー
+title: sdd
+version: 2.0.0
 created: 2025-09-28
 authors:
   - atsushifx
 changes:
+  - 2025-10-02: フロントマターベース構造に再構築、Bash実装に変更
   - 2025-09-28: 初版作成
 ---
 
-## Quick Reference
+## /sdd
 
-### Usage
+Spec-Driven-Development (SDD) の各フェーズを管理するコマンド。
 
-```bash
-/sdd [subcommand] [args]
-```
+## Bash ヘルパー関数ライブラリ
 
-### Subcommands
-
-- `/sdd init <namespace>/<module>` - Initialize project structure
-- `/sdd req` - Requirements definition through user interaction
-- `/sdd spec` - Design phase creating functional specifications
-- `/sdd task` - Task breakdown following BDD hierarchy
-- `/sdd code [task-group]` - Implementation with strict BDD process
-
-### Examples
+各サブコマンドで使用する共通関数:
 
 ```bash
-# Initialize new module
-/sdd init core/logger
+#!/bin/bash
+# SDD コマンド用ヘルパー関数集
 
-# Run requirements definition phase
-/sdd req
+# 環境変数設定
+setup_sdd_env() {
+  REPO_ROOT=$(git rev-parse --show-toplevel)
+  SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
+  SESSION_FILE="$SDD_BASE/.lastSession"
+}
 
-# Execute design phase with MCP tools
-/sdd spec
+# セッション保存
+save_session() {
+  local namespace="$1"
+  local module="$2"
 
-# Break down tasks following BDD hierarchy
-/sdd task
+  mkdir -p "$SDD_BASE"
 
-# Implement specific task group
-/sdd code DOC-01-01-01
+  cat > "$SESSION_FILE" << EOF
+namespace=$namespace
+module=$module
+timestamp=$(date -Iseconds 2>/dev/null || date +%Y-%m-%dT%H:%M:%S)
+EOF
 
-# Implement all task groups
-/sdd code
+  echo "💾 Session saved: $namespace/$module"
+}
+
+# セッション読み込み
+load_session() {
+  if [ ! -f "$SESSION_FILE" ]; then
+    echo "❌ No active session found."
+    echo "💡 Run '/sdd init <namespace>/<module>' first."
+    return 1
+  fi
+
+  source "$SESSION_FILE"
+  echo "📂 Session: $namespace/$module"
+  return 0
+}
+
+# プロジェクト構造初期化
+init_structure() {
+  local namespace="$1"
+  local module="$2"
+  local base_path="$SDD_BASE/$namespace/$module"
+
+  for subdir in requirements specifications tasks implementation; do
+    local full_path="$base_path/$subdir"
+    mkdir -p "$full_path"
+    echo "✅ Created: $full_path"
+  done
+}
 ```
+
+## 実行フロー
+
+1. **環境設定**: `setup_sdd_env` でパス設定
+2. **セッション管理**: `load_session` または `save_session`
+3. **サブコマンド実行**: すべて Bash で統一実装
 
 <!-- markdownlint-disable no-duplicate-heading -->
 
-## Help Display
+### Subcommand: init
 
-```python
-print("sdd (Spec-Driven-Development) - 要件定義から実装まで一貫した開発支援")
-print("")
-print("Usage: /sdd [subcommand] [args]")
-print("")
-print("Subcommands:")
-print(" init <namespace>/<module>  Initialize project structure")
-print(" req                        Requirements definition phase")
-print(" spec                       Design phase with MCP tools")
-print(" task                       Task breakdown following BDD")
-print(" code [task-group]          Implementation with strict BDD")
-print("")
-print("Examples:")
-print(" /sdd init core/logger")
-print(" /sdd req")
-print(" /sdd spec")
-print(" /sdd task")
-print(" /sdd code DOC-01-01-01")
+```bash
+#!/bin/bash
+# 使用方法: /sdd init <namespace>/<module>
+
+# 引数取得
+NAMESPACE_MODULE="$1"
+
+if [ -z "$NAMESPACE_MODULE" ]; then
+  echo "❌ Error: namespace/module is required"
+  echo "Usage: /sdd init <namespace>/<module>"
+  echo "Example: /sdd init core/logger"
+  exit 1
+fi
+
+if [[ ! "$NAMESPACE_MODULE" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ ]]; then
+  echo "❌ Error: Invalid format"
+  echo "Expected: namespace/module (e.g., core/logger)"
+  echo "Received: $NAMESPACE_MODULE"
+  exit 1
+fi
+
+# namespace/module 分離
+NAMESPACE="${NAMESPACE_MODULE%%/*}"
+MODULE="${NAMESPACE_MODULE##*/}"
+
+# 構造初期化
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
+BASE_PATH="$SDD_BASE/$NAMESPACE/$MODULE"
+
+for subdir in requirements specifications tasks implementation; do
+  FULL_PATH="$BASE_PATH/$subdir"
+  mkdir -p "$FULL_PATH"
+  echo "✅ Created: $FULL_PATH"
+done
+
+# セッション保存
+SESSION_FILE="$SDD_BASE/.lastSession"
+mkdir -p "$SDD_BASE"
+
+cat > "$SESSION_FILE" << EOF
+namespace=$NAMESPACE
+module=$MODULE
+timestamp=$(date -Iseconds 2>/dev/null || date +%Y-%m-%dT%H:%M:%S)
+EOF
+
+echo ""
+echo "🎉 SDD structure initialized for $NAMESPACE/$MODULE"
+echo "💾 Session saved"
 ```
 
-## Init Handler
+### Subcommand: req
 
-```python
-import os
+```bash
+#!/bin/bash
+# Requirements definition phase
 
-namespace_module = input("Enter namespace/module (e.g., core/logger): ")
-if not namespace_module or '/' not in namespace_module:
-    print("Error: Invalid format. Use namespace/module")
-    exit(1)
+# 環境設定とセッション読み込み
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
+SESSION_FILE="$SDD_BASE/.lastSession"
 
-base_path = f"./docs/.cc-sdd/{namespace_module}"
-subdirs = ["requirements", "specifications", "tasks", "implementation"]
+if [ ! -f "$SESSION_FILE" ]; then
+  echo "❌ No active session found."
+  echo "💡 Run '/sdd init <namespace>/<module>' first."
+  exit 1
+fi
 
-try:
-    for subdir in subdirs:
-        full_path = f"{base_path}/{subdir}"
-        os.makedirs(full_path, exist_ok=True)
-        print(f"Created: {full_path}")
+source "$SESSION_FILE"
+echo "📂 Session: $namespace/$module"
+echo ""
 
-    print(f"Success: SDD structure initialized for {namespace_module}")
-except Exception as e:
-    print(f"Error: {e}")
+# 要件定義フェーズ開始
+echo "📋 Requirements Definition Phase"
+echo "=================================================="
+echo ""
+echo "📝 This phase will:"
+echo "  1. Analyze your requirements"
+echo "  2. Ask clarifying questions"
+echo "  3. Create comprehensive requirements document"
+echo ""
+echo "🚀 Starting interactive requirements gathering..."
+echo ""
+
+# Note: Claude will guide interactive requirements definition
 ```
 
-## Requirements Handler
+### Subcommand: spec
 
-```python
-print("Requirements Definition Phase")
-print("===========================================")
-print("Interactive approach to clarify requirements")
-print("")
-print("Steps:")
-print("1. Analyze user's basic request")
-print("2. Ask clarifying questions about:")
-print("   - Target users/agents")
-print("   - Document structure preferences")
-print("   - Content scope and detail level")
-print("   - Integration requirements")
-print("3. Create comprehensive requirements document")
-print("")
-print("Output: requirements/ directory with detailed specifications")
+```bash
+#!/bin/bash
+# Design specification phase
+
+# 環境設定とセッション読み込み
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
+SESSION_FILE="$SDD_BASE/.lastSession"
+
+if [ ! -f "$SESSION_FILE" ]; then
+  echo "❌ No active session found."
+  echo "💡 Run '/sdd init <namespace>/<module>' first."
+  exit 1
+fi
+
+source "$SESSION_FILE"
+echo "📂 Session: $namespace/$module"
+echo ""
+
+# 設計仕様フェーズ開始
+echo "📐 Design Specification Phase"
+echo "=================================================="
+echo ""
+echo "📝 This phase will:"
+echo "  1. Review requirements document"
+echo "  2. Create functional specifications"
+echo "  3. Define interfaces and behaviors"
+echo "  4. Generate implementation templates"
+echo ""
+echo "🚀 Starting spec creation..."
+echo ""
+
+# Note: Claude will guide specification creation using MCP tools
 ```
 
-## Specification Handler
+### Subcommand: task
 
-```python
-print("Design Specification Phase")
-print("===========================================")
-print("Create functional .spec.md files based on requirements")
-print("")
-print("Steps:")
-print("1. Review requirements document")
-print("2. Ask user about:")
-print("   - Functional grouping strategy")
-print("   - Specification detail level")
-print("   - Template specificity requirements")
-print("3. Create functional .spec.md files with:")
-print("   - Interface specifications")
-print("   - Behavior specifications")
-print("   - Validation criteria")
-print("   - Implementation templates")
-print("")
-print("Output: specifications/ directory with .spec.md files")
+```bash
+#!/bin/bash
+# Task breakdown phase
+
+# セッション読み込み
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SESSION_FILE="$REPO_ROOT/docs/.cc-sdd/.lastSession"
+
+if [ ! -f "$SESSION_FILE" ]; then
+  echo "❌ No active session found."
+  echo "💡 Run '/sdd init <namespace>/<module>' first."
+  exit 1
+fi
+
+source "$SESSION_FILE"
+echo "📂 Session: $namespace/$module"
+echo ""
+
+# タスク分解開始
+echo "📋 Task Breakdown Phase"
+echo "=================================================="
+echo ""
+echo "🚀 Launching task breakdown agent..."
+echo ""
+echo "📝 Agent will:"
+echo "  - Break down tasks following BDD hierarchy"
+echo "  - Use TodoWrite tool for task management"
+echo "  - Follow docs/rules/07-bdd-test-hierarchy.md"
+echo ""
+
+# Note: Claude will invoke Task tool with general-purpose agent
 ```
 
-## Task Handler
+### Subcommand: code
 
-<!--markdownlint-disable line-length -->
+```bash
+#!/bin/bash
+# BDD implementation phase
 
-```python
-from subprocess import run
-import sys
+# セッション読み込み
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SESSION_FILE="$REPO_ROOT/docs/.cc-sdd/.lastSession"
 
-try:
-    # BDD階層準拠のタスク分解を実行
-    result = run([
-        "claude", "task",
-        "--subagent_type", "general-purpose",
-        "--prompt", "Break down tasks following BDD hierarchy as defined in docs/rules/07-bdd-test-hierarchy.md. Use TodoWrite tool following docs/rules/09-todo-task-management.md for task management."
-    ], capture_output=True, text=True)
+if [ ! -f "$SESSION_FILE" ]; then
+  echo "❌ No active session found."
+  echo "💡 Run '/sdd init <namespace>/<module>' first."
+  exit 1
+fi
 
-    if result.returnCode == 0:
-        print("Success: Task breakdown completed")
-        print(result.stdout)
-    else:
-        print(f"Error: Task breakdown failed - {result.stderr}")
+source "$SESSION_FILE"
+echo "📂 Session: $namespace/$module"
+echo ""
 
-except Exception as e:
-    print(f"Error: {e}")
+# タスクグループ指定（オプション）
+TASK_GROUP="${1:-}"
+
+# 実装フェーズ開始
+echo "💻 BDD Implementation Phase"
+echo "=================================================="
+echo ""
+
+if [ -n "$TASK_GROUP" ]; then
+  echo "📝 Target task group: $TASK_GROUP"
+else
+  echo "📝 Target: Full implementation"
+fi
+
+echo ""
+echo "🚀 Launching BDD coder agent..."
+echo ""
+echo "📋 Agent will follow:"
+echo "  - Strict Red-Green-Refactor cycle"
+echo "  - 1 message = 1 test principle"
+echo "  - BDD hierarchy from todo.md"
+echo ""
+
+# Note: Claude will invoke Task tool with typescript-bdd-coder agent
 ```
 
-## Code Handler
+## アーキテクチャの特徴
 
-```python
-from subprocess import run
-import sys
+- Bash 統一実装: すべてのサブコマンドと関数を Bash で実装
+- セッション管理: `.lastSession` で namespace/module を永続化
+- ヘルパー関数: 共通ロジックを関数化して DRY 原則を実現
+- シンプルな設計: 各サブコマンドは 15-30行程度
+- フロントマター駆動: 設定・サブコマンド定義を一元管理
+- 依存最小化: Git のみ必要 (Python/jq 不要)
 
-# 特定タスクグループまたは全実装の実行
-task_group = input("Enter task group (or press Enter for full implementation): ").strip()
+## 使用例
 
-if task_group:
-    prompt = f"""Execute implementation for specific task group: {task_group}
+### 標準ワークフロー
 
-Follow atsushifx-style BDD with strict Red-Green-Refactor cycle:
-1. RED: Implement failing tests for {task_group} task group
-2. GREEN: Implement minimal code to make tests pass
-3. REFACTOR: Optimize both documentation and code
+```bash
+# 1. プロジェクト初期化
+/sdd init core/logger
 
-Requirements:
-- Maintain Red-Green-Refactor cycle per task group
-- Use 1 message = 1 test principle
-- Reference todo.md for specific task details
+# 2. 要件定義
+/sdd req
+# → Claude が対話的に要件を収集
 
-Target: docs/for-ai/atsushifx-bdd-implementation.md"""
-else:
-    prompt = "Execute full implementation phase with strict BDD compliance. Follow Red-Green-Refactor cycle for each task group. Use 1 message = 1 test principle."
+# 3. 設計仕様作成
+/sdd spec
+# → Claude が MCP ツールで仕様作成
 
-try:
-    result = run([
-        "claude", "task",
-        "--subagent_type", "typescript-bdd-coder",
-        "--prompt", prompt
-    ], capture_output=True, text=True)
+# 4. タスク分解
+/sdd task
+# → general-purpose エージェントがタスク分解
 
-    if result.returnCode == 0:
-        print("Success: Implementation completed")
-        print(result.stdout)
-    else:
-        print(f"Error: Implementation failed - {result.stderr}")
+# 5. 実装
+/sdd code
+# → typescript-bdd-coder エージェントで BDD 実装
 
-except Exception as e:
-    print(f"Error: {e}")
+# 6. 部分実装（特定タスクグループ）
+/sdd code DOC-01-01-01
 ```
 
-## Examples
+### セッション管理の例
 
-### 使用例 1: プロジェクト初期化
+```bash
+# 初期化（セッション自動保存）
+/sdd init core/logger
+# → .lastSession に保存
 
-**実行**: `Init Handler のコードを実行して`
+# 別のターミナルでも同じセッション使用可能
+/sdd req
+# → .lastSession から core/logger を読み込み
 
-**入力**: `core/logger`
-
-**期待出力**:
-
-```text
-Created: ./docs/.cc-sdd/core/logger/requirements
-Created: ./docs/.cc-sdd/core/logger/specifications
-Created: ./docs/.cc-sdd/core/logger/tasks
-Created: ./docs/.cc-sdd/core/logger/implementation
-Success: SDD structure initialized for core/logger
-```
-
-### 使用例 2: 要件定義フェーズ
-
-**実行**: `Requirements Handler のコードを実行して`
-
-**期待出力**:
-
-```text
-Requirements Definition Phase
-===========================================
-Interactive approach to clarify requirements
-
-Steps:
-1. Analyze user's basic request
-2. Ask clarifying questions about:
-   - Target users/agents
-   - Document structure preferences
-   - Content scope and detail level
-   - Integration requirements
-3. Create comprehensive requirements document
-
-Output: requirements/ directory with detailed specifications
+# 新しいモジュールで初期化（セッション更新）
+/sdd init utils/validator
+# → .lastSession が utils/validator に更新
 ```
 
 ---
