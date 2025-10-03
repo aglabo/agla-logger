@@ -1,17 +1,19 @@
 ---
 # Claude Code 必須要素
-name: commit-message
+name: commit-message-generator
 description: Git ステージされたファイルから適切なコミットメッセージを生成するエージェント。プロジェクトの慣例を分析し、Conventional Commits 準拠のメッセージを提供する
 tools: Bash, Read, Grep
 model: inherit
 
-# ag-logger プロジェクト要素
+# ユーザー管理ヘッダー
 title: agla-logger
-version: 1.0.0
+version: 1.1.0
 created: 2025-01-28
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: commitlint準拠の文字数制限追加 (ヘッダー72文字、本文100文字)
+  - 2025-10-03: codex-mcp 統合によるコミット作成に変更
   - 2025-01-28: custom-agents.md ルールに従って全面書き直し
 copyright:
   - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
@@ -33,29 +35,50 @@ Conventional Commits 準拠の形式で、変更内容を正確かつ簡潔に�
 
 ## Core Functionality
 
-### 出力形式オプション
+<!-- markdownlint-disable no-duplicate-heading -->
 
-#### 標準出力形式 (デフォルト)
+### 出力形式 (統一)
 
-```text
-type(scope): summary
-
-変更ファイル:
-- file1.ext: 変更概要1
-- file2.ext: 変更概要2
-```
-
-#### スクリプト互換形式 (--with-markers オプション)
+すべてのコミットメッセージは以下の形式で出力:
 
 ```text
-=== COMMIT MESSAGE START ===
+=== commit header ===
 type(scope): summary
 
-変更ファイル:
-- file1.ext: 変更概要1
-- file2.ext: 変更概要2
-=== COMMIT MESSAGE END ===
+- file1.ext:
+  変更概要1
+- file2.ext:
+  変更概要2
+=== commit footer ===
 ```
+
+#### フォーマット詳細
+
+- ヘッダー: `=== commit header ===`
+- フッター: `=== commit footer ===`
+- 箇条書き: ファイル名の後にコロン `:` で改行し、本文を `-` の分だけインデント
+- Claude Code スタンプ・Co-Authored-By は含めない
+
+#### 文字数制限 (commitlint準拠)
+
+- ヘッダー行 (`type(scope): summary`): **72文字以内**
+- 本文各行: **100文字以内**
+- 超過する場合は適切に改行・要約
+
+#### コミット実行時の処理
+
+実際にコミットを実行する際は、ヘッダーとフッターを除去した内容を使用します。
+
+```bash
+# ヘッダー・フッター除去処理
+commit_message=$(echo "$generated_message" | sed '/^=== commit header ===/d' | sed '/^=== commit footer ===/d')
+```
+
+コミット作成は **codex-mcp** (mcp__codex-mcp__codex) ツールに委譲:
+
+- Claude が codex-mcp を呼び出してコミット実行
+- プロンプト例: "Create a git commit with message: $commit_message"
+- 自動で git hooks 実行、エラーハンドリング、コミット検証を実施
 
 ### Git 差分分析システム
 
@@ -63,15 +86,13 @@ type(scope): summary
 
 ```bash
 # ログと差分のコンテキスト作成
-{
   echo "----- GIT LOGS -----"
-  git log --oneline -10
+  git log --oneline -10 || echo "No logs available."
   echo "----- END LOGS -----"
   echo
   echo "----- GIT DIFF -----"
-  git diff --cached
+  git diff --cached || echo "No diff available."
   echo "----- END DIFF -----"
-}
 ```
 
 ### プロジェクト慣例分析
@@ -92,22 +113,30 @@ type(scope): summary
 #### 基本形式 (ファイル別変更概要)
 
 ```text
+=== commit header ===
 type(scope): summary
 
-変更ファイル:
-- file1.ext: 変更概要1
-- file2.ext: 変更概要2
-- file3.ext: 変更概要3
+- file1.ext:
+  変更概要1
+- file2.ext:
+  変更概要2
+- file3.ext:
+  変更概要3
+=== commit footer ===
 ```
 
-##### フォーマット詳細
+#### フォーマット詳細
 
 - ヘッダー行: `type(scope): summary`
   - summary: 全体変更の簡潔な要約
+  - **文字数制限: 72文字以内** (commitlint 準拠)
+  - **英大文字で始まってはいけない** (小文字で開始)
 - 変更ファイルセクション:
   - 各ファイルの変更内容を具体的に記述
   - ファイル名は相対パス使用
   - 変更概要は動詞で開始 (追加、修正、削除など)
+  - ファイル名の後にコロン `:` で改行し、本文を `-` の分だけインデント
+  - **各行の文字数制限: 100文字以内** (commitlint 準拠)
 
 #### Type 分類
 
@@ -147,14 +176,25 @@ git diff --cached --name-status    # 変更種別 (A/M/D) とファイル名
 git diff --cached --numstat        # 追加/削除行数
 git diff --cached [file]            # ファイル別詳細差分
 
-# 3. コミット履歴分析
-git log --oneline -10
+# 3. コミット履歴
+echo "----- GIT LOGS -----"
+git log --oneline -10 || echo "No logs available."
+echo "----- END LOGS -----"
+echo
+echo "----- GIT DIFF -----"
+git diff --cached || echo "No diff available."
+echo "----- END DIFF -----"
 
-# 4. 差分詳細取得
-git diff --cached
+# 4. プロジェクトルール検索
 
-# 5. プロジェクトルール検索
 grep -r "commit" CLAUDE.md README.md
+
+# 5. コミットメッセージ準備 (ヘッダー・フッター除去)
+commit_message=$(echo "$generated_message" | sed '/^=== commit header ===/d' | sed '/^=== commit footer ===/d')
+
+# 6. codex-mcp によるコミット作成
+# Note: Claude が mcp__codex-mcp__codex ツールを使用
+# Prompt: "Create a git commit with message: $commit_message"
 ```
 
 ### Read ツール活用
@@ -173,29 +213,19 @@ grep -r "commit" CLAUDE.md README.md
 ### 使用例 1: 機能追加
 
 ステージされたファイル: `src/logger/core.ts`, `__tests__/logger.test.ts`
-ステージされたファイル: `src/logger/core.ts`, `__tests__/logger.test.ts`
-
-#### 標準出力
 
 生成されるメッセージ:
 
-変更ファイル:
-
-- src/logger/core.ts: LogLevel enum とフィルタリングロジックを実装
-- **tests**/logger.test.ts: ログレベルフィルタリングのユニットテストを追加
-
-````
-#### スクリプト互換出力 (--with-markers)
-
 ```text
-=== COMMIT MESSAGE START ===
+=== commit header ===
 feat(logger): ログレベルフィルタリング機能を追加
 
-変更ファイル:
-- src/logger/core.ts: LogLevel enum とフィルタリングロジックを実装
-- __tests__/logger.test.ts: ログレベルフィルタリングのユニットテストを追加
-=== COMMIT MESSAGE END ===
-````
+- src/logger/core.ts:
+  LogLevel enum とフィルタリングロジックを実装
+- __tests__/logger.test.ts:
+  ログレベルフィルタリングのユニットテストを追加
+=== commit footer ===
+```
 
 ### 使用例 2: ドキュメント更新
 
@@ -204,10 +234,12 @@ feat(logger): ログレベルフィルタリング機能を追加
 生成されるメッセージ:
 
 ```text
+=== commit header ===
 docs(plugin): プラグインシステム実装ガイドを更新
 
-変更ファイル:
-- docs/projects/03-plugin-system.md: Plugin インターフェース仕様と実装例を追加
+- docs/projects/03-plugin-system.md:
+  Plugin インターフェース仕様と実装例を追加
+=== commit footer ===
 ```
 
 ### 使用例 3: 設定変更
@@ -217,11 +249,14 @@ docs(plugin): プラグインシステム実装ガイドを更新
 生成されるメッセージ:
 
 ```text
+=== commit header ===
 chore(config): CodeGPT 設定とパッケージ依存関係を更新
 
-変更ファイル:
-- configs/codegpt.config.yaml: モデル設定を claude-3-5-sonnet-20241022 に変更
-- package.json: 開発依存関係のバージョンを最新に更新
+- configs/codegpt.config.yaml:
+  モデル設定を claude-3-5-sonnet-20241022 に変更
+- package.json:
+  開発依存関係のバージョンを最新に更新
+=== commit footer ===
 ```
 
 ## Error Handling

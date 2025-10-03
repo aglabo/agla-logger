@@ -9,6 +9,7 @@ created: 2025-01-15
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: 実際の /sdd, /idd-issue コマンドに合わせて全面更新 - Bash実装方式への変更
   - 2025-01-15: 初版作成
 copyright:
   - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
@@ -18,14 +19,6 @@ copyright:
 
 このドキュメントは、Claude Code 向けのカスタムスラッシュコマンドを記述するための統一ルールを定義します。
 AI エージェントがコマンド構文を正確に理解し、一貫性のあるコマンドを作成することを目的とします。
-
-## 目次
-
-1. [統合フロントマター仕様](#統合フロントマター仕様)
-2. [Python スニペット実行方式](#python-スニペット実行方式)
-3. [コマンド構造標準](#コマンド構造標準)
-4. [品質検証ワークフロー](#品質検証ワークフロー)
-5. [実践的活用例](#実践的活用例)
 
 ## 統合フロントマター仕様
 
@@ -42,14 +35,30 @@ allowed-tools: Bash(*), Task(*)
 argument-hint: [subcommand] [args]
 description: [AI エージェント向けコマンド説明]
 
-# ag-logger プロジェクト要素
-title: agla-logger
+# 設定変数 (オプション)
+config:
+  base_dir: path/to/base
+  temp_dir: temp/files
+  session_file: .session
+
+# サブコマンド定義 (オプション)
+subcommands:
+  init: "初期化"
+  list: "一覧表示"
+  view: "表示"
+
+# ユーザー管理ヘッダー
+title: command-name
 version: 1.0.0
 created: YYYY-MM-DD
 authors:
   - atsushifx
 changes:
   - YYYY-MM-DD: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
 ---
 ```
 
@@ -84,146 +93,221 @@ changes:
 
 記述例:
 
-- `Claude カスタムスラッシュコマンド記述ルール - AI エージェント向け統一ガイド`
-- `BDD開発フロー実行コマンド - 要件定義から実装まで`
+- `Spec-Driven-Development主要コマンド - init/req/spec/task/code サブコマンドで要件定義から実装まで一貫した開発支援`
+- `GitHub Issue 作成・管理システム - issue-generatorエージェントによる構造化Issue作成`
 
-### ag-logger プロジェクト要素
+### 設定変数セクション (オプション)
+
+#### config フィールド
+
+**目的**: コマンド実行時に使用する設定値の定義。
+**形式**: YAML オブジェクト形式。
+
+使用例:
+
+```yaml
+config:
+  base_dir: docs/.cc-sdd # 基本ディレクトリ
+  temp_dir: temp/issues # 一時ファイルディレクトリ
+  session_file: .lastSession # セッションファイル名
+  subdirs: # サブディレクトリリスト
+    - requirements
+    - specifications
+```
+
+**活用方法**:
+
+- Bash スクリプト内で環境変数として参照
+- ファイルパス構築の基準値として使用
+- セッション管理のファイル名指定
+
+### サブコマンド定義セクション (オプション)
+
+#### subcommands フィールド
+
+**目的**: コマンドのサブコマンド一覧とその説明の定義。
+**形式**: キー: 値のマッピング形式。
+
+使用例:
+
+```yaml
+subcommands:
+  init: "プロジェクト構造初期化"
+  req: "要件定義フェーズ"
+  new: "issue-generatorエージェントで新規Issue作成"
+  list: "保存済みIssueドラフト一覧表示"
+```
+
+**活用方法**:
+
+- ヘルプメッセージの自動生成
+- サブコマンドの存在確認
+- ドキュメント自動生成
+
+### ユーザー管理ヘッダー
 
 #### 統一要素
 
-- title: `agla-logger` (プロジェクト名統一)
+- title: コマンド名 (kebab-case)
 - version: セマンティックバージョニング形式
 - created: 初回作成日 (YYYY-MM-DD 形式)
 - authors: 作成者リスト
 - changes: 変更履歴
+- copyright: MIT ライセンス表記
 
 #### 要素分離ルール
 
-必須: コメント区分により Claude Code 要素と ag-logger 要素を明確に分離。
+必須: コメント区分により Claude Code 要素とユーザー管理要素を明確に分離。
 
 ```yaml
 ---
 # Claude Code 必須要素
 [claude-code-elements]
 
-# ag-logger プロジェクト要素
-[ag-logger-elements]
+# 設定変数 (オプション)
+[config-section]
+
+# サブコマンド定義 (オプション)
+[subcommands-section]
+
+# ユーザー管理ヘッダー
+[user-management-elements]
+
+copyright:
+  [copyright-notice]
 ---
 ```
 
-## Python スニペット実行方式
+## Bash 実装方式
 
-### 基本実行パターン
+### 基本実装パターン
 
-#### セクション別コードブロック構造
+#### サブコマンド別 Bash スクリプト構造
+
+各サブコマンドは独立した Bash スクリプトブロックとして実装:
 
 ````markdown
-## [Section Name]
+### Subcommand: [subcommand-name]
 
-```python
-# Python コード
-print("実行結果")
+```bash
+#!/bin/bash
+# サブコマンドの説明
+
+# 環境設定
+REPO_ROOT=$(git rev-parse --show-toplevel)
+BASE_DIR="$REPO_ROOT/[base-path]"
+
+# 処理実行
+echo "✅ 処理完了"
 ```
 ````
 
-#### Claude 実行指示形式
+### 標準実装パターン
 
-```text
-[Section Name]のコードを実行して。
+#### Pattern 1: 環境設定とセッション管理
+
+```bash
+#!/bin/bash
+# 環境変数設定
+setup_env() {
+  REPO_ROOT=$(git rev-parse --show-toplevel)
+  BASE_DIR="$REPO_ROOT/[base-path]"
+  SESSION_FILE="$BASE_DIR/.session"
+}
+
+# セッション保存
+save_session() {
+  local key="$1"
+  local value="$2"
+
+  mkdir -p "$BASE_DIR"
+  cat > "$SESSION_FILE" << EOF
+${key}=${value}
+timestamp=$(date -Iseconds 2>/dev/null || date +%Y-%m-%dT%H:%M:%S)
+EOF
+
+  echo "💾 Session saved: $key=$value"
+}
+
+# セッション読み込み
+load_session() {
+  if [ ! -f "$SESSION_FILE" ]; then
+    echo "❌ No active session found."
+    return 1
+  fi
+
+  source "$SESSION_FILE"
+  echo "📂 Session: loaded"
+  return 0
+}
 ```
 
-### 標準実行パターン
+#### Pattern 2: ディレクトリ構造初期化
 
-#### Pattern 1: Help Display (ヘルプ表示)
+```bash
+#!/bin/bash
+# ディレクトリ構造初期化
 
-```python
-print("[command-name] - [Brief description]")
-print("")
-print("Usage: /[command-name] [subcommand] [args]")
-print("")
-print("Subcommands:")
-print(" [sub1]    [Description]")
-print(" [sub2]    [Description]")
-print("")
-print("Examples:")
-print(" /[command-name] [example1]")
-print(" /[command-name] [example2]")
+REPO_ROOT=$(git rev-parse --show-toplevel)
+BASE_PATH="$REPO_ROOT/[base-path]"
+
+for subdir in [subdir1] [subdir2] [subdir3]; do
+  FULL_PATH="$BASE_PATH/$subdir"
+  mkdir -p "$FULL_PATH"
+  echo "✅ Created: $FULL_PATH"
+done
+
+echo ""
+echo "🎉 Structure initialized"
 ```
 
-#### Pattern 2: Directory Creation (ディレクトリ作成)
+#### Pattern 3: エージェント起動
 
-```python
-import os
+```bash
+#!/bin/bash
+# エージェント起動フロー
 
-base_path = "[target-directory]"
-subdirs = ["[subdir1]", "[subdir2]", "[subdir3]"]
+echo "🚀 Launching [agent-name] agent..."
+echo ""
+echo "📝 Agent will:"
+echo "  - [処理内容1]"
+echo "  - [処理内容2]"
+echo ""
 
-try:
-    # ベースディレクトリ作成
-    os.makedirs(base_path, exist_ok=True)
-    print(f"Created: {base_path}")
-
-    # サブディレクトリ作成
-    for subdir in subdirs:
-        full_path = f"{base_path}/{subdir}"
-        os.makedirs(full_path, exist_ok=True)
-        print(f"Created: {full_path}")
-
-except Exception as e:
-    print(f"Error: {e}")
-```
-
-#### Pattern 3: File Creation (ファイル作成)
-
-```python
-import os
-
-file_path = "[target-file.ext]"
-content = """[file-content]
-"""
-
-try:
-    # ディレクトリ存在確認・作成
-    dir_path = os.path.dirname(file_path)
-    if dir_path:
-        os.makedirs(dir_path, exist_ok=True)
-
-    # ファイル作成
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(content)
-
-    print(f"Created: {file_path}")
-
-except Exception as e:
-    print(f"Error: {e}")
+# Note: Claude will invoke Task tool with [agent-name] agent
 ```
 
 ### 処理制約・要件
 
 #### 技術制約
 
-- Python バージョン: Python 3.x (Claude Code 環境準拠)
-- ライブラリ: 標準ライブラリ (os, sys, json, datetime) のみ使用
-- 実行時間: 即座完了 (5秒以内)
-- 処理複雑度: シンプルな処理 (クラス定義・複雑なロジック禁止)
+- Shell: Bash (Git Bash on Windows 対応)
+- 依存関係: Git コマンドのみ必須
+- 実行時間: 即座完了 (数秒以内)
+- 処理複雑度: シンプルな処理 (複雑なロジック禁止)
 
 #### エラーハンドリング
 
 基本パターン:
 
-```python
-try:
-    # 処理
-    print("Success: 処理完了")
-except Exception as e:
-    print(f"Error: {e}")
+```bash
+if [ -z "$REQUIRED_VAR" ]; then
+  echo "❌ Error: Required variable not set"
+  exit 1
+fi
+
+echo "✅ Success: 処理完了"
 ```
 
 メッセージ形式:
 
-- `Error: [Specific error description]`
-- `Success: [成功メッセージ]`
-- `Created: [作成されたファイル/ディレクトリ]`
+```bash
+- `❌ Error: [Specific error description]`
+- `✅ Success: [成功メッセージ]`
+- `✅ Created: [作成されたファイル/ディレクトリ]`
+- `💾 Session saved: [セッション情報]`
+- `🚀 Launching: [起動内容]`
+```
 
 ## コマンド構造標準
 
@@ -231,7 +315,7 @@ except Exception as e:
 
 #### ディレクトリ構造
 
-```text
+```bash
 .claude/
 └── commands/
     ├── [command-name].md
@@ -260,7 +344,7 @@ except Exception as e:
 
 #### 必須セクション構成
 
-````markdown
+```markdown
 ---
 [Frontmatter]
 ---
@@ -271,10 +355,10 @@ except Exception as e:
 
 ## Help Display
 
-```python
+'''python
 [Help display code]
+'''
 ```
-````
 
 ## [Function] Handler
 
@@ -387,7 +471,7 @@ except Exception as e:
 
 #### 検証レポート形式
 
-```text
+```bash
 === Quality Validation Report ===
 File: [command-file].md
 Date: YYYY-MM-DD HH:MM:SS
@@ -411,143 +495,220 @@ Warnings: [N]
 
 ## 実践的活用例
 
-### 基本コマンド例
+### 例1: /sdd コマンド
 
-#### コマンドファイル: `sample-command.md`
+Spec-Driven-Development (SDD) ワークフロー実装例。
 
-````markdown
----
-# Claude Code 必須要素
-allowed-tools: Bash(*), Task(*)
-argument-hint: [subcommand] [args]
-description: サンプルコマンド - 基本的な使用方法デモ
-
-# ag-logger プロジェクト要素
-title: agla-logger
-version: 1.0.0
-created: 2025-01-15
-authors:
-  - atsushifx
-changes:
-  - 2025-01-15: 初版作成
----
-
-## Quick Reference
-
-基本的なサンプルコマンドの使用方法:
-
-```text
-/sample-command help       # ヘルプ表示。
-/sample-command init       # 初期化実行。
-/sample-command status     # 状態確認。
-```
-````
-
-## Help Display
-
-```python
-print("sample-command - Basic sample command demonstration")
-print("")
-print("Usage: /sample-command [subcommand] [args]")
-print("")
-print("Subcommands:")
-print(" help      Show this help message")
-print(" init      Initialize sample configuration")
-print(" status    Show current status")
-print("")
-print("Examples:")
-print(" /sample-command help")
-print(" /sample-command init")
-```
-
-## Initialize Handler
-
-```python
-import os
-
-config_dir = "./sample-config"
-config_file = f"{config_dir}/sample.json"
-
-try:
-    # 設定ディレクトリ作成
-    os.makedirs(config_dir, exist_ok=True)
-    print(f"Created: {config_dir}")
-
-    # 設定ファイル作成
-    config_content = """{
-  "version": "1.0.0",
-  "initialized": true,
-  "created": "2025-01-15"
-}"""
-
-    with open(config_file, "w", encoding="utf-8") as f:
-        f.write(config_content)
-
-    print(f"Created: {config_file}")
-    print("Success: Sample command initialized")
-
-except Exception as e:
-    print(f"Error: {e}")
-```
-
-## 使用例
-
-### 使用例 1: ヘルプ表示
-
-**実行**: `Help Display のコードを実行して`
-
-**期待出力**:
-
-```text
-sample-command - Basic sample command demonstration
-
-Usage: /sample-command [subcommand] [args]
-
-Subcommands:
- help      Show this help message
- init      Initialize sample configuration
- status    Show current status
-
-Examples:
- /sample-command help
- /sample-command init
-```
-
-### 使用例 2: 初期化実行
-
-**実行**: `Initialize Handler のコードを実行して`
-
-**期待出力**:
-
-```text
-Created: ./sample-config
-Created: ./sample-config/sample.json
-Success: Sample command initialized
-```
-
-### 複雑なコマンド例 (参考)
-
-より複雑な機能を持つコマンドの場合:
+#### コマンドファイル: `.claude/commands/sdd.md`
 
 ```yaml
 ---
 # Claude Code 必須要素
-allowed-tools: Bash(*), Task(*), Read(*), Write(*)
-argument-hint: <command> [subcommand] [args...]
-description: [詳細なコマンド機能説明]
-model: claude-3-5-sonnet-20241022
-disable-model-invocation: false
+allowed-tools: Bash(*), Read(*), Write(*), Task(*)
+argument-hint: [subcommand] [additional args]
+description: Spec-Driven-Development主要コマンド - init/req/spec/task/code サブコマンドで要件定義から実装まで一貫した開発支援
 
-# ag-logger プロジェクト要素
-title: agla-logger
-version: 1.1.0
-created: YYYY-MM-DD
+# 設定変数
+config:
+  base_dir: docs/.cc-sdd
+  session_file: .lastSession
+  subdirs:
+    - requirements
+    - specifications
+    - tasks
+    - implementation
+
+# サブコマンド定義
+subcommands:
+  init: "プロジェクト構造初期化"
+  req: "要件定義フェーズ"
+  spec: "設計仕様作成フェーズ"
+  task: "タスク分解フェーズ"
+  code: "BDD実装フェーズ"
+
+# ユーザー管理ヘッダー
+title: sdd
+version: 2.0.0
+created: 2025-09-28
 authors:
   - atsushifx
-changes:
-  - YYYY-MM-DD: 初版作成
-  - YYYY-MM-DD: [機能追加・修正内容]
 ---
+```
+
+#### /sdd 主要サブコマンド実装
+
+**init サブコマンド**:
+
+```bash
+#!/bin/bash
+# プロジェクト構造初期化
+
+NAMESPACE_MODULE="$1"
+NAMESPACE="${NAMESPACE_MODULE%%/*}"
+MODULE="${NAMESPACE_MODULE##*/}"
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
+BASE_PATH="$SDD_BASE/$NAMESPACE/$MODULE"
+
+for subdir in requirements specifications tasks implementation; do
+  FULL_PATH="$BASE_PATH/$subdir"
+  mkdir -p "$FULL_PATH"
+  echo "✅ Created: $FULL_PATH"
+done
+
+# セッション保存
+SESSION_FILE="$SDD_BASE/.lastSession"
+cat > "$SESSION_FILE" << EOF
+namespace=$NAMESPACE
+module=$MODULE
+timestamp=$(date -Iseconds)
+EOF
+
+echo "🎉 SDD structure initialized for $NAMESPACE/$MODULE"
+```
+
+**code サブコマンド** (bdd-coder エージェント起動):
+
+```bash
+#!/bin/bash
+# BDD実装フェーズ
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SESSION_FILE="$REPO_ROOT/docs/.cc-sdd/.lastSession"
+
+source "$SESSION_FILE"
+echo "📂 Session: $namespace/$module"
+echo ""
+echo "💻 BDD Implementation Phase"
+echo "🚀 Launching BDD coder agent..."
+
+# Note: Claude will invoke Task tool with bdd-coder agent
+```
+
+#### /sdd 使用例
+
+```bash
+# 1. プロジェクト初期化
+/sdd init core/logger
+
+# 2-4. 要件定義・設計・タスク分解
+/sdd req
+/sdd spec
+/sdd task
+
+# 5. BDD実装
+/sdd code
+```
+
+### 例2: /idd-issue コマンド
+
+GitHub Issue 作成・管理システム実装例。
+
+#### コマンドファイル: `.claude/commands/idd-issue.md`
+
+```yaml
+---
+# Claude Code 必須要素
+allowed-tools: Bash(git:*, gh:*), Read(*), Write(*), Task(*)
+argument-hint: [subcommand] [options]
+description: GitHub Issue 作成・管理システム - issue-generatorエージェントによる構造化Issue作成
+
+# 設定変数
+config:
+  temp_dir: temp/issues
+  issue_types:
+    - feature
+    - bug
+    - enhancement
+    - task
+
+# サブコマンド定義
+subcommands:
+  new: "issue-generatorエージェントで新規Issue作成"
+  list: "保存済みIssueドラフト一覧表示"
+  view: "特定のIssueドラフト表示"
+  edit: "Issueドラフト編集"
+  load: "GitHub IssueをローカルにImport"
+  push: "ドラフトをGitHubにPush"
+
+# ユーザー管理ヘッダー
+title: idd-issue
+version: 2.1.0
+created: 2025-09-30
+authors:
+  - atsushifx
+---
+```
+
+#### /idd-issue 主要サブコマンド実装
+
+**new サブコマンド** (issue-generator エージェント起動):
+
+```bash
+#!/bin/bash
+setup_issue_env
+ensure_issues_dir
+
+echo "🚀 Launching issue-generator agent..."
+echo ""
+show_issue_types
+
+# Note: Claude will invoke issue-generator agent via Task tool
+# Agent will save session using: save_session()
+```
+
+**list サブコマンド**:
+
+```bash
+#!/bin/bash
+setup_issue_env
+
+echo "📋 Issue drafts:"
+echo "=================================================="
+
+for file in "$ISSUES_DIR"/*.md; do
+  filename=$(basename "$file" .md)
+  title=$(extract_title "$file")
+  echo "📄 $filename"
+  echo "   Title: $title"
+  echo ""
+done
+```
+
+**push サブコマンド**:
+
+```bash
+#!/bin/bash
+setup_issue_env
+find_issue_file "$1"
+
+TITLE=$(extract_title "$ISSUE_FILE")
+TEMP_BODY=$(mktemp)
+tail -n +2 "$ISSUE_FILE" > "$TEMP_BODY"
+
+if [[ "$ISSUE_NAME" =~ ^new- ]]; then
+  gh issue create --title "$TITLE" --body-file "$TEMP_BODY"
+else
+  ISSUE_NUM=$(extract_issue_number "$ISSUE_NAME")
+  gh issue edit "$ISSUE_NUM" --title "$TITLE" --body-file "$TEMP_BODY"
+fi
+
+rm -f "$TEMP_BODY"
+```
+
+#### /idd-issue 使用例
+
+```bash
+# 1. 新規Issue作成
+/idd-issue new
+
+# 2. Issue確認
+/idd-issue list
+/idd-issue view 123
+
+# 3. GitHubへプッシュ
+/idd-issue push 123
 ```
 
 ## See Also
@@ -556,13 +717,14 @@ changes:
 - [フロントマターガイド](frontmatter-guide.md): フロントマター統一ルール
 - [執筆ルール](writing-rules.md): Claude 向け執筆禁則事項
 - [ドキュメントテンプレート](document-template.md): 標準テンプレート
+- [AI Development Standards](../for-ai-dev-standards/README.md): AI 開発標準ドキュメント
 
 ## 注意事項・制約
 
 ### 絶対遵守事項
 
 1. **フロントマター統一**: Claude Code 公式要素の厳格遵守
-2. **Python 制約**: 標準ライブラリのみ使用、シンプル処理原則
+2. **Bash 制約**: 標準コマンドのみ使用、Git 依存、シェル移植性確保
 3. **セキュリティ**: 機密情報のコード記述・ログ出力禁止
 4. **ファイル配置**: `.claude/commands/` 直下の配置厳守
 
