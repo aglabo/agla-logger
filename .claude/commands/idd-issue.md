@@ -1,6 +1,6 @@
 ---
 # Claude Code 必須要素
-allowed-tools: Bash(git:*, gh:*), Read(*), Write(*), Task(*)
+allowed-tools: Bash(git:*, gh:*, gh issue:*, mkdir:*, date:*, cat:*, ls:*, head:*, tail:*, basename:*, wc:*, stat:*, sed:*, tr:*, cut:*, mktemp:*, rm:*, mv:*, source:*, echo:*, export:*, test:*, command:*, jq:*), Read(*), Write(*), Task(*), mcp__codex-mcp__codex(*)
 argument-hint: [subcommand] [options]
 description: GitHub Issue 作成・管理システム - issue-generatorエージェントによる構造化Issue作成
 
@@ -23,14 +23,17 @@ subcommands:
   edit: "Issueドラフト編集"
   load: "GitHub IssueをローカルにImport"
   push: "ドラフトをGitHubにPush (新規作成または更新)"
+  branch: "Issueからブランチ名を提案・作成 (デフォルト: 提案のみ, -c: 作成)"
 
 # ag-logger プロジェクト要素
 title: idd-issue
-version: 2.1.0
+version: 2.2.0
 created: 2025-09-30
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: ブランチ名セッション保存機能追加 - 提案したブランチ名を保存・再利用可能に
+  - 2025-10-03: ブランチ自動作成機能追加 - codex-mcpによるcommitlint準拠のブランチ名生成
   - 2025-10-03: セッション管理機能追加 - .last-sessionでコマンド間でIssue状態を保持
   - 2025-10-02: フロントマターベース構造に再構築、/idd-issue に名称変更
   - 2025-09-30: 初版作成 - 6サブコマンド体系でIssue管理機能を実装
@@ -324,13 +327,14 @@ load_session() {
 }
 
 # セッション情報保存
-# 引数: $1 - ファイル名, $2 - Issue番号, $3 - タイトル, $4 - 種別, $5 - コマンド名
+# 引数: $1 - ファイル名, $2 - Issue番号, $3 - タイトル, $4 - 種別, $5 - コマンド名, $6 - ブランチ名 (オプション)
 save_session() {
   local filename="$1"
   local issue_num="$2"
   local title="$3"
   local issue_type="$4"
   local command="$5"
+  local branch_name="${6:-}"
   local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
   cat > "$SESSION_FILE" << EOF
@@ -341,6 +345,7 @@ LAST_ISSUE_TITLE="$title"
 LAST_ISSUE_TYPE="$issue_type"
 LAST_TIMESTAMP="$timestamp"
 LAST_COMMAND="$command"
+LAST_BRANCH_NAME="$branch_name"
 EOF
 }
 ```
@@ -532,6 +537,77 @@ echo "Next steps:"
 echo "  /idd-issue list  # List all issues"
 ```
 
+### Subcommand: branch
+
+```bash
+#!/bin/bash
+setup_issue_env
+
+# Parse options
+CREATE_BRANCH=false  # Default: suggestion only (-n)
+
+while getopts "nc" opt; do
+  case $opt in
+    n) CREATE_BRANCH=false ;;
+    c) CREATE_BRANCH=true ;;
+    *) echo "Usage: /idd-issue branch [-n|-c] [issue-number]" && exit 1 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+# Get issue file
+if ! find_issue_file "$1"; then
+  exit 1
+fi
+
+# Load issue content
+ISSUE_CONTENT=$(cat "$ISSUE_FILE")
+FILENAME=$(basename "$ISSUE_FILE" .md)
+ISSUE_NUM=$(extract_issue_number "$FILENAME")
+TITLE=$(extract_title "$ISSUE_FILE")
+
+echo "📋 Issue #$ISSUE_NUM: $TITLE"
+echo ""
+
+# Check if branch name already exists in session
+if load_session && [ -n "$LAST_BRANCH_NAME" ] && [ "$LAST_ISSUE_NUMBER" = "$ISSUE_NUM" ]; then
+  echo "💡 Found saved branch name: $LAST_BRANCH_NAME"
+  echo ""
+  read -p "Use this branch name? (Y/n): " USE_SAVED
+  if [[ "$USE_SAVED" =~ ^[Yy]?$ ]]; then
+    SUGGESTED_BRANCH="$LAST_BRANCH_NAME"
+    echo "✅ Using saved branch name"
+  else
+    SUGGESTED_BRANCH=""
+  fi
+else
+  SUGGESTED_BRANCH=""
+fi
+
+# If no saved branch or user declined, analyze with codex-mcp
+if [ -z "$SUGGESTED_BRANCH" ]; then
+  echo "🤖 Analyzing issue content with codex-mcp..."
+  echo ""
+
+  # Note: Claude will use codex-mcp to analyze the issue and suggest:
+  #   1. Commitlint type (feat, fix, chore, docs, style, refactor, test, etc.)
+  #   2. Scope (specific function, command, module name)
+  #   3. Branch name in format: <type>-<issue-no>/<scope>/<title-slug>
+  #
+  # Example analysis for Issue #42:
+  #   Type: chore (adding development tooling)
+  #   Scope: claude-commands (modifying .claude/commands/)
+  #   Branch: chore-42/claude-commands/idd-issue-branch-auto
+  #
+  # After analysis, save the suggested branch name to session:
+  #   SUGGESTED_BRANCH="chore-42/claude-commands/idd-issue-branch-auto"
+  #   save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "branch" "$SUGGESTED_BRANCH"
+fi
+
+# Default behavior (-n): Only show the suggestion without creating the branch.
+# With -c flag: Create the branch after user confirmation.
+```
+
 ## アーキテクチャの特徴
 
 - エージェント連携: Issue 生成の複雑なロジックを issue-generator エージェントに委譲
@@ -607,6 +683,28 @@ Issue ドラフトファイルは決定的な命名規則を使用:
 /idd-issue load 123           # GitHubからIssue #123をImport
 /idd-issue push new-251002-*  # 新規Issueを作成
 /idd-issue push 123           # 既存Issue #123を更新
+```
+
+### ブランチ名提案・作成
+
+```bash
+/idd-issue branch             # セッションのIssueからブランチ名を提案 (作成しない)
+/idd-issue branch 42          # Issue #42からブランチ名を提案
+/idd-issue branch -c          # セッションのIssueからブランチ作成
+/idd-issue branch -c 42       # Issue #42からブランチ作成
+
+# 動作例: Issue #42 の場合 (初回)
+# → codex-mcpが内容を分析
+# → 提案: type=chore, scope=claude-commands
+# → ブランチ名: chore-42/claude-commands/idd-issue-branch-auto
+# → セッションに保存
+# → -c オプションでブランチ作成・切り替え
+
+# 2回目以降の実行
+# → セッションから保存済みブランチ名を取得
+# → 確認プロンプト表示: "Use this branch name? (Y/n)"
+# → Y で保存済みブランチ名を再利用
+# → n で codex-mcp による再分析
 ```
 
 ---
