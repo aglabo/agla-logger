@@ -543,6 +543,7 @@ pnpm run lint:markdown docs/**/*.md
 - [カスタムスラッシュコマンド](custom-slash-commands.md) - スラッシュコマンド記述ルール
 - [カスタムエージェント](custom-agents.md) - エージェント記述ルール
 - [ドキュメント作成ガイドライン](README.md) - 全体概要
+- [AI Development Standards](../for-ai-dev-standards/README.md) - AI 開発標準ドキュメント
 
 ---
 

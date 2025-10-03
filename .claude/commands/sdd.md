@@ -48,7 +48,7 @@ setup_sdd_env() {
   REPO_ROOT=$(git rev-parse --show-toplevel)
   SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
   SESSION_FILE="$SDD_BASE/.last-session"
-  MSG_FILE="$SDD_BASE/.commit-message.tmp"
+  COMMIT_MSG="$REPO_ROOT/temp/commit_message_current.md"
   COMMIT_SESSION_FILE="$SDD_BASE/.commit-session"
 }
 
@@ -100,53 +100,77 @@ init_structure() {
 
 # === Commit サブコマンド用ヘルパー関数 ===
 
-# fzf インストール確認
-check_fzf() {
-  if ! command -v fzf &> /dev/null; then
-    echo "❌ Error: fzf is required."
-    echo "Install: https://github.com/junegunn/fzf"
-    echo ""
-    echo "Installation methods:"
-    echo "  - Homebrew: brew install fzf"
-    echo "  - apt: sudo apt install fzf"
-    echo "  - Scoop: scoop install fzf"
-    echo "  - Manual: https://github.com/junegunn/fzf#installation"
-    return 1
-  fi
-  return 0
-}
+# 対話的ファイル選択 (番号入力方式)
+select_files_interactive() {
+  # ファイルリスト取得
+  local -a files
+  while IFS= read -r file; do
+    files+=("$file")
+  done < <(git status --short | awk '{print $2}')
 
-# 変更ファイル一覧取得
-get_changed_files() {
-  git status --short | awk '{print $2}'
-}
-
-# fzf で対話的ファイル選択
-select_files_with_fzf() {
-  local files="$1"
-
-  if [ -z "$files" ]; then
+  if [ ${#files[@]} -eq 0 ]; then
     echo "ℹ️ No changed files to commit."
     return 1
   fi
 
-  local selected
-  selected=$(echo "$files" | fzf \
-    --multi \
-    --height=50% \
-    --border \
-    --header="Select files to commit (Tab: select multiple, Enter: confirm)" \
-    --prompt="Files > " \
-    --preview="git diff --color=always {} 2>/dev/null || git diff --cached --color=always {} 2>/dev/null || cat {}" \
-    --preview-window=right:60% \
-    --bind='ctrl-a:select-all,ctrl-d:deselect-all')
+  # ファイル一覧表示
+  echo ""
+  echo "📋 Changed files:"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  for i in "${!files[@]}"; do
+    printf "%2d. %s\n" "$((i+1))" "${files[$i]}"
+  done
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
 
-  if [ -z "$selected" ]; then
-    echo "ℹ️ No files selected. Cancelled."
+  # 選択入力
+  echo "Enter file numbers to commit (e.g., 1,2,3 or 1-3 or all):"
+  read -p "> " selection
+
+  if [ -z "$selection" ]; then
+    echo "ℹ️ No selection. Cancelled."
     return 1
   fi
 
-  echo "$selected"
+  # "all" 処理
+  if [ "$selection" = "all" ]; then
+    printf "%s\n" "${files[@]}"
+    return 0
+  fi
+
+  # 選択解析
+  local -a selected_files
+  IFS=',' read -ra parts <<< "$selection"
+
+  for part in "${parts[@]}"; do
+    part=$(echo "$part" | xargs)  # trim whitespace
+
+    # 範囲指定 (e.g., 1-3)
+    if [[ "$part" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+      local start="${BASH_REMATCH[1]}"
+      local end="${BASH_REMATCH[2]}"
+
+      for ((i=start; i<=end; i++)); do
+        local idx=$((i-1))
+        if [ $idx -ge 0 ] && [ $idx -lt ${#files[@]} ]; then
+          selected_files+=("${files[$idx]}")
+        fi
+      done
+    # 単一番号
+    elif [[ "$part" =~ ^[0-9]+$ ]]; then
+      local idx=$((part-1))
+      if [ $idx -ge 0 ] && [ $idx -lt ${#files[@]} ]; then
+        selected_files+=("${files[$idx]}")
+      fi
+    fi
+  done
+
+  if [ ${#selected_files[@]} -eq 0 ]; then
+    echo "ℹ️ No valid files selected. Cancelled."
+    return 1
+  fi
+
+  printf "%s\n" "${selected_files[@]}"
   return 0
 }
 
@@ -291,19 +315,18 @@ cleanup_old_commit_session() {
 
 # コミットメッセージ生成
 generate_commit_message() {
-  local msg_file="$SDD_BASE/.commit-message.tmp"
-
   echo ""
-  echo "📝 Generating commit message..."
+  echo "📝 Launching commit-message-generator agent..."
   echo ""
 
-  # Note: Claude がここでコミットメッセージを生成
+  # Note: Claude が commit-message-generator エージェントを起動
+  # Task tool で commit-message-generator を呼び出し
   # - git diff --cached で staged changes を分析
   # - git log で最近のコミットスタイルを確認
   # - Conventional Commits 形式のメッセージを生成
-  # - 結果を $msg_file に書き込み
+  # - 結果を $COMMIT_MSG に書き込み
 
-  echo "$msg_file"
+  echo "$COMMIT_MSG"
   return 0
 }
 
@@ -383,15 +406,13 @@ display_commit_message() {
 
 # コミット中止
 abort_commit() {
-  local msg_file="$SDD_BASE/.commit-message.tmp"
-
   echo ""
   echo "🛑 Aborting commit..."
   echo ""
 
   # メッセージファイル削除
-  if [ -f "$msg_file" ]; then
-    rm -f "$msg_file"
+  if [ -f "$COMMIT_MSG" ]; then
+    rm -f "$COMMIT_MSG"
     echo "  ✓ Commit message deleted"
   fi
 
@@ -614,6 +635,7 @@ echo ""
 # Subcommand: commit - Multi-step commit workflow
 # Usage:
 #   /sdd commit      - Generate and display message
+#   /sdd commit -v   - View message
 #   /sdd commit -e   - Edit message
 #   /sdd commit -c   - Commit with message
 #   /sdd commit -a   - Abort commit
@@ -622,7 +644,7 @@ echo ""
 REPO_ROOT=$(git rev-parse --show-toplevel)
 SDD_BASE="$REPO_ROOT/docs/.cc-sdd"
 SESSION_FILE="$SDD_BASE/.last-session"
-MSG_FILE="$SDD_BASE/.commit-message.tmp"
+COMMIT_MSG="$REPO_ROOT/temp/commit_message_current.md"
 
 # セッション読み込み (オプション - namespace/module は任意)
 load_session optional || true
@@ -639,19 +661,38 @@ if [ "$OPTION" = "-a" ]; then
   exit 0
 fi
 
+# === Option: -v (View) ===
+if [ "$OPTION" = "-v" ]; then
+  if [ ! -f "$COMMIT_MSG" ]; then
+    echo "❌ No commit message found."
+    echo "💡 Run '/sdd commit' first to generate a message."
+    exit 1
+  fi
+
+  # メッセージ表示
+  display_commit_message "$COMMIT_MSG"
+
+  echo "💡 Next steps:"
+  echo "  - /sdd commit -c  : Commit with this message"
+  echo "  - /sdd commit -e  : Edit message"
+  echo "  - /sdd commit -v  : View message again"
+  echo "  - /sdd commit -a  : Abort commit"
+  exit 0
+fi
+
 # === Option: -e (Edit) ===
 if [ "$OPTION" = "-e" ]; then
-  if [ ! -f "$MSG_FILE" ]; then
+  if [ ! -f "$COMMIT_MSG" ]; then
     echo "❌ No commit message found."
     echo "💡 Run '/sdd commit' first to generate a message."
     exit 1
   fi
 
   # メッセージ編集
-  edit_commit_message "$MSG_FILE"
+  edit_commit_message "$COMMIT_MSG"
 
   # 編集後のメッセージ表示
-  display_commit_message "$MSG_FILE"
+  display_commit_message "$COMMIT_MSG"
 
   echo "💡 Next steps:"
   echo "  - /sdd commit -c  : Commit with this message"
@@ -662,62 +703,49 @@ fi
 
 # === Option: -c (Commit) ===
 if [ "$OPTION" = "-c" ]; then
-  if [ ! -f "$MSG_FILE" ]; then
+  if [ ! -f "$COMMIT_MSG" ]; then
     echo "❌ No commit message found."
     echo "💡 Run '/sdd commit' first to generate a message."
     exit 1
   fi
 
   # メッセージ検証
-  if ! validate_commit_message "$MSG_FILE"; then
+  if ! validate_commit_message "$COMMIT_MSG"; then
     echo "💡 Message is empty. Options:"
     echo "  - /sdd commit -e  : Edit message"
-    echo "  - /sdd commit -a  : Abort commit"
+  echo "  - /sdd commit -a  : Abort commit"
     exit 1
   fi
 
   # コミット実行
-  execute_commit_with_message "$MSG_FILE"
+  execute_commit_with_message "$COMMIT_MSG"
   exit $?
 fi
 
 # === Default: Generate and display message ===
 
-# [1] fzf チェック
-if ! check_fzf; then
-  exit 1
-fi
-
 # メインループ (再選択対応)
 while true; do
-  # [2] 変更ファイル取得
-  changed_files=$(get_changed_files)
-
-  if [ -z "$changed_files" ]; then
-    echo "ℹ️ No changed files to commit."
-    exit 0
-  fi
-
-  # [3] fzf でファイル選択
-  selected_files=$(select_files_with_fzf "$changed_files")
+  # [1] 対話的ファイル選択
+  selected_files=$(select_files_interactive)
 
   if [ $? -ne 0 ]; then
     exit 0
   fi
 
-  # [4] セッション保存
+  # [2] セッション保存
   save_commit_session "$selected_files"
 
-  # [5] ステージング
+  # [3] ステージング
   if ! stage_files "$selected_files"; then
     echo "❌ Staging failed."
     exit 1
   fi
 
-  # [6] ステージング結果表示
+  # [4] ステージング結果表示
   show_staged_files
 
-  # [7] 確認プロンプト
+  # [5] 確認プロンプト
   confirm_staging
   result=$?
 
@@ -800,23 +828,31 @@ done
 
 # ステップ 1: ファイル選択とメッセージ生成
 /sdd commit
-# 1. fzf で変更ファイルを表示
-# 2. Tab/Shift+Tab で複数選択
-# 3. Enter で確定
-# 4. ステージング結果確認
-# 5. y (コミット) / n (キャンセル) / r (再選択)
-# 6. Claude がコミットメッセージを自動生成
-# 7. 生成されたメッセージを表示
-# 8. 次のステップの選択肢を表示
+# 1. 変更ファイルを番号付きで表示
+# 2. 番号で選択 (例: 1,2,3 または 1-3 または all)
+# 3. ステージング結果確認
+# 4. y (コミット) / n (キャンセル) / r (再選択)
+# 5. commit-message-generator エージェントがメッセージ生成
+# 6. 生成されたメッセージを表示
+# 7. 次のステップの選択肢を表示
 #
 # 出力例:
+# 📋 Changed files:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  1. .claude/agents/commit-message-generator.md
+#  2. .claude/commands/sdd.md
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Enter file numbers to commit (e.g., 1,2,3 or 1-3 or all):
+# > 1,2
+#
 # 📋 Commit message:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# docs(claude): update commit workflow to multi-step
+# refactor(sdd): improve commit workflow with view option
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
 # 💡 Next steps:
 #   - /sdd commit -c  : Commit with this message
+#   - /sdd commit -v  : View message again
 #   - /sdd commit -e  : Edit message
 #   - /sdd commit -a  : Abort commit
 
