@@ -54,6 +54,7 @@ Popen
 pytest
 recov
 redhat
+Reselecting
 retryable
 returncode
 runbook

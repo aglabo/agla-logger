@@ -1,6 +1,16 @@
 ---
 # Claude Code 必須要素
-allowed-tools: Bash(git:*, gh:*, gh issue:*, mkdir:*, date:*, cat:*, ls:*, head:*, tail:*, basename:*, wc:*, stat:*, sed:*, tr:*, cut:*, mktemp:*, rm:*, mv:*, source:*, echo:*, export:*, test:*, command:*, jq:*), Read(*), Write(*), Task(*), mcp__codex-mcp__codex(*)
+allowed-tools:
+  Bash(
+    git:*, gh:*, gh issue:*,
+    mkdir:*, date:*, cat:*, ls:*, head:*, tail:*, basename:*, wc:*, stat:*,
+    sed:*, tr:*, cut:*, mktemp:*, rm:*, mv:*, source:*, echo:*, export:*,
+    test:*, command:*, jq:*, code:*
+  ),
+  Read(*), Write(*), Task(*), TodoWrite(*),
+  mcp__codex-mcp__codex(*),
+  mcp__serena-mcp__*,
+  mcp__lsmcp__*
 argument-hint: [subcommand] [options]
 description: GitHub Issue 作成・管理システム - issue-generatorエージェントによる構造化Issue作成
 
@@ -27,14 +37,15 @@ subcommands:
 
 # ag-logger プロジェクト要素
 title: idd-issue
-version: 2.2.0
+version: 2.2.1
 created: 2025-09-30
 authors:
   - atsushifx
 changes:
-  - 2025-10-03: ブランチ名セッション保存機能追加 - 提案したブランチ名を保存・再利用可能に
-  - 2025-10-03: ブランチ自動作成機能追加 - codex-mcpによるcommitlint準拠のブランチ名生成
-  - 2025-10-03: セッション管理機能追加 - .last-sessionでコマンド間でIssue状態を保持
+  - 2025-10-03:
+    allowed-toolsに各種コマンドを追加、見やすいように成形
+    ブランチ自動作成機能追加 - codex-mcpによるcommitlint準拠のブランチ名生成
+    セッション管理機能追加 - .last-sessionでコマンド間でIssue状態を保持
   - 2025-10-02: フロントマターベース構造に再構築、/idd-issue に名称変更
   - 2025-09-30: 初版作成 - 6サブコマンド体系でIssue管理機能を実装
 ---
