@@ -192,30 +192,34 @@ if [[ ! -f "$DRAFT_FILE" ]]; then
   exit 1
 fi
 
-# Extract title from frontmatter
-TITLE=$(grep -E '^title:' "$DRAFT_FILE" | sed 's/^title: *"\?\([^"]*\)"\?/\1/')
+# Extract title from first line (H1 heading)
+TITLE=$(head -n 1 "$DRAFT_FILE" | sed 's/^# *//')
 
 if [[ -z "$TITLE" ]]; then
   echo "❌ Could not extract title from draft"
+  echo "💡 First line should be an H1 heading (# Title)"
   exit 1
 fi
 
 echo "🚀 Creating PR: $TITLE"
 
-# Create PR using GitHub CLI
-# Extract body (skip frontmatter)
-BODY=$(awk '/^---$/{if(++count==2) flag=1; next} flag' "$DRAFT_FILE")
+# Extract body (skip H1 title and empty line)
+BODY_FILE="$REPO_ROOT/temp/pr/pr_body.txt"
+tail -n +3 "$DRAFT_FILE" > "$BODY_FILE"
 
-if gh pr create --title "$TITLE" --body "$BODY"; then
+# Create PR using GitHub CLI
+if gh pr create --title "$TITLE" --body-file "$BODY_FILE"; then
   echo "🎉 PR successfully created!"
 
-  # Clean up draft and last_draft tracker after successful push
+  # Clean up draft and temporary files
   rm -f "$DRAFT_FILE"
   rm -f "$LAST_DRAFT"
+  rm -f "$BODY_FILE"
   echo "🗑️ Draft file cleaned up"
 else
   echo "❌ GitHub CLI error"
   echo "💡 Tip: Make sure you have push permissions and gh CLI is authenticated"
+  rm -f "$BODY_FILE"
   exit 1
 fi
 ```
@@ -223,8 +227,9 @@ fi
 ## アーキテクチャの特徴
 
 - エージェント連携: PR 生成の複雑なロジックを pr-generator エージェントに委譲
+- GitHub CLI 統合: `gh pr create` による PR 作成
 - Bash シンプル実装: 各サブコマンドは 10-40行の軽量 Bash スクリプト
-- 明確な責務分離: 生成 (agent) とユーティリティ (local scripts) を分離
+- 明確な責務分離: 生成 (agent)、作成 (gh CLI)、ユーティリティ (local scripts) を分離
 - 設定の一元管理: フロントマターで設定・サブコマンド定義を集約
 - 保守しやすい設計: 特定機能の修正時に該当セクションのみ変更すればよい。
 - 拡張しやすい設計: 新サブコマンドは新セクション追加のみで実現可能。
@@ -239,9 +244,18 @@ fi
 4. **エージェント処理**:
    - Git 情報収集 (commits, file changes, issues)
    - `.github/PULL_REQUEST_TEMPLATE.md` 読み込み
-   - PR ドラフト生成
+   - Conventional Commit 形式のタイトル生成
+   - PR ドラフト生成 (1行目: H1 タイトル、3行目以降: テンプレート構造)
    - `temp/pr/{output_file}` に保存
 5. **完了報告**: エージェントが生成結果を報告
+
+`/idd-pr push` コマンドは以下の流れで動作:
+
+1. **ドラフト読み込み**: `temp/pr/` から最後に生成されたドラフトを読み込み
+2. **タイトル抽出**: 1行目の H1 見出しからタイトルを取得
+3. **本文抽出**: 3行目以降 (H1 と空行をスキップ) を PR 本文として抽出
+4. **PR 作成**: `gh pr create` を使用して GitHub に PR を作成
+5. **クリーンアップ**: 成功後にドラフトファイルと一時ファイルを削除
 
 ---
 

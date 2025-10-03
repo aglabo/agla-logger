@@ -9,6 +9,8 @@ created: 2025-01-28
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: /sdd, /idd-issue コマンド記述を削除し、bdd-coder, commit-message-generator エージェント実例に置き換え
+  - 2025-10-03: 実際の /sdd, /idd-issue コマンドと bdd-coder, issue-generator エージェントに合わせて全面更新
   - 2025-01-28: 初版作成
 copyright:
   - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
@@ -18,13 +20,6 @@ copyright:
 
 このドキュメントは、Claude Code 向けのカスタムエージェントを記述するための統一ルールを定義します。
 AI エージェントがエージェント構文を正確に理解し、一貫性のあるエージェントを作成することを目的とします。
-
-## 目次
-
-1. [統合フロントマター仕様](#統合フロントマター仕様)
-2. [エージェント構造標準](#エージェント構造標準)
-3. [品質検証ワークフロー](#品質検証ワークフロー)
-4. [実践的活用例](#実践的活用例)
 
 ## 統合フロントマター仕様
 
@@ -38,18 +33,25 @@ Claude Code 公式要素と ag-logger プロジェクト要素を統合した統
 ---
 # Claude Code 必須要素
 name: your-agent-name
-description: [エージェントの実行タイミング説明]
+<!-- markdownlint-disable MD013 -->
+description: [エージェントの実行タイミング説明] Examples: <example>Context: [状況] user: "[ユーザー入力]" assistant: "[アシスタント応答]" <commentary>[解説]</commentary></example>
+<!-- markdownlint-enable MD013 -->
 tools: tool1, tool2, tool3  # オプション - 省略された場合はすべてのツールを継承
 model: inherit  # オプション - モデルエイリアスまたは'inherit'を指定
+color: blue  # オプション - エージェント識別色
 
-# ag-logger プロジェクト要素
-title: agla-logger
+# ユーザー管理ヘッダー
+title: agent-name
 version: 1.0.0
 created: YYYY-MM-DD
 authors:
   - atsushifx
 changes:
   - YYYY-MM-DD: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
 ---
 ```
 
@@ -76,19 +78,31 @@ changes:
 #### description フィールド
 
 **目的**: エージェントが呼び出されるべき条件・タイミングの説明。
-**要件**: 簡潔で具体的な条件説明 (100-200 文字程度)。
+**要件**: 簡潔で具体的な条件説明 + Examples 記法での使用例。
 
 記述パターン:
 
-- `[条件] を [動作] するエージェント`
-- `[タイミング] に [機能] を提供`
-- `[入力条件] から [出力結果] を生成`
+```yaml
+[核心機能説明] Examples: <example>Context: [状況] user: "[入力]" assistant: "[応答]" <commentary>[解説]</commentary></example>
+```
 
 記述例:
 
-- `TypeScript BDD プロセスで要件定義から実装まで一貫した開発を行うエージェント`
-- `Git ステージされたファイルから適切なコミットメッセージを生成するエージェント`
-- `テスト実行時にカバレッジと品質レポートを統合提供するエージェント`
+```yaml
+description: >
+  atsushifx式BDD厳格プロセスで多言語対応コードを実装する汎用エージェント。
+  Red-Green-Refactor サイクルを厳格に遵守し、1 message = 1 test の原則で段階的実装を行う。
+  Examples: <example>Context: 新機能の BDD 実装要求 user: "バリデーション機能を BDD で実装して"
+  assistant: "bdd-coder エージェントで厳格な Red-Green-Refactor サイクルによる実装を開始します"
+  <commentary>BDD 厳格プロセスが必要なので、単一テストから始める段階的実装を実行</commentary></example>
+```
+
+Examples 記法の構造:
+
+- Context: 状況説明
+- user: ユーザー入力例
+- assistant: アシスタント応答例
+- commentary: 判断理由・解説
 
 #### tools フィールド (オプション)
 
@@ -106,7 +120,7 @@ changes:
 **目的**: エージェントが使用するモデル指定。
 **形式**: モデルエイリアスまたは継承指定。
 
-**ag-logger プロジェクト標準**: `inherit`
+**プロジェクト標準**: `inherit`
 
 使用パターン:
 
@@ -115,27 +129,43 @@ changes:
 - `haiku`: Claude 3 Haiku
 - `opus`: Claude 3 Opus
 
-### ag-logger プロジェクト要素
+#### color フィールド (オプション)
+
+**目的**: エージェント識別色の指定。
+**形式**: 色名文字列。
+
+使用例:
+
+- `blue`: bdd-coder エージェント
+- `green`: issue-generator エージェント
+- `red`: エラー処理系エージェント
+- `yellow`: 警告・レビュー系エージェント
+
+### ユーザー管理ヘッダー
 
 #### 統一要素
 
-- title: `agla-logger` (プロジェクト名統一)
+- title: エージェント名 (kebab-case)
 - version: セマンティックバージョニング形式
 - created: 初回作成日 (YYYY-MM-DD 形式)
 - authors: 作成者リスト
 - changes: 変更履歴
+- copyright: MIT ライセンス表記
 
 #### 要素分離ルール
 
-必須: コメント区分により Claude Code 要素と ag-logger 要素を明確に分離。
+必須: コメント区分により Claude Code 要素とユーザー管理要素を明確に分離。
 
 ```yaml
 ---
 # Claude Code 必須要素
 [claude-code-elements]
 
-# ag-logger プロジェクト要素
-[ag-logger-elements]
+# ユーザー管理ヘッダー
+[user-management-elements]
+
+copyright:
+  [copyright-notice]
 ---
 ```
 
@@ -145,7 +175,7 @@ changes:
 
 #### ディレクトリ構造
 
-```text
+```bash
 .claude/
 └── agents/
     ├── [agent-name].md
@@ -299,7 +329,7 @@ if filename != agent_name:
 
 #### 検証レポート形式
 
-```text
+```bash
 === Agent Quality Validation Report ===
 File: [agent-file].md
 Date: YYYY-MM-DD HH:MM:SS
@@ -324,200 +354,314 @@ Warnings: [N]
 
 ## 実践的活用例
 
-### 基本エージェント例
+### 例1: bdd-coder エージェント
 
-#### エージェントファイル: `sample-bdd-agent.md`
+実際のプロジェクトで使用されている多言語対応 BDD 実装エージェント。
+
+#### エージェントファイル: `.claude/agents/bdd-coder.md`
+
+<!-- markdownlint-disable line-length -->
 
 ```markdown
 ---
 # Claude Code 必須要素
-name: sample-bdd-agent
-description: BDD 開発プロセスでテスト駆動開発を支援するサンプルエージェント
-tools: Read, Edit, Bash, Task
+name: bdd-coder
+description: atsushifx式BDD厳格プロセスで多言語対応コードを実装する汎用エージェント。Red-Green-Refactor サイクルを厳格に遵守し、1 message = 1 test の原則で段階的実装を行う。TodoWrite ツールと todo.md の完全同期による進捗管理と、プロジェクト固有の品質ゲート自動実行で高品質コードを保証する。
+tools: Bash, Read, Write, Edit, Grep, Glob, TodoWrite
+model: inherit
+color: blue
+
+# ユーザー管理ヘッダー
+title: bdd-coder
+version: 3.0.0
+created: 2025-01-28
+authors:
+  - atsushifx
+changes:
+  - 2025-10-02: 多言語対応に汎用化、プロジェクト固有要素を削除
+  - 2025-01-28: 初版作成
+---
+
+## エージェント Overview
+
+atsushifx 式 BDD を厳格に実践する多言語対応実装エージェント。
+Red-Green-Refactor サイクルと TodoWrite 連携による段階的実装を提供。
+
+### 核心原則
+
+1. 1 message = 1 test
+2. 厳格プロセス遵守 (RED → GREEN → REFACTOR)
+3. TodoWrite 連携
+4. 品質ゲート統合
+
+### 主要機能
+
+- BDD 三層階層構造 (Given/When/Then)
+- MCP ツール活用
+- 進捗管理とタスク追跡
+- 品質保証システム統合
+```
+
+<!-- markdownlint-enable -->
+
+#### 例1 bdd-coder の特徴
+
+- 多言語対応: TypeScript/Vitest、Python/pytest、Java/JUnit など任意の言語対応
+- 厳格プロセス: 1 message = 1 test 原則の徹底
+- TodoWrite 連携: todo.md との完全同期
+- MCP ツール活用: serena-mcp, lsmcp による効率的コードナビゲーション
+- 品質ゲート: プロジェクト固有の品質チェック自動実行
+
+### 例2: issue-generator エージェント
+
+GitHub Issue 作成を専門とするエージェント。
+
+#### エージェントファイル: `.claude/agents/issue-generator.md`
+
+<!-- markdownlint-disable line-length -->
+
+```markdown
+---
+# Claude Code 必須要素
+name: issue-generator
+description: 一般的なプロジェクト用の GitHub Issue 作成エージェント。Feature リクエスト、Bug レポート、Enhancement、Task の構造化された Issue ドラフトを temp/ ディレクトリに作成し、プロジェクトの開発プロセスと品質基準に準拠した内容を生成する。
+tools: Read, Write, Grep
+model: inherit
+color: green
+
+# ユーザー管理ヘッダー
+title: issue-generator
+version: 2.0.0
+created: 2025-09-30
+authors:
+  - atsushifx
+---
+
+## エージェント Overview
+
+GitHub Issue 作成スペシャリスト。YML テンプレートから動的に Issue 構造を生成。
+
+### 主要責務
+
+1. YML テンプレート読み込み (`.github/ISSUE_TEMPLATE/`)
+2. 対話的情報収集
+3. Markdown ドラフト生成
+4. temp/issues/ への保存
+
+### 対応 Issue 種別
+
+- feature: 新機能追加要求
+- bug: バグレポート
+- enhancement: 既存機能改善
+- task: 開発・メンテナンスタスク
+```
+
+<!-- markdownlint-enable -->
+
+#### issue-generator の主要特徴
+
+- 動的テンプレート: `.github/ISSUE_TEMPLATE/` から YML 読み込み
+- 自動ファイル名生成: `new-{timestamp}-{type}-{slug}.md` 形式
+- セッション連携: `/idd-issue` コマンドとの統合
+- GitHub CLI 統合: gh コマンドでの Issue push サポート
+
+### 例3: bdd-coder エージェント
+
+atsushifx 式 BDD 厳格プロセスでの多言語対応コード実装エージェント。
+
+#### bdd-coder エージェントファイル
+
+<!-- markdownlint-disable line-length -->
+
+```yaml
+---
+# Claude Code 必須要素
+name: bdd-coder
+description: atsushifx式BDD厳格プロセスで多言語対応コードを実装する汎用エージェント。Red-Green-Refactor サイクルを厳格に遵守し、1 message = 1 test の原則で段階的実装を行う。
+tools: Bash, Read, Write, Edit, Grep, Glob, TodoWrite
+model: inherit
+color: blue
+
+# ユーザー管理ヘッダー
+title: bdd-coder
+version: 3.0.0
+created: 2025-01-28
+authors:
+  - atsushifx
+---
+```
+
+<!-- markdownlint-enable -->
+
+#### bdd-coder の起動条件
+
+以下の場合にエージェントが起動:
+
+- atsushifx 式 BDD でのコード実装要求時
+- Red-Green-Refactor サイクルでの厳格な開発プロセスが必要な場合
+- テスト駆動開発 (TDD) の実践が必要な場合
+- `/sdd code` コマンド実行時
+- bdd-coder の明示的呼び出し時
+
+トリガー例:
+
+```bash
+"バリデーション機能を BDD で実装して"
+"エラーハンドリング機能を BDD プロセスで拡張して"
+```
+
+#### bdd-coder の主要特徴
+
+**核心原則**:
+
+- 1 message = 1 test: 各メッセージで 1 つの `it()` のみを実装
+- 厳格プロセス遵守: RED → GREEN → REFACTOR の順序を絶対遵守
+- ToDo 連携: TodoWrite ツールと todo.md の完全同期
+- 品質ゲート統合: types/lint/test/format/build の必須実行
+
+**BDD 三層階層構造**:
+
+- Feature レベル (Given): 機能やコンポーネントの状態
+- Scenario レベル (When): 特定のアクションやイベント
+- Case レベル (Then): 期待される結果 ([正常]/[異常]/[エッジケース])
+
+**多言語対応**:
+
+- TypeScript/Vitest、Python/pytest、Java/JUnit、Ruby/RSpec など
+- 任意のプログラミング言語とテストフレームワークの組み合わせに対応
+
+**進捗管理**:
+
+- TodoWrite ツールでタスク状態の自動更新
+- expect 文完了時の即座完了報告
+- タスクグループ完了時の進捗レポート (X/N タスク完了)
+
+### 例4: commit-message-generator エージェント
+
+Git ステージファイルから Conventional Commits 準拠メッセージを生成するエージェント。
+
+#### commit-message-generator エージェントファイル
+
+<!-- markdownlint-disable line-length -->
+
+```yaml
+---
+# Claude Code 必須要素
+name: commit-message-generator
+description: Git ステージされたファイルから適切なコミットメッセージを生成するエージェント。プロジェクトの慣例を分析し、Conventional Commits 準拠のメッセージを提供する
+tools: Bash, Read, Grep
 model: inherit
 
-# ag-logger プロジェクト要素
+# ユーザー管理ヘッダー
 title: agla-logger
 version: 1.0.0
 created: 2025-01-28
 authors:
   - atsushifx
-changes:
-  - 2025-01-28: 初版作成
 ---
-
-## Agent Overview
-
-このエージェントは BDD (Behavior-Driven Development) プロセスにおいて、要件定義からテスト実装まで一貫した開発支援を提供します。
-
-## Activation Conditions
-
-- ユーザーが BDD フローでの機能実装を要求した場合
-- テスト駆動開発のガイダンスが必要な場合
-- 要件定義からコード実装までの一貫した開発支援が必要な場合
-
-## Core Functionality
-
-### Test-First Development
-
-1. 要件分析と理解
-2. テストケース設計
-3. 実装前テスト作成
-4. Red-Green-Refactor サイクル実行
-
-### Code Generation
-
-- TypeScript/JavaScript での実装
-- Jest/Vitest を使用したテスト作成
-- ESLint/Prettier 対応コード生成
-
-## Integration Guidelines
-
-### 他エージェントとの連携
-
-- `git-commit-generator`: 実装完了後のコミット作成
-- `test-coverage-analyzer`: テストカバレッジ分析
-- `code-quality-checker`: コード品質確認
-
-### ツール使用パターン
-
-1. Read: 既存コード分析
-2. Edit: テスト・実装コード編集
-3. Bash: テスト実行・ビルド確認
-4. Task: 複雑な作業の並列実行
-
-## Examples
-
-### 使用例 1: 新機能の BDD 実装
-
-**トリガー**: "新しいログフィルタ機能を BDD で実装して"
-
-**期待動作**:
-
-1. 要件分析とテストケース設計
-2. 失敗するテストの実装
-3. 最小限の実装でテスト通過
-4. リファクタリングとコード品質向上
-
-### 使用例 2: 既存機能の拡張
-
-**トリガー**: "エラーハンドリング機能を BDD プロセスで拡張して"
-
-**期待動作**:
-
-1. 既存コードの分析
-2. 拡張要件のテストケース追加
-3. 段階的な機能実装
-4. 回帰テスト確認
 ```
 
-### 高度なエージェント例
+<!-- markdownlint-enable  -->
 
-#### エージェントファイル: `typescript-test-optimizer.md`
+#### commit-message-generator の起動条件
 
-```markdown
----
-# Claude Code 必須要素
-name: typescript-test-optimizer
-description: TypeScript プロジェクトのテスト最適化とパフォーマンス改善を行うエージェント
-tools: *
-model: inherit
+以下の場合にエージェントが起動:
 
-# ag-logger プロジェクト要素
-title: agla-logger
-version: 1.1.0
-created: 2025-01-28
-authors:
-  - atsushifx
-changes:
-  - 2025-01-28: 初版作成
----
+- ユーザーがコミットメッセージの生成を要求した場合
+- ファイルがステージされており、コミット準備が整っている場合
+- プロジェクト慣例に沿ったメッセージが必要な場合
 
-## Agent Overview
+トリガー例:
 
-TypeScript プロジェクトにおけるテストスイートの最適化、実行時間短縮、カバレッジ向上を専門とするエージェントです。
+```bash
+"コミットメッセージを作成して"
+"このコミットのメッセージを生成して"
+```
 
-## Activation Conditions
+#### commit-message-generator の主要特徴
 
-- テスト実行時間が長すぎる場合 (5分以上)
-- テストカバレッジが目標値を下回る場合 (80%未満)
-- テストの並列実行最適化が必要な場合
-- CI/CD パイプラインでのテスト失敗頻発時
+**統一出力形式**:
 
-## Core Functionality
+```text
+=== commit header ===
+type(scope): summary
 
-### Performance Analysis
+- file1.ext:
+  変更概要1
+- file2.ext:
+  変更概要2
+=== commit footer ===
+```
 
-- テスト実行時間分析
-- ボトルネック特定
-- 並列実行最適化
-- モック・スタブ最適化
+**プロジェクト慣例分析**:
 
-### Coverage Optimization
+- 最近 10 件のコミットメッセージ形式を確認
+- 言語 (日本語/英語)、プレフィックス使用パターンを特定
+- CLAUDE.md、README.md からコミットルールを検索
 
-- カバレッジギャップ分析
-- 効率的なテストケース設計
-- 冗長テスト除去
-- エッジケーステスト強化
+**Type 分類**:
 
-## Integration Guidelines
+- `feat`: 新機能追加
+- `fix`: バグ修正
+- `docs`: ドキュメント更新
+- `test`: テスト追加・修正
+- `chore`: ルーチンタスク・メンテナンス
+- `refactor`: バグ修正や機能追加を伴わないコード変更
 
-### MCP ツール活用
+**Scope 自動判定**:
 
-- `mcp__lsmcp__search_symbols`: テスト対象シンボル分析
-- `mcp__lsmcp__get_project_overview`: プロジェクト構造理解
-- `mcp__serena-mcp__find_referencing_symbols`: 依存関係分析
+- ファイル種別による自動判定 (設定ファイル、スクリプト、ドキュメント、ソースコード、テストなど)
+- ファイルパス分析で scope を自動決定
 
-### ag-logger 品質ゲート
+使用例:
 
-1. `pnpm run test:develop`: 単体テスト実行
-2. `pnpm run test:ci`: 統合テスト実行
-3. `pnpm run check:types`: 型チェック
-4. カバレッジレポート生成
+機能追加時:
 
-## Examples
+```bash
+=== commit header ===
+feat(logger): ログレベルフィルタリング機能を追加
 
-### 使用例 1: テスト実行時間最適化
-
-**入力**: テストスイート実行時間 8分
-
-**処理**:
-
-1. 実行時間プロファイリング
-2. 並列実行可能テスト特定
-3. モック最適化提案
-4. 設定調整実装
-
-**期待結果**: 実行時間 3分以下達成
-
-### 使用例 2: カバレッジ向上
-
-**入力**: カバレッジ 75%
-
-**処理**:
-
-1. 未カバー領域特定
-2. 効率的テストケース設計
-3. エッジケーステスト追加
-4. 冗長テスト除去
-
-**期待結果**: カバレッジ 85%以上達成
+- src/logger/core.ts:
+  LogLevel enum とフィルタリングロジックを実装
+- __tests__/logger.test.ts:
+  ログレベルフィルタリングのユニットテストを追加
+=== commit footer ===
 ```
 
 ## 関連ドキュメント
 
-### ag-logger プロジェクト体系
+### ドキュメント作成ルール
 
 - [カスタムスラッシュコマンド](./custom-slash-commands.md): スラッシュコマンド記述ルール
 - [執筆ルール](./writing-rules.md): Claude 向け執筆禁則事項
 - [ドキュメントテンプレート](./document-template.md): 標準テンプレート
 - [フロントマターガイド](./frontmatter-guide.md): フロントマター統一ルール
 
-### 開発関連ルール
+### プロジェクト開発ルール
 
 - [開発ワークフロー](../rules/01-development-workflow.md): BDD 開発プロセス
 - [品質保証システム](../rules/03-quality-assurance.md): 多層品質保証
 - [MCP ツール必須要件](../rules/04-mcp-tools-mandatory.md): MCP ツール活用ルール
+- [BDD テスト階層](../rules/07-bdd-test-hierarchy.md): BDD 階層構造統一ルール
+
+### AI 開発標準ドキュメント
+
+- [AI 開発標準 README](../for-AI-dev-standards/README.md): AI 開発標準全体概要
+- [セットアップとオンボーディング](../for-AI-dev-standards/01-setup-and-onboarding.md): 環境構築・初期設定
+- [核心原則](../for-AI-dev-standards/02-core-principles.md): 開発における基本原則
+- [MCP ツール使用法](../for-AI-dev-standards/03-mcp-tools-usage.md): MCP ツールの活用方法
+- [BDD ワークフロー](../for-AI-dev-standards/05-bdd-workflow.md): BDD 開発プロセス詳細
+- [BDD 実装詳細](../for-AI-dev-standards/10-bdd-implementation-details.md): BDD 実装の技術的詳細
+
+### エージェント実装例
+
+<!-- markdownlint-disable line-length -->
+
+- [.claude/agents/bdd-coder.md](../../.claude/agents/bdd-coder.md): bdd-coder エージェント実装
+- [.claude/agents/issue-generator.md](../../.claude/agents/issue-generator.md): issue-generator エージェント実装
+- [.claude/agents/commit-message-generator.md](../../.claude/agents/commit-message-generator.md): commit-message-generator エージェント実装
+
+<!-- markdownlint-enable -->
 
 ## 注意事項・制約
 
@@ -528,12 +672,22 @@ TypeScript プロジェクトにおけるテストスイートの最適化、実
 3. **セキュリティ**: 機密情報の処理・ログ出力禁止
 4. **ファイル配置**: `.claude/agents/` 直下の配置厳守
 
-### ag-logger 固有制約
+### プロジェクト固有制約
 
 - model フィールドは常に `inherit` を指定
 - MCP ツール (`lsmcp`, `serena-mcp`) の積極活用
-- 4層テスト戦略との整合性確保
-- lefthook 品質ゲートとの連携
+- 4層テスト戦略との整合性確保:
+  - Unit tests: `pnpm run test:develop`
+  - Functional tests: `pnpm run test:functional`
+  - Integration tests: `pnpm run test:ci`
+  - E2E tests: `pnpm run test:e2e`
+- 品質ゲート (5 項目) との連携:
+  - 型チェック: `pnpm run check:types`
+  - リンター: `pnpm run lint:all`
+  - テスト実行: `pnpm run test:develop`
+  - フォーマット: `pnpm run check:dprint`
+  - ビルド確認: `pnpm run build`
+- lefthook による pre-commit 自動品質保証
 
 ### 品質保証要件
 

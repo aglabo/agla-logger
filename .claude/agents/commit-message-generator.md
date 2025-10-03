@@ -7,11 +7,13 @@ model: inherit
 
 # ユーザー管理ヘッダー
 title: agla-logger
-version: 1.0.0
+version: 1.1.0
 created: 2025-01-28
 authors:
   - atsushifx
 changes:
+  - 2025-10-03: commitlint準拠の文字数制限追加 (ヘッダー72文字、本文100文字)
+  - 2025-10-03: codex-mcp 統合によるコミット作成に変更
   - 2025-01-28: custom-agents.md ルールに従って全面書き直し
 copyright:
   - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
@@ -57,15 +59,26 @@ type(scope): summary
 - 箇条書き: ファイル名の後にコロン `:` で改行し、本文を `-` の分だけインデント
 - Claude Code スタンプ・Co-Authored-By は含めない
 
+#### 文字数制限 (commitlint準拠)
+
+- ヘッダー行 (`type(scope): summary`): **72文字以内**
+- 本文各行: **100文字以内**
+- 超過する場合は適切に改行・要約
+
 #### コミット実行時の処理
 
-実際にコミットを実行する際は、ヘッダーとフッターを除去した内容でコミット:
+実際にコミットを実行する際は、ヘッダーとフッターを除去した内容を使用します。
 
 ```bash
 # ヘッダー・フッター除去処理
 commit_message=$(echo "$generated_message" | sed '/^=== commit header ===/d' | sed '/^=== commit footer ===/d')
-git commit -m "$commit_message"
 ```
+
+コミット作成は **codex-mcp** (mcp__codex-mcp__codex) ツールに委譲:
+
+- Claude が codex-mcp を呼び出してコミット実行
+- プロンプト例: "Create a git commit with message: $commit_message"
+- 自動で git hooks 実行、エラーハンドリング、コミット検証を実施
 
 ### Git 差分分析システム
 
@@ -116,11 +129,13 @@ type(scope): summary
 
 - ヘッダー行: `type(scope): summary`
   - summary: 全体変更の簡潔な要約
+  - **文字数制限: 72文字以内** (commitlint 準拠)
 - 変更ファイルセクション:
   - 各ファイルの変更内容を具体的に記述
   - ファイル名は相対パス使用
   - 変更概要は動詞で開始 (追加、修正、削除など)
   - ファイル名の後にコロン `:` で改行し、本文を `-` の分だけインデント
+  - **各行の文字数制限: 100文字以内** (commitlint 準拠)
 
 #### Type 分類
 
@@ -173,10 +188,12 @@ echo "----- END DIFF -----"
 
 grep -r "commit" CLAUDE.md README.md
 
-# 5. コミット実行 (ヘッダー・フッター除去)
-
+# 5. コミットメッセージ準備 (ヘッダー・フッター除去)
 commit_message=$(echo "$generated_message" | sed '/^=== commit header ===/d' | sed '/^=== commit footer ===/d')
-git commit -m "$commit_message"
+
+# 6. codex-mcp によるコミット作成
+# Note: Claude が mcp__codex-mcp__codex ツールを使用
+# Prompt: "Create a git commit with message: $commit_message"
 ```
 
 ### Read ツール活用

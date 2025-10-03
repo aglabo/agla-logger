@@ -174,11 +174,20 @@ git log main..HEAD --pretty=format:"%s %b" | grep -oE '#[0-9]+'
 
 ### ステップ 6: ドラフト保存
 
-`.github/PULL_REQUEST_TEMPLATE.md` の見出し構造を厳格に維持します。
-各セクションに分析結果を充填したうえで `temp/pr/${OUTPUT_FILE}` に保存します。
+ドラフトファイルの構造:
+
+1. **1行目**: ステップ 3 で生成した Conventional Commit 形式のタイトルを H1 見出しとして出力
+   - 形式: `# <type>(<scope>): <description>`
+   - 例: `# feat(commands): unify idd workflow commands`
+2. **2行目**: 空行
+3. **3行目以降**: `.github/PULL_REQUEST_TEMPLATE.md` の見出し構造を厳格に維持
+   - 各セクションに分析結果を充填
+   - テンプレートファイルの見出し、区切り線 (`---`)、チェックリスト項目を一切変更しない
+
+最終的に `temp/pr/${OUTPUT_FILE}` に保存します。
 
 注意:
-テンプレートファイルの見出し、区切り線 (`---`)、チェックリスト項目を一切変更せず、内容のみを自動生成したものに置き換えてください。
+最初の H1 見出しはテンプレートの外側に追加し、テンプレート本体はそのまま維持してください。
 
 ## プロジェクト適応
 
@@ -196,6 +205,24 @@ git log main..HEAD --pretty=format:"%s %b" | grep -oE '#[0-9]+'
 - エンコーディング: UTF-8
 - 改行コード: LF
 - マークダウン形式: GitHub Flavored Markdown
+
+ファイル構造:
+
+```markdown
+# <type>(<scope>): <description>
+
+## {テンプレートの最初のH2見出し}
+
+...
+
+## {テンプレートの次のH2見出し}
+
+...
+```
+
+- 1行目: Conventional Commit 形式の H1 見出し (ステップ 3 で生成)
+- 2行目: 空行
+- 3行目以降: `.github/PULL_REQUEST_TEMPLATE.md` から取得した見出し構造をそのまま使用
 
 ## 最終確認チェックリスト
 
@@ -225,9 +252,9 @@ git log main..HEAD --pretty=format:"%s %b" | grep -oE '#[0-9]+'
 💾 ドラフト保存先: temp/pr/${OUTPUT_FILE}
 
 💡 次のステップ:
-  1. ドラフトを確認・編集
-  2. プロジェクトの品質チェックを実行
-  3. PR を作成: gh pr create --title "..." --body-file temp/pr/${OUTPUT_FILE}
+  1. ドラフトを確認・編集: /idd-pr view
+  2. 必要に応じて編集: /idd-pr edit
+  3. PR を作成: /idd-pr push
 ```
 
 ## パラメータの使用方法
