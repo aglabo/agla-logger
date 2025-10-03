@@ -348,6 +348,128 @@ LAST_COMMAND="$command"
 LAST_BRANCH_NAME="$branch_name"
 EOF
 }
+
+# codex-mcpでIssue分析→ブランチ名提案
+# 引数: $1 - Issue番号, $2 - タイトル, $3 - Issue内容
+# 戻り値: グローバル変数 SUGGESTED_BRANCH に提案されたブランチ名を設定
+analyze_issue_for_branch() {
+  local issue_num="$1"
+  local title="$2"
+  local issue_content="$3"
+
+  echo "🤖 Analyzing issue content with codex-mcp..."
+  echo ""
+
+  # Note: Claude will use mcp__codex-mcp__codex tool with the following prompt:
+  ANALYSIS_PROMPT="Analyze this GitHub Issue and suggest a branch name following these rules:
+
+Issue #${issue_num}: ${title}
+
+Content:
+${issue_content}
+
+Rules:
+1. Determine the commitlint type (feat, fix, chore, docs, style, refactor, test, build, ci, perf)
+2. Extract a scope (component/module name, e.g., 'claude-commands', 'logger-core', 'error-handling')
+3. Create a slug from the title (lowercase, hyphenated, max 50 chars)
+4. Format: <type>-${issue_num}/<scope>/<slug>
+
+Examples:
+- feat-42/user-auth/login-system
+- fix-123/error-handling/null-pointer
+- chore-42/claude-commands/idd-issue-branch-auto
+
+Output ONLY the branch name, nothing else."
+
+  # Claude will invoke mcp__codex-mcp__codex and set SUGGESTED_BRANCH
+  # SUGGESTED_BRANCH="<result from codex-mcp>"
+}
+
+# 既存ブランチへの切り替え確認・実行
+# 引数: $1 - ブランチ名
+# 戻り値: 0=成功, 1=失敗またはキャンセル
+switch_to_existing_branch() {
+  local branch_name="$1"
+
+  echo "⚠️  Branch already exists. Switch to it?"
+  read -p "Switch? (Y/n): " SWITCH_CONFIRM
+
+  if [[ "$SWITCH_CONFIRM" =~ ^[Yy]?$ ]]; then
+    if git switch "$branch_name"; then
+      echo "✅ Switched to existing branch: $branch_name"
+      return 0
+    else
+      echo "❌ Failed to switch to branch"
+      return 1
+    fi
+  else
+    echo "❌ Operation cancelled"
+    return 1
+  fi
+}
+
+# 新規ブランチ作成・切り替え
+# 引数: $1 - ブランチ名
+# 戻り値: 0=成功, 1=失敗
+create_branch_from_suggestion() {
+  local branch_name="$1"
+
+  echo ""
+  echo "📌 Suggested branch name:"
+  echo "   $branch_name"
+  echo ""
+  echo "🌿 Create and switch to this branch?"
+  read -p "Proceed? (Y/n): " CONFIRM
+
+  if [[ ! "$CONFIRM" =~ ^[Yy]?$ ]]; then
+    echo "❌ Branch creation cancelled"
+    return 1
+  fi
+
+  echo ""
+  echo "🔧 Creating branch..."
+
+  # Check if branch already exists
+  if git show-ref --verify --quiet "refs/heads/$branch_name"; then
+    switch_to_existing_branch "$branch_name"
+    return $?
+  fi
+
+  # Create and switch to new branch
+  if git switch -c "$branch_name"; then
+    echo "✅ Branch created and checked out: $branch_name"
+    echo ""
+    echo "Next steps:"
+    echo "  1. Make your changes"
+    echo "  2. Commit with: git commit -m '<type>(<scope>): <description>'"
+    echo "  3. Push with: git push -u origin $branch_name"
+    return 0
+  else
+    echo "❌ Failed to create branch"
+    return 1
+  fi
+}
+
+# Issueメタデータ一括抽出
+# 引数: なし (グローバル変数 $ISSUE_FILE を使用)
+# 戻り値: グローバル変数 ISSUE_FILENAME, ISSUE_TITLE, ISSUE_TYPE, ISSUE_NUM を設定
+extract_issue_metadata() {
+  ISSUE_FILENAME=$(basename "$ISSUE_FILE" .md)
+  ISSUE_TITLE=$(extract_title "$ISSUE_FILE")
+  ISSUE_TYPE=$(detect_issue_type "$ISSUE_TITLE")
+  ISSUE_NUM=$(extract_issue_number "$ISSUE_FILENAME")
+}
+
+# Issue処理後のセッション更新
+# 引数: $1 - コマンド名, $2 - ブランチ名 (オプション)
+# 処理: extract_issue_metadata() → save_session() を実行
+update_issue_session() {
+  local command="$1"
+  local branch_name="${2:-}"
+
+  extract_issue_metadata
+  save_session "$ISSUE_FILENAME" "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_TYPE" "$command" "$branch_name"
+}
 ```
 
 ## 実行フロー
@@ -398,12 +520,8 @@ $PAGER "$ISSUE_FILE"
 echo "=================================================="
 echo "📊 $(wc -l < "$ISSUE_FILE") lines, $(wc -w < "$ISSUE_FILE") words"
 
-# Save session
-FILENAME=$(basename "$ISSUE_FILE" .md)
-TITLE=$(extract_title "$ISSUE_FILE")
-ISSUE_TYPE=$(detect_issue_type "$TITLE")
-ISSUE_NUM=$(extract_issue_number "$FILENAME")
-save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "view"
+# Update session
+update_issue_session "view"
 
 echo ""
 echo "Commands:"
@@ -426,12 +544,8 @@ echo "📝 Opening in $EDITOR..."
 $EDITOR "$ISSUE_FILE"
 echo "✅ Issue edited"
 
-# Save session
-FILENAME=$(basename "$ISSUE_FILE" .md)
-TITLE=$(extract_title "$ISSUE_FILE")
-ISSUE_TYPE=$(detect_issue_type "$TITLE")
-ISSUE_NUM=$(extract_issue_number "$FILENAME")
-save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "edit"
+# Update session
+update_issue_session "edit"
 ```
 
 ### Subcommand: load
@@ -525,10 +639,9 @@ if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
-# Save session after successful push
-ISSUE_TYPE=$(detect_issue_type "$TITLE")
-ISSUE_NUM=$(extract_issue_number "$ISSUE_NAME")
-save_session "$ISSUE_NAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "push"
+# Update session after successful push
+extract_issue_metadata
+save_session "$ISSUE_FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "push"
 
 echo ""
 echo "🎉 Push completed!"
@@ -560,16 +673,15 @@ if ! find_issue_file "$1"; then
   exit 1
 fi
 
-# Load issue content
+# Load issue content and metadata
 ISSUE_CONTENT=$(cat "$ISSUE_FILE")
-FILENAME=$(basename "$ISSUE_FILE" .md)
-ISSUE_NUM=$(extract_issue_number "$FILENAME")
-TITLE=$(extract_title "$ISSUE_FILE")
+extract_issue_metadata
 
-echo "📋 Issue #$ISSUE_NUM: $TITLE"
+echo "📋 Issue #$ISSUE_NUM: $ISSUE_TITLE"
 echo ""
 
-# Check if branch name already exists in session
+# Check session for saved branch name
+SUGGESTED_BRANCH=""
 if load_session && [ -n "$LAST_BRANCH_NAME" ] && [ "$LAST_ISSUE_NUMBER" = "$ISSUE_NUM" ]; then
   echo "💡 Found saved branch name: $LAST_BRANCH_NAME"
   echo ""
@@ -577,35 +689,30 @@ if load_session && [ -n "$LAST_BRANCH_NAME" ] && [ "$LAST_ISSUE_NUMBER" = "$ISSU
   if [[ "$USE_SAVED" =~ ^[Yy]?$ ]]; then
     SUGGESTED_BRANCH="$LAST_BRANCH_NAME"
     echo "✅ Using saved branch name"
-  else
-    SUGGESTED_BRANCH=""
   fi
-else
-  SUGGESTED_BRANCH=""
 fi
 
-# If no saved branch or user declined, analyze with codex-mcp
+# Analyze with codex-mcp if no saved branch
 if [ -z "$SUGGESTED_BRANCH" ]; then
-  echo "🤖 Analyzing issue content with codex-mcp..."
-  echo ""
-
-  # Note: Claude will use codex-mcp to analyze the issue and suggest:
-  #   1. Commitlint type (feat, fix, chore, docs, style, refactor, test, etc.)
-  #   2. Scope (specific function, command, module name)
-  #   3. Branch name in format: <type>-<issue-no>/<scope>/<title-slug>
-  #
-  # Example analysis for Issue #42:
-  #   Type: chore (adding development tooling)
-  #   Scope: claude-commands (modifying .claude/commands/)
-  #   Branch: chore-42/claude-commands/idd-issue-branch-auto
-  #
-  # After analysis, save the suggested branch name to session:
-  #   SUGGESTED_BRANCH="chore-42/claude-commands/idd-issue-branch-auto"
-  #   save_session "$FILENAME" "$ISSUE_NUM" "$TITLE" "$ISSUE_TYPE" "branch" "$SUGGESTED_BRANCH"
+  analyze_issue_for_branch "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_CONTENT"
+  # Note: Claude will call analyze_issue_for_branch() which sets SUGGESTED_BRANCH
+  # Then save to session:
+  save_session "$ISSUE_FILENAME" "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_TYPE" "branch" "$SUGGESTED_BRANCH"
 fi
 
-# Default behavior (-n): Only show the suggestion without creating the branch.
-# With -c flag: Create the branch after user confirmation.
+# Execute based on mode
+if [ "$CREATE_BRANCH" = false ]; then
+  # Suggestion mode: Display only
+  echo ""
+  echo "📌 Suggested branch name:"
+  echo "   $SUGGESTED_BRANCH"
+  echo ""
+  echo "💡 To create this branch, run:"
+  echo "   /idd-issue branch -c $ISSUE_NUM"
+else
+  # Create mode: Create and switch
+  create_branch_from_suggestion "$SUGGESTED_BRANCH"
+fi
 ```
 
 ## アーキテクチャの特徴
