@@ -702,6 +702,7 @@ feat(logger): ログレベルフィルタリング機能を追加
 - [フロントマターガイド](frontmatter-guide.md): フロントマター統一ルール
 - [執筆ルール](writing-rules.md): Claude 向け執筆禁則事項
 - [ドキュメントテンプレート](document-template.md): 標準テンプレート
+- [AI Development Standards](../for-ai-dev-standards/README.md): AI 開発標準ドキュメント
 
 ---
 
