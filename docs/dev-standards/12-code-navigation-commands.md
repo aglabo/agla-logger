@@ -1,127 +1,107 @@
-# コードナビゲーション最適化コマンドガイド
+---
+header:
+  - src: 12-code-navigation-commands.md
+  - @(#): MCP Commands Reference
+title: agla-logger
+description: 開発者向けMCPコマンドリファレンス
+version: 1.0.0
+created: 2025-09-22
+updated: 2025-09-27
+authors:
+  - atsushifx
+changes:
+  - 2025-09-22: 初版作成
+  - 2025-09-27: AI専用詳細を分離、開発者向けリファレンスに変更
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
+
+## MCPコマンドリファレンス
+
+このドキュメントは、agla-loggerプロジェクトで利用可能な主要MCPコマンドのリファレンスを提供します。
 
 ## 概要
 
-このガイドは lsmcp と serena-mcp を使用して ag-logger コードベースを効率的にナビゲートし、トークン使用量を最小化するためのコマンド集です。
+MCPツールは、Claude CodeでTypeScriptプロジェクトを効率的に操作するためのツールセットです。
+主にプロジェクト理解、コード検索、型情報取得、リファクタリング支援に使用されます。
 
-## プロジェクト基本情報
+## 主要MCPツール
+
+### lsmcp (Language Server MCP)
+
+- **プロジェクト概要**: `mcp__lsmcp__get_project_overview`
+- **シンボル検索**: `mcp__lsmcp__search_symbols`
+- **型情報取得**: `mcp__lsmcp__lsp_get_hover`
+- **定義確認**: `mcp__lsmcp__lsp_get_definitions`
+- **参照検索**: `mcp__lsmcp__lsp_find_references`
+
+### serena-mcp (Semantic Analysis MCP)
+
+- **ファイル検索**: `mcp__serena-mcp__find_file`
+- **シンボル詳細**: `mcp__serena-mcp__find_symbol`
+- **パターン検索**: `mcp__serena-mcp__search_for_pattern`
+- **参照分析**: `mcp__serena-mcp__find_referencing_symbols`
+
+## 基本的な使用例
+
+### プロジェクト理解
 
 ```bash
-# プロジェクトルート
-ROOT="C:\Users\atsushifx\workspaces\develop\ag-logger\packages\@aglabo\ag-logger"
-
-# 統計情報
-- 総ファイル数: 49
-- 総シンボル数: 126
-- クラス数: 10
-- メソッド数: 79
-- プロパティ数: 26
-```
-
-## 1. プロジェクト概観コマンド
-
-### 初期状況把握
-
-```bash
-# プロジェクト全体概観
+# プロジェクト全体概要
 mcp__lsmcp__get_project_overview --root "$ROOT"
 
-# ディレクトリ構造確認
-mcp__lsmcp__list_dir --relativePath "." --recursive false
-
-# TypeScript ファイル一覧
-mcp__serena-mcp__find_file --file_mask "*.ts" --relative_path "."
-```
-
-### 高レベル構造理解
-
-```bash
-# メインディレクトリの確認
-mcp__serena-mcp__list_dir --relative_path "src" --recursive false
-mcp__serena-mcp__list_dir --relative_path "shared" --recursive false
-mcp__serena-mcp__list_dir --relative_path "configs" --recursive false
-```
-
-## 2. 効率的シンボル検索戦略
-
-### クラス検索（最優先）
-
-```bash
-# 全クラス一覧（10個のクラス）
-mcp__lsmcp__search_symbols --kind ["Class"] --root "$ROOT"
-
-# 主要クラスの詳細検索
+# 主要クラス検索
 mcp__lsmcp__search_symbols --query "AgLogger" --root "$ROOT"
-mcp__lsmcp__search_symbols --query "AgLoggerManager" --root "$ROOT"
-mcp__lsmcp__search_symbols --query "AgLoggerConfig" --root "$ROOT"
 ```
 
-### プラグイン検索
+### コード検索
 
 ```bash
-# Formatter プラグイン検索
-mcp__lsmcp__search_symbols --query "Formatter" --root "$ROOT"
+# パターン検索
+mcp__serena-mcp__search_for_pattern --substring_pattern "class.*Logger" --relative_path "src"
 
-# Logger プラグイン検索  
-mcp__lsmcp__search_symbols --query "Logger" --root "$ROOT"
-
-# Mock 関連検索
-mcp__lsmcp__search_symbols --query "Mock" --root "$ROOT"
+# ファイル検索
+mcp__serena-mcp__find_file --file_mask "*.ts" --relative_path "src"
 ```
 
-### 型・インターフェース検索
+### 型情報取得
 
 ```bash
-# 主要型定義検索
-mcp__serena-mcp__get_symbols_overview --relative_path "shared/types/AgLogger.interface.ts"
-mcp__serena-mcp__get_symbols_overview --relative_path "shared/types/AgLogLevel.types.ts"
-mcp__serena-mcp__get_symbols_overview --relative_path "shared/types/AgLoggerError.types.ts"
+# 型定義確認
+mcp__lsmcp__lsp_get_definitions --symbolName "AgLogger"
+
+# 参照箇所確認
+mcp__lsmcp__lsp_find_references --symbolName "AgLogger"
 ```
 
-## 3. 詳細シンボル解析コマンド
+## AI開発支援の詳細ガイド
 
-### コアクラス詳細解析
+MCPツールの詳細な使用方法とAI開発支援については、以下の専用ドキュメントを参照してください:
 
-```bash
-# AgLogger クラス完全解析
-mcp__lsmcp__get_symbol_details --relativePath "src\AgLogger.class.ts" --line 32 --symbol "AgLogger" --root "$ROOT"
+### 開発者向けガイド
 
-# AgLoggerManager クラス詳細
-mcp__lsmcp__get_symbol_details --relativePath "src\AgLoggerManager.class.ts" --line 27 --symbol "AgLoggerManager" --root "$ROOT"
+- **[AI支援開発ガイド](16-ai-assisted-development.md)** - 効果的なMCPツール活用方法
+- **[AIツール概要](11-coding-ai-tools.md)** - 利用可能なAIツールとベストプラクティス
 
-# AgLoggerConfig クラス詳細
-mcp__lsmcp__get_symbol_details --relativePath "src\internal\AgLoggerConfig.class.ts" --line 49 --symbol "AgLoggerConfig" --root "$ROOT"
-```
+### AIエージェント向け専用ガイド
 
-### メソッド個別解析
+- **[for-AI-dev-standards/](../for-AI-dev-standards/)** - AIエージェント専用開発標準
+  - [04-code-navigation.md](../for-AI-dev-standards/04-code-navigation.md) - 詳細なナビゲーション戦略
+  - [03-mcp-tools-usage.md](../for-AI-dev-standards/03-mcp-tools-usage.md) - MCPツール完全活用ガイド
 
-```bash
-# executeLog メソッド（核心処理）
-mcp__lsmcp__lsp_get_definitions --relativePath "src\AgLogger.class.ts" --line 250 --symbolName "executeLog" --includeBody true --root "$ROOT"
+## 関連ドキュメント
 
-# createLogger メソッド
-mcp__lsmcp__lsp_get_definitions --relativePath "src\AgLogger.class.ts" --line 57 --symbolName "createLogger" --includeBody true --root "$ROOT"
+- [開発ワークフロー](02-development-workflow.md) - 基本的な開発フロー
+- [品質保証システム](06-quality-assurance.md) - コード品質管理
 
-# setLoggerConfig メソッド
-mcp__lsmcp__lsp_get_definitions --relativePath "src\AgLogger.class.ts" --line 91 --symbolName "setLoggerConfig" --includeBody true --root "$ROOT"
-```
+---
 
-## 4. プラグイン専用ナビゲーション
+## License
 
-### Formatter プラグイン
-
-```bash
-# JsonFormatter 詳細
-mcp__lsmcp__get_symbol_details --relativePath "src\plugins\formatter\JsonFormatter.ts" --line 21 --symbol "JsonFormatter" --root "$ROOT"
-
-# PlainFormatter 確認
-mcp__serena-mcp__get_symbols_overview --relative_path "src/plugins/formatter/PlainFormatter.ts"
-
-# MockFormatter と ErrorThrowFormatter
-mcp__lsmcp__lsp_get_document_symbols --relativePath "src\plugins\formatter\MockFormatter.ts" --root "$ROOT"
-```
-
-### Logger プラグイン
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx
 
 ```bash
 # ConsoleLogger 詳細
@@ -134,12 +114,12 @@ mcp__lsmcp__get_symbol_details --relativePath "src\plugins\logger\MockLogger.ts"
 mcp__serena-mcp__get_symbols_overview --relative_path "src/plugins/logger/E2eMockLogger.ts"
 ```
 
-## 5. ユーティリティ関数ナビゲーション
+## 7. ユーティリティ関数ナビゲーション
 
 ### 主要ユーティリティ
 
 ```bash
-# AgLogValidators（よく使用される）
+# AgLogValidators (よく使用される) 
 mcp__serena-mcp__get_symbols_overview --relative_path "src/utils/AgLogValidators.ts"
 
 # AgLoggerGetMessage
@@ -162,12 +142,12 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "validate" --relative_pa
 mcp__serena-mcp__search_for_pattern --substring_pattern "create" --relative_path "src" --restrict_search_to_code_files true
 ```
 
-## 6. 依存関係とリファレンス分析
+## 8. 依存関係とリファレンス分析
 
 ### シンボル使用箇所の特定
 
 ```bash
-# AgLogger の全参照箇所（21箇所）
+# AgLogger の全参照箇所 (21箇所) 
 mcp__lsmcp__lsp_find_references --relativePath "src\AgLogger.class.ts" --line 32 --symbolName "AgLogger" --root "$ROOT"
 
 # executeLog メソッドの使用箇所
@@ -187,7 +167,7 @@ mcp__lsmcp__lsp_find_references --relativePath "src\AgLoggerManager.class.ts" --
 mcp__serena-mcp__find_referencing_symbols --name_path "AgLoggerConfig" --relative_path "src/internal/AgLoggerConfig.class.ts"
 ```
 
-## 7. テスト関連ナビゲーション
+## 9. テスト関連ナビゲーション
 
 ### テストファイル検索
 
@@ -216,7 +196,7 @@ mcp__serena-mcp__list_dir --relative_path "src/plugins/formatter/__tests__" --re
 mcp__serena-mcp__list_dir --relative_path "src/plugins/logger/__tests__" --recursive false
 ```
 
-## 8. 設定・ビルド関連
+## 10. 設定・ビルド関連
 
 ### 設定ファイル確認
 
@@ -224,13 +204,13 @@ mcp__serena-mcp__list_dir --relative_path "src/plugins/logger/__tests__" --recur
 # TypeScript 設定
 mcp__serena-mcp__get_symbols_overview --relative_path "tsconfig.json"
 
-# Vitest 設定（4種類）
+# Vitest 設定 (4種類) 
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/vitest.config.unit.ts"
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/vitest.config.functional.ts"
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/vitest.config.integration.ts"
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/vitest.config.e2e.ts"
 
-# ESLint 設定（2種類）
+# ESLint 設定 (2種類) 
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/eslint.config.js"
 mcp__serena-mcp__get_symbols_overview --relative_path "configs/eslint.config.typed.js"
 ```
@@ -246,7 +226,7 @@ mcp__serena-mcp__get_symbols_overview --relative_path "configs/tsup.config.esm.t
 mcp__serena-mcp__search_for_pattern --substring_pattern "\"scripts\":" --relative_path "." --context_lines_after 20
 ```
 
-## 9. 効率的な解析ワークフロー
+## 11. 効率的な解析ワークフロー
 
 ### 新機能理解のワークフロー
 
@@ -283,7 +263,7 @@ mcp__serena-mcp__find_symbol --name_path "関数名" --include_body true --relat
 mcp__serena-mcp__find_file --file_mask "*関数名*.spec.ts" --relative_path "src"
 ```
 
-## 10. トークン最適化戦略
+## 12. トークン最適化戦略
 
 ### 高効率コマンドパターン
 
@@ -314,7 +294,7 @@ mcp__lsmcp__get_symbol_details --relativePath "パス" --line "行" --symbol "�
 mcp__lsmcp__lsp_get_definitions --relativePath "パス" --line "行" --symbolName "メソッド名" --includeBody true --root "$ROOT"
 ```
 
-## 11. よく使用されるコマンドセット
+## 13. よく使用されるコマンドセット
 
 ### 日常的な開発作業
 
@@ -346,7 +326,7 @@ mcp__lsmcp__lsp_find_references --relativePath "パス" --line "行" --symbolNam
 mcp__serena-mcp__search_for_pattern --substring_pattern "設定キー" --relative_path "." --context_lines_after 3
 ```
 
-## 12. メモリ活用戦略
+## 14. メモリ活用戦略
 
 ### 既存メモリの確認
 
@@ -369,7 +349,7 @@ mcp__serena-mcp__write_memory --memory_name "new_findings.md" --content "新し�
 mcp__lsmcp__write_memory --memoryName "updated_symbol_map" --content "更新内容" --root "$ROOT"
 ```
 
-## 13. エラー回避のベストプラクティス
+## 15. エラー回避のベストプラクティス
 
 ### 確実に動作するコマンド
 
@@ -397,7 +377,7 @@ mcp__lsmcp__search_symbols --query "AgLogger" --root "$ROOT"
 # mcp__serena-mcp__search_for_pattern --substring_pattern ".*" --relative_path "." --restrict_search_to_code_files false
 ```
 
-## 14. 高度な検索テクニック
+## 16. 高度な検索テクニック
 
 ### 複合検索パターン
 
@@ -422,7 +402,7 @@ mcp__lsmcp__search_symbols --kind ["Method"] --query "create" --root "$ROOT"
 mcp__serena-mcp__get_symbols_overview --relative_path "src/AgLogger.class.ts"
 ```
 
-## 15. パフォーマンス最適化
+## 17. パフォーマンス最適化
 
 ### 検索順序の最適化
 
@@ -446,7 +426,7 @@ mcp__serena-mcp__list_dir --relative_path "src/plugins/logger" --recursive false
 mcp__serena-mcp__list_dir --relative_path "src/utils" --recursive false
 ```
 
-## 16. 実践的コマンド例
+## 18. 実践的コマンド例
 
 ### シナリオ1: 新しいフォーマッタープラグイン開発
 
@@ -481,29 +461,11 @@ mcp__serena-mcp__find_file --file_mask "*executeLog*.spec.ts" --relative_path "s
 mcp__serena-mcp__find_referencing_symbols --name_path "executeLog" --relative_path "src/AgLogger.class.ts"
 ```
 
-## 参考情報
+## 19. 参考情報
 
 ### プロジェクト内の重要ファイル
 
-- **エントリーポイント**: `src/index.ts`
-- **メインクラス**: `src/AgLogger.class.ts`
-- **設定管理**: `src/internal/AgLoggerConfig.class.ts`
-- **型定義**: `shared/types/AgLogger.interface.ts`
-
-### 最新の統計情報
-
-- **最終更新**: 2025-09-08T02:18:04.484Z
-- **インデックス時間**: 18秒
-- **総シンボル数**: 126個
-- **プロジェクトルート**: `C:\Users\atsushifx\workspaces\develop\ag-logger\packages\@aglabo\ag-logger`
-
-### 効率性指標
-
-このガイドに従うことで：
-
-- **検索時間**: 平均70%短縮
-- **トークン使用量**: 最大90%削減
-- **精度**: 95%以上の適切な結果
-- **学習コスト**: 段階的習得可能
-
-このコマンドガイドを活用することで、ag-logger コードベースを効率的にナビゲートし、必要な情報に最小限のトークンでアクセスできます。
+- エントリーポイント: `src/index.ts`
+- メインクラス: `src/AgLogger.class.ts`
+- 設定管理: `src/internal/AgLoggerConfig.class.ts`
+- 型定義: `shared/types/AgLogger.interface.ts`

@@ -1,25 +1,41 @@
-# 品質保証システム完全ガイド
+---
+header:
+  - src: 03-quality-assurance.md
+  - @(#): Quality Assurance
+title: agla-logger
+description: 品質保証プロセスと必須チェックの統合ガイド
+version: 1.0.0
+created: 2025-09-22
+authors:
+  - atsushifx
+changes:
+  - 2025-09-22: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
 
-## 概要
+## 品質保証システム完全ガイド
 
-ag-loggerプロジェクトの多層的品質保証システム。静的解析、セキュリティチェック、文書品質、自動化フックを統合した包括的な品質管理を提供します。
+## 1. 概要
 
-## 品質保証システム全体設計
+ag-logger プロジェクトの多層的品質保証システム。静的解析、セキュリティチェック、文書品質、自動化フックを統合した包括的な品質管理を提供します。
+
+## 2. 品質保証システム全体設計
 
 ### 6層品質ゲート構成
 
 **包括的品質保証によるコード品質とセキュリティの確保**
 
-```
-1. 静的解析     - ESLint, TypeScript コンパイラ
-2. フォーマット  - dprint による統一書式
-3. セキュリティ  - secretlint, gitleaks による機密情報検出
-4. 文書品質     - textlint, markdownlint, cspell
-5. 規約遵守     - commitlint, ls-lint
-6. 自動化      - lefthook による Pre-commit hooks
-```
+1. 静的解析 - ESLint, TypeScript コンパイラ
+2. フォーマット - dprint による統一書式
+3. セキュリティ - secretlint, gitleaks による機密情報検出
+4. 文書品質 - textlint, markdownlint, cspell
+5. 規約遵守 - commitlint, ls-lint
+6. 自動化 - lefthook による Pre-commit hooks
 
-### MCPツールによる品質システム調査
+### 3.1. MCPツールによる品質システム調査
 
 #### 品質設定の詳細理解
 
@@ -35,9 +51,9 @@ mcp__serena-mcp__get_symbols_overview --relative_path "configs/eslint.config.all
 mcp__serena-mcp__find_file --file_mask "lefthook.yml" --relative_path "."
 ```
 
-## ESLint設定システム
+## 3. ESLint設定システム
 
-### 二段階ESLint設定アーキテクチャ
+### 4.1. 二段階ESLint設定アーキテクチャ
 
 **基本設定とTypeScript特化設定の戦略的分離**
 
@@ -48,11 +64,11 @@ mcp__serena-mcp__find_file --file_mask "lefthook.yml" --relative_path "."
 pnpm run lint
 pnpm -r run lint
 
-# 中央集約基本リント（全ファイル対象）
+# 中央集約基本リント (全ファイル対象) 
 pnpm run lint-all
 ```
 
-**設定ファイル**:
+設定ファイル:
 
 - パッケージレベル: `configs/eslint.config.js`
 - 中央集約: `configs/eslint.config.all.js`
@@ -64,11 +80,11 @@ pnpm run lint-all
 pnpm run lint:types
 pnpm -r run lint:types
 
-# 中央集約 TypeScript リント（全ファイル対象）
+# 中央集約 TypeScript リント (全ファイル対象) 
 pnpm run lint-all:types
 ```
 
-**設定ファイル**:
+設定ファイル:
 
 - パッケージレベル: `configs/eslint.config.typed.js`
 - 中央集約: `configs/eslint.config.all.typed.js`
@@ -86,7 +102,7 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "rules.*:" --relative_pa
 mcp__serena-mcp__search_for_pattern --substring_pattern "plugins.*:" --relative_path "configs" --context_lines_after 3
 ```
 
-### 統合リント実行
+### 4.2. 統合リント実行
 
 #### 包括的リントフロー
 
@@ -99,7 +115,7 @@ pnpm run lint -- --fix
 pnpm run lint:all -- --fix
 ```
 
-### ESLint高度ルール構成
+### 4.3. ESLint高度ルール構成
 
 ```javascript
 // configs/eslint.config.all.typed.js
@@ -124,9 +140,9 @@ export default [
 ];
 ```
 
-## コードフォーマットシステム
+## 4. コードフォーマットシステム
 
-### dprint統一フォーマットシステム
+### 5.1. dprint統一フォーマットシステム
 
 **一貫性のあるコードスタイル維持**
 
@@ -136,7 +152,7 @@ export default [
 # コードフォーマット実行
 pnpm run format:dprint
 
-# フォーマットチェック（CI 用）
+# フォーマットチェック (CI 用) 
 pnpm run check:dprint
 ```
 
@@ -150,7 +166,7 @@ mcp__serena-mcp__find_file --file_mask "dprint.json*" --relative_path "."
 mcp__serena-mcp__search_for_pattern --substring_pattern "includes.*excludes" --relative_path "." --context_lines_after 5
 ```
 
-### dprint詳細設定
+### 5.2. dprint詳細設定
 
 ```json
 // dprint.jsonc
@@ -179,9 +195,9 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "includes.*excludes" --r
 }
 ```
 
-## セキュリティチェックシステム
+## 5. セキュリティチェックシステム
 
-### secretlint機密情報検出システム
+### 6.1. secretlint機密情報検出システム
 
 **コミット前機密情報漏洩防止**
 
@@ -224,7 +240,7 @@ rules:
         - "github_pat_example_*"
 ```
 
-### gitleaks追加セキュリティ層
+### 6.2. gitleaks追加セキュリティ層
 
 ```toml
 # configs/gitleaks.toml
@@ -250,9 +266,9 @@ regex = '''(?i)(mysql|postgres|mongodb)://[^\s]+'''
 tags = ["database", "connection"]
 ```
 
-## TypeScript型チェック
+## 6. TypeScript型チェック
 
-### 厳密な型安全性システム
+### 7.1. 厳密な型安全性システム
 
 #### 型チェック実行コマンド
 
@@ -280,7 +296,7 @@ mcp__lsmcp__lsp_get_diagnostics --relativePath "src/AgLogger.class.ts" --root "$
 mcp__serena-mcp__search_for_pattern --substring_pattern "\\berror TS" --relative_path "." --context_lines_after 2
 ```
 
-### TypeScript厳密設定
+### 7.2. TypeScript厳密設定
 
 ```json
 // base/configs/tsconfig.base.json
@@ -301,9 +317,9 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "\\berror TS" --relative
 }
 ```
 
-## 文書品質チェック
+## 7. 文書品質チェック
 
-### cspellスペルチェックシステム
+### 8.1. cspellスペルチェックシステム
 
 #### スペルチェック実行
 
@@ -358,7 +374,7 @@ mcp__serena-mcp__find_file --file_mask "*.dic" --relative_path ".vscode/cspell"
 }
 ```
 
-### Markdownリント・textlint
+### 8.2. Markdownリント・textlint
 
 #### Markdown品質チェック
 
@@ -366,7 +382,7 @@ mcp__serena-mcp__find_file --file_mask "*.dic" --relative_path ".vscode/cspell"
 # Markdown 構文チェック
 pnpm run lint:markdown
 
-# 文書品質チェック（textlint）
+# 文書品質チェック (textlint) 
 pnpm run lint:text
 ```
 
@@ -423,9 +439,9 @@ rules:
       strict: false
 ```
 
-## ファイル名・構造規約
+## 8. ファイル名・構造規約
 
-### ls-lintファイル名規約システム
+### 9.1. ls-lintファイル名規約システム
 
 #### ファイル名チェック実行
 
@@ -478,14 +494,14 @@ extensions:
   - ".yml"
 ```
 
-## コミット品質管理
+## 9. コミット品質管理
 
-### commitlint規約遵守システム
+### 9.2. commitlint規約遵守システム
 
 #### コミットメッセージ検証
 
 ```bash
-# コミットメッセージ検証（lefthook により自動実行）
+# コミットメッセージ検証 (lefthook により自動実行) 
 pnpm exec commitlint --from HEAD~1 --to HEAD --verbose
 
 # 手動コミットメッセージ確認
@@ -530,7 +546,7 @@ export default {
 };
 ```
 
-### codegpt自動改善システム
+### 9.3. codegpt自動改善システム
 
 ```yaml
 # configs/codegpt.config.yaml
@@ -547,9 +563,9 @@ commit:
   enforce_conventional: true
 ```
 
-## Pre-commitフック（lefthook）
+## 10. Pre-commitフック (lefthook)
 
-### 自動品質ゲートシステム
+### 10.1. 自動品質ゲートシステム
 
 **コミット時自動実行による品質保証**
 
@@ -564,7 +580,7 @@ mcp__serena-mcp__get_symbols_overview --relative_path "lefthook.yml"
 mcp__serena-mcp__search_for_pattern --substring_pattern "commands:" --relative_path "." --context_lines_after 10
 ```
 
-### lefthook包括的設定
+### 10.2. lefthook包括的設定
 
 ```yaml
 # lefthook.yml
@@ -608,9 +624,9 @@ commit-msg:
       fail_text: "コミットメッセージの改善に失敗しました。"
 ```
 
-## キャッシュシステム
+## 11. キャッシュシステム
 
-### 品質チェック高速化
+### 11.1. 品質チェック高速化
 
 **パフォーマンス向上のための各種キャッシュ**
 
@@ -636,7 +652,7 @@ mcp__lsmcp__list_dir --relativePath ".cache" --recursive true
 mcp__serena-mcp__search_for_pattern --substring_pattern "cache" --relative_path "package.json" --context_lines_after 2
 ```
 
-### キャッシュ活用高度コマンド
+### 11.2. キャッシュ活用高度コマンド
 
 ```bash
 # キャッシュ付き ESLint 実行
@@ -648,22 +664,22 @@ pnpm exec cspell --cache --cache-location .cache/cspell-cache/ "src/**/*.ts"
 # キャッシュ付き TypeScript チェック
 pnpm exec tsc --incremental --tsBuildInfoFile .cache/typescript-cache/tsbuildinfo
 
-# キャッシュクリア（問題発生時）
+# キャッシュクリア (問題発生時) 
 rm -rf .cache
 pnpm install
 ```
 
-## 品質メトリクス・レポーティング
+## 12. 品質メトリクス・レポーティング
 
-### コード品質指標
+### 12.1. コード品質指標
 
 #### 品質目標値
 
-- **ESLint エラー数**: 0 を維持
-- **TypeScript エラー数**: 0 を維持
-- **テストカバレッジ**: 90%+ を目標
-- **セキュリティ警告**: 0 を維持
-- **スペルエラー**: 0 を維持
+- ESLint エラー数: 0 を維持
+- TypeScript エラー数: 0 を維持
+- テストカバレッジ: 90%+ を目標
+- セキュリティ警告: 0 を維持
+- スペルエラー: 0 を維持
 
 #### MCPツールによるメトリクス確認
 
@@ -675,7 +691,7 @@ mcp__lsmcp__get_project_overview --root "$ROOT"
 mcp__serena-mcp__search_for_pattern --substring_pattern "error|warning|TODO|FIXME" --relative_path "src" --restrict_search_to_code_files true
 ```
 
-### 品質レポート生成システム
+### 12.2. 品質レポート生成システム
 
 ```bash
 # ESLint 詳細レポート生成
@@ -694,9 +710,9 @@ pnpm test --coverage --reporter=html --outputFile=reports/coverage.html
 pnpm exec secretlint --format json --output reports/security-report.json "**/*"
 ```
 
-## CI/CD品質ゲート
+## 13. CI/CD品質ゲート
 
-### GitHub Actions統合
+### 12.3. GitHub Actions統合
 
 #### CI用品質チェック実行
 
@@ -725,9 +741,9 @@ mcp__serena-mcp__find_file --file_mask "*.yml" --relative_path ".github/workflow
 mcp__serena-mcp__search_for_pattern --substring_pattern "pnpm run.*check|pnpm run.*lint" --relative_path ".github" --context_lines_after 2
 ```
 
-## 包括的品質チェック
+## 14. 包括的品質チェック
 
-### 開発完了前必須チェックリスト
+### 13.1. 開発完了前必須チェックリスト
 
 #### 段階的品質確認プロセス
 
@@ -759,7 +775,7 @@ mcp__serena-mcp__find_referencing_symbols --name_path "主要シンボル" --rel
 mcp__serena-mcp__find_file --file_mask "*.spec.ts" --relative_path "src/__tests__"
 ```
 
-### リリース前包括品質検証
+### 13.2. リリース前包括品質検証
 
 ```bash
 # 完全品質検証プロセス
@@ -774,9 +790,9 @@ pnpm run build && echo "✅ Build" || echo "❌ Build"
 echo "=== Quality Gate Complete ==="
 ```
 
-## トラブルシューティング
+## 15. トラブルシューティング
 
-### 品質チェック問題診断・解決
+### 14.1. 品質チェック問題診断・解決
 
 #### 段階的問題解決フロー
 
@@ -811,12 +827,19 @@ mcp__serena-mcp__find_file --file_mask "*.config.*" --relative_path "configs"
 mcp__lsmcp__get_typescript_dependencies --root "$ROOT"
 ```
 
-### よくある問題と解決策
+### 16.1. よくある問題と解決策
 
-1. **ESLint設定競合**: `configs/` の設定確認・同期 → `pnpm run sync:configs`
-2. **型エラー**: `tsconfig.json` の継承関係確認 → MCPツールで型システム調査
-3. **フォーマット問題**: `dprint.jsonc` の設定確認 → MCPツールで設定詳細確認
-4. **テスト失敗**: テスト環境の依存関係確認 → MCPツールでテスト構造調査
-5. **セキュリティ警告**: 機密情報の誤検出 → `secretlint.config.yaml` の除外設定調整
+1. ESLint設定競合: `configs/` の設定確認・同期 → `pnpm run sync:configs`
+2. 型エラー: `tsconfig.json` の継承関係確認 → MCP ツールで型システム調査
+3. フォーマット問題: `dprint.jsonc` の設定確認 → MCP ツールで設定詳細確認
+4. テスト失敗: テスト環境の依存関係確認 → MCP ツールでテスト構造調査
+5. セキュリティ警告: 機密情報の誤検出 → `secretlint.config.yaml` の除外設定調整
 
-この品質保証システムにより、ag-loggerプロジェクトの高品質とセキュリティを継続的に維持できます。
+この品質保証システムにより、ag-logger プロジェクトの高品質とセキュリティを継続的に維持できます。
+
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx

@@ -1,40 +1,55 @@
-# 開発ワークフロー完全ガイド
+---
+header:
+  - src: 02-development-workflow.md
+  - @(#): Development Workflow
+title: agla-logger
+description: BDD開発フローと実装手順の詳細ガイド
+version: 1.0.0
+created: 2025-09-22
+authors:
+  - atsushifx
+changes:
+  - 2025-09-22: 初版作成
+copyright:
+  - Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
+  - This software is released under the MIT License.
+  - https://opensource.org/licenses/MIT
+---
 
-## 概要
+## 開発ワークフロー完全ガイド
 
-ag-logger プロジェクトの包括的な開発ワークフロー。BDD（Behavior-Driven Development）手法を基盤とし、厳格な品質ゲートとMCPツール活用による効率的な開発を実現します。
+`agla-logger` プロジェクトの開発ワークフロー。
+BDD (Behavior-Driven Development) 手法を基盤とし、厳格なテストによる品質保持とコーディングエージェントを使った高速な開発を実現します。
 
-## BDD開発手法（atsushifx式）
+## 1. BDD開発手法 (atsushifx式)
 
-### 基本原則
+### 2.1. 基本原則
 
-**厳密なBDD実践による高品質開発**
+コーディングエージェントに対応した具体的かつ詳細な BDD によって、高い品質を保持して開発します。
 
 #### 核となる原則
 
-- **1 message = 1 test**: 実装サイクルごとに単一の `it()` テスト
-- **RED/GREEN確認**: 次のステップに進む前の必須確認
-- **最小実装**: テスト通過に必要な最小限のコードのみ実装
-- **自然言語記述**: 明確で記述的なテスト名
+- 1 message = 1 test: 実装サイクルごとに単一の `it()` テスト
+- RED/GREEN 確認: 次のステップに進む前の必須確認
+- 最小実装: テスト通過に必要な最小限のコードのみ実装
+- 自然言語記述: 明確で記述的なテスト名
 
 #### BDDサイクル
 
-```
-1. 失敗するテスト記述（RED）
+1. 失敗するテスト記述 (RED)
    ↓
-2. テスト通過する最小コード実装（GREEN）
-   ↓  
-3. 必要に応じてリファクタリング
+2. テスト通過する最小コード実装 (GREEN)
+   ↓
+3. 実装したコードのリファクタリング
    ↓
 4. 次のテストで繰り返し
-```
 
-### MCPツール活用による効率化
+### 2.2. MCPツール活用による効率化
 
 #### コード理解フェーズでの必須MCP使用
 
 ```bash
-# Phase 0: 既存コード理解（MCPツール必須）
+# Phase 0: 既存コード理解 (MCPツール必須)
 # プロジェクト構造の把握
 mcp__lsmcp__get_project_overview --root "$ROOT"
 
@@ -45,22 +60,22 @@ mcp__lsmcp__search_symbols --query "関連機能名" --root "$ROOT"
 mcp__lsmcp__get_symbol_details --relativePath "ファイルパス" --line "行" --symbol "シンボル名"
 ```
 
-## 実装フロー詳細
+## 2. 実装フロー詳細
 
-### Phase 1: テスト駆動設計（RED）
+### 3.1. Phase 1: テスト駆動設計 (RED)
 
 ```bash
 # 新機能テスト作成
 cd packages/@aglabo/ag-logger
 
-# 既存テストパターンの研究（MCPツール使用）
-mcp__serena-mcp__find_file --file_mask "*.spec.ts" --relative_path "src/__tests__"
-mcp__serena-mcp__get_symbols_overview --relative_path "src/__tests__/AgLogger.spec.ts"
+# 既存テストパターンの研究 (Claude Code活用)
+「テストファイルの構造と既存のテストパターンを分析して」
+「AgLogger.spec.tsのテスト構造を教えて」
 
 # 新機能テスト作成
 vi src/__tests__/NewFeature.spec.ts
 
-# テスト実行（失敗確認）
+# テスト実行 (失敗確認)
 pnpm exec vitest run src/__tests__/NewFeature.spec.ts
 ```
 
@@ -81,14 +96,14 @@ describe('NewFeature', () => {
 });
 ```
 
-### テスト階層統一ルール（必須遵守）
+### 3.2. テスト階層統一ルール (必須遵守)
 
 #### 3階層BDD構造の厳格適用
 
 **すべてのテストファイルで以下の統一形式を遵守:**
 
 ```typescript
-// パターンA: Given開始（前提条件ベース）
+// パターンA: Given開始 (前提条件ベース)
 describe('Given: [前提条件の詳細記述]', () => {
   describe('When: [具体的な操作・実行内容]', () => {
     it('Then: [正常]/[異常]/[エッジケース] - should [期待される動作]', () => {
@@ -97,7 +112,7 @@ describe('Given: [前提条件の詳細記述]', () => {
   });
 });
 
-// パターンB: Feature開始（機能単位テスト）
+// パターンB: Feature開始 (機能単位テスト)
 describe('Feature: [機能名・特徴の記述]', () => {
   describe('When: [具体的な操作・実行内容]', () => {
     it('Then: [正常]/[異常]/[エッジケース] - should [期待される動作]', () => {
@@ -106,12 +121,6 @@ describe('Feature: [機能名・特徴の記述]', () => {
   });
 });
 ```
-
-#### Then句の分類タグ（必須）
-
-- **[正常]**: 期待された入力・条件での正常動作確認
-- **[異常]**: エラー入力・異常条件での適切なエラー処理確認
-- **[エッジケース]**: 境界値・特殊条件・極端な状況での動作確認
 
 #### DescribeにThen句がある場合の特別ルール
 
@@ -145,7 +154,7 @@ describe('Feature: 高負荷シナリオ処理', () => {
 });
 ```
 
-#### 実装パターン例（実際の使用例）
+#### 実装パターン例 (実際の使用例)
 
 ```typescript
 // Unit Test例
@@ -176,7 +185,7 @@ describe('Feature: Application Lifecycle Management', () => {
 });
 ```
 
-### Phase 2: 最小実装（GREEN）
+### 3.3. Phase 2: 最小実装 (GREEN)
 
 #### MCPツールによる既存パターン調査
 
@@ -197,17 +206,17 @@ mcp__lsmcp__parse_imports --filePath "src/関連ファイル.ts" --root "$ROOT"
 # 実装ファイル作成・編集
 vi src/NewFeature.ts
 
-# テスト実行（成功確認）
+# テスト実行 (成功確認)
 pnpm exec vitest run src/__tests__/NewFeature.spec.ts
 
-# 型チェック（MCPツール活用）
+# 型チェック (MCPツール活用)
 pnpm run check:types
 
 # 実装後のシンボル確認
 mcp__lsmcp__get_symbol_details --relativePath "src/NewFeature.ts" --line "1" --symbol "NewFeature"
 ```
 
-### Phase 3: リファクタリング・品質確認
+### 3.4. Phase 3: リファクタリング・品質確認
 
 #### 統合確認フロー
 
@@ -221,13 +230,13 @@ pnpm run test:develop
 # フォーマット適用
 pnpm run format:dprint
 
-# 影響範囲確認（MCPツール使用）
+# 影響範囲確認 (MCPツール使用)
 mcp__serena-mcp__find_referencing_symbols --name_path "変更したシンボル" --relative_path "src/変更したファイル.ts"
 ```
 
-## 4層テスト戦略
+## 3. 4層テスト戦略
 
-### テスト階層アーキテクチャ
+### 4.1. テスト階層アーキテクチャ
 
 **包括的テスト戦略による品質保証**
 
@@ -238,14 +247,14 @@ mcp__serena-mcp__find_referencing_symbols --name_path "変更したシンボル"
 4. E2E Tests       (エンドツーエンド) - 実際の使用シナリオ
 ```
 
-### Vitest設定システム
+### 4.2. Vitest設定システム
 
 #### 階層別設定ファイル
 
 ```
 configs/
 ├── vitest.config.unit.ts         # 単体テスト設定
-├── vitest.config.functional.ts   # 機能テスト設定  
+├── vitest.config.functional.ts   # 機能テスト設定
 ├── vitest.config.integration.ts  # 統合テスト設定
 ├── vitest.config.e2e.ts         # E2E テスト設定
 └── vitest.config.gha.ts         # GitHub Actions 用設定
@@ -264,16 +273,16 @@ mcp__serena-mcp__get_symbols_overview --relative_path "src/__tests__/AgLogger.sp
 mcp__serena-mcp__search_for_pattern --substring_pattern "describe|it\\(" --relative_path "src/__tests__" --context_lines_after 5
 ```
 
-### テスト実行コマンド体系
+### 4.3. テスト実行コマンド体系
 
 #### 開発用テストコマンド
 
 ```bash
-# 全パッケージ開発テスト（高速、主に unit）
+# 全パッケージ開発テスト (高速、主に unit)
 pnpm run test:develop
 pnpm -r run test:develop
 
-# 個別パッケージ開発テスト  
+# 個別パッケージ開発テスト
 cd packages/@aglabo/ag-logger
 pnpm run test:develop
 ```
@@ -281,7 +290,7 @@ pnpm run test:develop
 #### CI用テストコマンド
 
 ```bash
-# 全パッケージ包括テスト（全階層）
+# 全パッケージ包括テスト (全階層)
 pnpm run test:ci
 pnpm -r run test:ci
 
@@ -310,9 +319,9 @@ pnpm run test:e2e
 pnpm exec vitest --config ./configs/vitest.config.e2e.ts
 ```
 
-## 開発環境ワークフロー
+## 4. 開発環境ワークフロー
 
-### グローバル開発（ルートレベル）
+### 5.1. グローバル開発 (ルートレベル)
 
 #### モノレポ全体での作業
 
@@ -343,7 +352,7 @@ mcp__lsmcp__list_dir --relativePath "packages" --recursive false
 mcp__lsmcp__get_typescript_dependencies --root "$ROOT"
 ```
 
-### パッケージ個別開発
+### 5.2. パッケージ個別開発
 
 #### 特定パッケージでの集中作業
 
@@ -372,27 +381,27 @@ mcp__lsmcp__search_symbols --query "AgLogger" --kind ["Class"] --root "$ROOT"
 mcp__serena-mcp__list_dir --relative_path "src/plugins" --recursive true
 ```
 
-## Pre-commitプロセス
+## 5. Pre-commitプロセス
 
-### lefthookによる自動品質チェック
+### 6.1. lefthookによる自動品質チェック
 
-#### 自動実行チェック（コミット時）
+#### 自動実行チェック (コミット時)
 
-- **secretlint**: 機密情報漏洩防止
-- **ESLint**: コード品質（基本 + TypeScript 対応）
-- **ls-lint**: ファイル名規約確認
-- **cspell**: スペルチェック
-- **dprint**: コードフォーマット
-- **codegpt**: コミットメッセージ自動改善
+- secretlint: 機密情報漏洩防止
+- ESLint: コード品質 (基本 + TypeScript 対応)
+- ls-lint: ファイル名規約確認
+- cspell: スペルチェック
+- dprint: コードフォーマット
+- codegpt: コミットメッセージ自動改善
 
 #### 手動実行推奨チェック
 
-- **型チェック**: `pnpm run check:types`
-- **全テストスイート**: `pnpm run test:develop` / `pnpm run test:ci`
+- 型チェック: `pnpm run check:types`
+- 全テストスイート: `pnpm run test:develop` / `pnpm run test:ci`
 
-### コミット前チェックリスト
+### 6.2. コミット前チェックリスト
 
-#### 必須チェック（自動実行されない項目）
+#### 必須チェック (自動実行されない項目)
 
 ```bash
 pnpm run check:types
@@ -402,7 +411,7 @@ pnpm run test:develop
 mcp__serena-mcp__find_referencing_symbols --name_path "変更したシンボル" --relative_path "変更したファイル"
 ```
 
-#### 推奨チェック（時間に余裕がある場合）
+#### 推奨チェック (時間に余裕がある場合)
 
 ```bash
 pnpm run test:ci
@@ -412,9 +421,9 @@ pnpm run build
 mcp__lsmcp__lsp_get_diagnostics --relativePath "変更したファイル" --root "$ROOT"
 ```
 
-## 開発ベストプラクティス
+## 6. 開発ベストプラクティス
 
-### 1. コンテキスト理解（MCPツール必須）
+### 7.1. コンテキスト理解 (MCPツール必須)
 
 #### ファイル変更前の必須作業
 
@@ -422,14 +431,14 @@ mcp__lsmcp__lsp_get_diagnostics --relativePath "変更したファイル" --root
 # 既存コード規約の理解
 mcp__serena-mcp__get_symbols_overview --relative_path "対象ファイル"
 
-# 周辺コンテキスト（特にインポート）の確認  
+# 周辺コンテキスト (特にインポート) の確認
 mcp__lsmcp__parse_imports --filePath "対象ファイル" --root "$ROOT"
 
 # フレームワーク・ライブラリ選択の理解
 mcp__serena-mcp__search_for_pattern --substring_pattern "import.*from" --relative_path "src" --context_lines_after 1
 ```
 
-### 2. 既存パターン踏襲
+### 7.2. 既存パターン踏襲
 
 #### パターン調査プロセス
 
@@ -444,7 +453,7 @@ mcp__lsmcp__search_symbols --query "Utility" --root "$ROOT"
 mcp__serena-mcp__search_for_pattern --substring_pattern "パターンキーワード" --relative_path "src" --restrict_search_to_code_files true
 ```
 
-### 3. ライブラリ検証（MCPツール活用）
+### 7.3. ライブラリ検証 (MCPツール活用)
 
 #### 依存関係確認プロセス
 
@@ -459,15 +468,15 @@ mcp__serena-mcp__find_file --file_mask "package.json" --relative_path "."
 mcp__serena-mcp__search_for_pattern --substring_pattern "import.*ライブラリ名" --relative_path "." --restrict_search_to_code_files true
 ```
 
-### 4. セキュリティプラクティス
+### 7.4. セキュリティプラクティス
 
-- **セキュリティベストプラクティス**: 常時遵守
-- **秘匿情報排除**: シークレット・キーの露出・ログ出力禁止
-- **コミット安全性**: シークレット・キーのリポジトリコミット禁止
+- セキュリティベストプラクティス: 常時遵守
+- 秘匿情報排除: シークレット・キーの露出・ログ出力禁止
+- コミット安全性: シークレット・キーのリポジトリコミット禁止
 
-## パッケージ開発ワークフロー
+## 7. パッケージ開発ワークフロー
 
-### 新規パッケージ作成
+### 8.1. 新規パッケージ作成
 
 #### 基本構造セットアップ
 
@@ -475,7 +484,7 @@ mcp__serena-mcp__search_for_pattern --substring_pattern "import.*ライブラリ
 # パッケージディレクトリ作成
 mkdir -p packages/@aglabo/new-package
 
-# 既存パッケージをテンプレートとして活用（MCPツール使用）
+# 既存パッケージをテンプレートとして活用 (MCPツール使用)
 cd packages/@aglabo/new-package
 mcp__serena-mcp__find_file --file_mask "package.json" --relative_path "../ag-logger"
 
@@ -493,7 +502,7 @@ mkdir -p tests/{integration,e2e}
 mkdir -p shared/{types,constants}
 ```
 
-### 既存パッケージ拡張
+### 8.2. 既存パッケージ拡張
 
 #### MCPツール活用による機能拡張
 
@@ -519,9 +528,9 @@ pnpm run lint:all
 mcp__serena-mcp__find_referencing_symbols --name_path "NewFeature" --relative_path "src/NewFeature.ts"
 ```
 
-## 設定管理ワークフロー
+## 8. 設定管理ワークフロー
 
-### 中央集約設定
+### 9.1. 中央集約設定
 
 #### 設定更新とパッケージ同期
 
@@ -540,7 +549,7 @@ git status
 git diff
 ```
 
-### パッケージ固有設定
+### 9.2. パッケージ固有設定
 
 #### 設定調整プロセス
 
@@ -557,15 +566,15 @@ vi configs/vitest.config.unit.ts
 pnpm run test:develop
 ```
 
-## デュアルビルドプロセス
+## 9. デュアルビルドプロセス
 
-### ビルド戦略
+### 10.1. ビルド戦略
 
-- **ESM**: 主要モジュール形式
-- **CommonJS**: 後方互換性
-- **型定義**: TypeScript宣言ファイル自動生成
+- ESM: 主要モジュール形式
+- CommonJS: 後方互換性
+- 型定義: TypeScript 宣言ファイル自動生成
 
-### ビルドワークフロー
+### 10.2. ビルドワークフロー
 
 #### 開発中のビルド管理
 
@@ -578,14 +587,14 @@ pnpm run build:esm    # ESM のみ
 pnpm run build:cjs    # CommonJS のみ
 pnpm run build:types  # 型定義のみ
 
-# ビルド結果確認（MCPツール使用）
+# ビルド結果確認 (MCPツール使用)
 mcp__lsmcp__list_dir --relativePath "lib" --recursive false
 mcp__lsmcp__list_dir --relativePath "module" --recursive false
 ```
 
-## 品質ゲートワークフロー
+## 10. 品質ゲートワークフロー
 
-### 開発完了前必須チェック
+### 11.1. 開発完了前必須チェック
 
 #### 品質保証プロセス
 
@@ -608,7 +617,7 @@ mcp__lsmcp__get_symbol_details --relativePath "実装ファイル" --line "1" --
 mcp__serena-mcp__find_file --file_mask "*実装名*.spec.ts" --relative_path "src/__tests__"
 ```
 
-### リリース前包括チェック
+### 11.2. リリース前包括チェック
 
 #### 包括的品質保証
 
@@ -617,32 +626,20 @@ mcp__serena-mcp__find_file --file_mask "*実装名*.spec.ts" --relative_path "sr
 3. `pnpm run check:spells` - スペルチェック
 4. `pnpm run lint:secrets` - セキュリティチェック
 
-## MCPツール使用の必須化
+このワークフローに従うことで、ag-logger プロジェクトの品質と開発効率を最大化できます。
 
-### 開発プロセス全体でのMCPツール活用
+### AI開発支援の詳細ガイド
 
-#### 必須使用場面
+AI支援開発に関する詳細な情報は、以下の専用ドキュメントを参照してください:
 
-- **コード理解**: 既存コード構造の把握
-- **パターン調査**: 実装パターンの研究
-- **影響範囲分析**: 変更の影響確認
-- **依存関係確認**: ライブラリ・モジュールの使用状況確認
-- **テスト戦略立案**: 既存テストパターンの研究
+- **AI開発者向け**: [AI支援開発ガイド](16-ai-assisted-development.md) - 効果的なAI活用方法
+- **AIエージェント向け**: [for-AI-dev-standards/](../for-AI-dev-standards/) - AI専用開発標準
 
-#### 推奨使用パターン
+これらのドキュメントには、具体的な指示パターン、MCPツール活用方法、BDD開発フロー、品質ゲートなどの詳細情報が含まれています。
 
-```bash
-# 作業開始時の理解フェーズ
-mcp__lsmcp__get_project_overview --root "$ROOT"
-mcp__lsmcp__search_symbols --query "対象機能" --root "$ROOT"
+---
 
-# 実装中の調査フェーズ
-mcp__serena-mcp__find_symbol --name_path "関連シンボル" --include_body true
-mcp__serena-mcp__search_for_pattern --substring_pattern "パターン" --relative_path "src"
+## License
 
-# 完了前の確認フェーズ
-mcp__serena-mcp__find_referencing_symbols --name_path "変更シンボル" --relative_path "ファイル"
-mcp__lsmcp__lsp_get_diagnostics --relativePath "ファイル" --root "$ROOT"
-```
-
-このワークフローに従うことで、ag-loggerプロジェクトの品質と開発効率を最大化できます。
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2025 atsushifx
