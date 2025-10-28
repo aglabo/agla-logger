@@ -27,7 +27,7 @@
       "type": "stdio",
       "command": "codex",
       "args": [
-        "mcp"
+        "mcp-server"
       ],
       "env": {}
     }
