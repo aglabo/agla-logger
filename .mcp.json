@@ -1,13 +1,5 @@
 {
   "mcpServers": {
-    "lsmcp": {
-      "type": "stdio",
-      "command": "lsmcp",
-      "args": [
-        "-p",
-        "typescript"
-      ]
-    },
     "serena-mcp": {
       "type": "stdio",
       "command": "uvx",
@@ -20,8 +12,7 @@
         "ide-assistant",
         "--project",
         "."
-      ],
-      "env": {}
+      ]
     },
     "codex-mcp": {
       "type": "stdio",
@@ -30,6 +21,14 @@
         "mcp-server"
       ],
       "env": {}
+    },
+    "lsmcp": {
+      "type": "stdio",
+      "command": "lsmcp",
+      "args": [
+        "-p",
+        "typescript"
+      ]
     }
   }
 }
