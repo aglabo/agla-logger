@@ -1,5 +1,6 @@
 // src: .vscode/cspell.json
-// @(#) : cspell settings for this workspace
+// @(#) : cspell config for user-centric settings
+//
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
@@ -12,11 +13,12 @@
     "${env:XDG_CONFIG_HOME}/vscode/cspell.config.json"
   ],
   "language": "en",
-  "caseSensitive": true,
+  "caseSensitive": false,
+  "allowCompoundWords": true,
   "dictionaryDefinitions": [
     {
       "name": "project-dic",
-      "description": "dictionary for this project",
+      "description": "user dictionary for this project",
       "path": "./cspell/dicts/project.dic",
       "addWords": true,
       "scope": "workspace"
@@ -39,5 +41,6 @@
     // user defined dictionaries
     "user-dic",
     "project-dic"
-  ]
+  ],
+  "useGitignore": true
 }
