@@ -1,5 +1,5 @@
 // src: ./tsconfig.json
-// @(#) : TypeScript configuration for @aglabo/agla-error-core - error handling core module
+// @(#) : TypeScript configuration for @aglabo/agla-logger-composer - logger composition module
 //
 // Copyright (c) 2025 atsushifx <http://github.com/atsushifx>
 //
@@ -18,7 +18,7 @@
   ],
   "compilerOptions": {
     // directories
-    "declarationDir": "./modules",
+    "declarationDir": "./maps",
     // "outDir": "./maps",
     "rootDir": "./",
     // aliases
