@@ -1,0 +1,69 @@
+{
+  "name": "@aglabo/agla-logger-composer",
+  "_comment": "@(#) Log message composer library with formatters, validators, and stringify utilities for logging frameworks",
+  "description": "Log message composer library for logging frameworks including log formatters, message validators, timestamp utilities, and cross-runtime helpers",
+  "version": "0.1.0",
+  "private": false,
+  "author": "atsushifx <https://github.com/atsushifx>",
+  "license": "MIT",
+  "type": "module",
+  "types": "./module/index.d.ts",
+  "imports": {
+    "#/*": "./src/*",
+    "#src": "./src",
+    "#src/*": "./src/*",
+    "#shared": "./shared",
+    "#shared/*": "./shared/*",
+    "#tests": "./tests",
+    "#tests/*": "./tests/*"
+  },
+  "exports": {
+    ".": {
+      "types": "./module/index.d.ts",
+      "import": "./module/index.js"
+    }
+  },
+  "files": [
+    "module",
+    "LICENSE",
+    "LICENSE.ja",
+    "README.md",
+    "README.ja.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm exec tsup --config ./configs/tsup.config.ts",
+    "build": "pnpm exec tsup --config ./configs/tsup.config.ts",
+    "clean": "pnpm rimraf dist module .cache",
+    "format:dprint": "dprint fmt",
+    "check:dprint": "dprint check",
+    "check:types": "tsc --noEmit --incremental",
+    "check:spells": "cspell --config .vscode/cspell.json --cache --cache-location .cache/cspell/cSpellCache",
+    "lint": "pnpm exec eslint --config ./configs/eslint.config.js --cache --cache-location .cache/eslint-cache/esLintCache ",
+    "lint:types": "pnpm exec eslint --config ./configs/eslint.config.typed.js --cache --cache-location .cache/eslint-cache/esLintCacheTypes",
+    "lint:deno": "pnpm exec deno lint",
+    "lint:bun": "pnpm exec eslint --config ./configs/eslint.config.bun.js --cache --cache-location .cache/eslint-cache/esLintCache-bun ",
+    "lint:secrets": "secretlint --secretlintrc ./configs/secretlint.config.yaml --secretlintignore .gitignore --maskSecrets **/*",
+    "test:all": "concurrently \"pnpm run test:develop\" \"pnpm run test:functional\" \"pnpm run test:ci\" \"pnpm run test:e2e\" \"pnpm run test:runtime\" ",
+    "test:develop": "pnpm exec vitest run --config ./configs/vitest.config.unit.ts",
+    "test:functional": "pnpm exec vitest run --config ./configs/vitest.config.functional.ts",
+    "test:ci": "pnpm exec vitest run --config ./configs/vitest.config.integration.ts",
+    "test:e2e": "pnpm exec vitest run --config ./configs/vitest.config.e2e.ts",
+    "test:runtime": "concurrently \"pnpm run test:runtime:node\" \"pnpm run test:runtime:deno\" \"pnpm run test:runtime:bun\" ",
+    "test:runtime:node": "pnpm exec vitest run --config ./configs/vitest.config.runtime.ts ",
+    "test:runtime:deno": "deno test src/**/__tests__/runtime/deno/*.spec.ts",
+    "test:runtime:bun": "bun test ./src/__tests__/runtime/bun/",
+    "test:coverage:unit": "pnpm exec vitest run --coverage --config ./configs/vitest.config.unit.ts",
+    "test:coverage:functional": "pnpm exec vitest run --coverage --config ./configs/vitest.config.functional.ts",
+    "test:coverage:integration": "pnpm exec vitest run --coverage --config ./configs/vitest.config.integration.ts",
+    "test:coverage:e2e": "pnpm exec vitest run --coverage --config ./configs/vitest.config.e2e.ts",
+    "test:coverage:runtime": "pnpm exec vitest run --coverage --config ./configs/vitest.config.runtime.ts",
+    "test:coverage:all": "concurrently \"pnpm run test:coverage:unit\" \"pnpm run test:coverage:functional\" \"pnpm run test:coverage:integration\" \"pnpm run test:coverage:e2e\" \"pnpm run test:coverage:runtime\"",
+    "sync:configs": "pnpm -w run sync:configs "
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
