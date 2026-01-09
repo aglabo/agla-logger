@@ -10,7 +10,6 @@ export default [
   // for This Product
   './packages/@aglabo/agla-error-core/tsconfig.json',
   './packages/@aglabo/agla-logger-core/tsconfig.json',
-  './packages/@aglabo/agla-logger-composer/tsconfig.json',
   // aggregators
   './aggregators/@aglabo/agla-error/tsconfig.json',
   './aggregators/@aglabo/agla-logger/tsconfig.json',
