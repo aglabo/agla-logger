@@ -1,5 +1,5 @@
 // src: ./configs/eslint.config.all.js
-// @(#) : ESLint flat configuration for all TypeScript files
+// @(#) : ESLint configuration for all TypeScript files in @aglabo error handling library
 //
 // Copyright (c) 2025 atsushifx <https://github.com/atsushifx>
 //
@@ -27,11 +27,19 @@ const rootDir = path.resolve(__dirname, '../');
 export default [
   ...baseConfig,
 
+  // ignore runtime-specific test files and coverage reports
+  {
+    ignores: [
+      'packages/**/__tests__/runtime/deno/**',
+      'packages/**/__tests__/runtime/bun/**',
+      '**/coverage/**',
+    ],
+  },
+
   // source code settings
   {
     files: [
       'packages/**/*.ts',
-      'aggregators/**/*.ts',
     ],
     languageOptions: {
       parser: tsparser,
